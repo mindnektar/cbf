@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import connectWithRouter from 'helpers/connectWithRouter';
+import { createGame } from 'actions/games';
+import { push } from 'actions/history';
 import Button from 'Button';
 
 const games = [
@@ -15,7 +17,9 @@ const games = [
 
 class AllGames extends React.Component {
     createGameHandler = id => () => {
-        
+        this.props.createGame(id).then((newGame) => {
+            this.props.push('play', newGame.id, 'setup');
+        });
     }
 
     render() {
@@ -54,11 +58,15 @@ class AllGames extends React.Component {
 }
 
 AllGames.propTypes = {
-
+    createGame: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired,
 };
 
 export default connectWithRouter(
     null,
-    null,
+    {
+        createGame,
+        push,
+    },
     AllGames,
 );

@@ -3,15 +3,18 @@ module.exports = (app) => {
         app.knex('user')
             .where('access_token', request.header('X-Access-token'))
             .select()
-            .then((result) => {
-                if (result.length === 0) {
+            .then(([user]) => {
+                if (!user) {
                     response.status(204).send();
                     return;
                 }
 
-                response.json({
-                    email: result[0].email,
-                    username: result[0].username,
+                app.knex('user_in_game').where('user_id', user.id).select().then((games) => {
+                    response.json({
+                        email: user.email,
+                        games: games.map(game => game.game_id),
+                        username: user.username,
+                    });
                 });
             });
     });

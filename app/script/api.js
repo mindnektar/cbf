@@ -45,6 +45,8 @@ const login = (username, password) => (
 
 // games
 
+const createGame = (game) => request('games', 'POST', { game });
+
 const fetchGames = () => request('games');
 
 // me
@@ -53,6 +55,7 @@ const fetchMe = () => request('me');
 
 export default {
     login,
+    createGame,
     fetchGames,
     fetchMe,
 };
