@@ -1,0 +1,44 @@
+{
+  "parser": "babel-eslint",
+  "extends": "airbnb",
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true,
+  },
+  "settings": {
+    "import/resolver": {
+      "webpack": {
+        "config": "webpack.config.js",
+      },
+    },
+  },
+  "rules": {
+    "comma-dangle": ["error", {
+      "arrays": "always-multiline",
+      "objects": "always-multiline",
+      "imports": "always-multiline",
+      "exports": "always-multiline",
+      "functions": "ignore",
+    }],
+    "guard-for-in": [0],
+    "import/extensions": [1, "never"],
+    "import/no-named-as-default": [0],
+    "import/no-extraneous-dependencies": [0],
+    "import/prefer-default-export": [0],
+    "indent": [2, 4, {"SwitchCase": 1}],
+    "jsx-a11y/label-has-for": [0],
+    "jsx-a11y/no-static-element-interactions": [0],
+    "no-continue": [0],
+    "no-param-reassign": [0],
+    "no-restricted-syntax": [0],
+    "no-underscore-dangle": [0],
+    "no-use-before-define": [0],
+    "react/forbid-prop-types": [0],
+    "react/jsx-indent": ["error", 4],
+    "react/jsx-indent-props": ["error", 4],
+    "react/no-danger": [0],
+    "react/prefer-stateless-function": [0],
+    "react/prop-types": [2, { "skipUndeclared": true }],
+  }
+}

@@ -1,0 +1,35 @@
+.cbf-header
+    align-items: center
+    background-color: $color-primary
+    box-shadow: $shadow
+    box-sizing: border-box
+    display: flex
+    height: $header-height
+    position: fixed
+    top: 0
+    width: 100%
+
+.cbf-header__logo
+    color: $color-light
+    font-size: 40px
+    text-align: center
+    width: 160px
+
+.cbf-header__menu
+    display: flex
+    margin-left: 24px
+
+.cbf-header__menu-item
+    border-radius: 8px
+    color: $color-light
+    cursor: pointer
+    margin-right: 24px
+    padding: 8px 24px
+    transition-duration: $t-duration
+    transition-property: background-color, box-shadow
+    transition-timing-function: $t-easing
+
+.cbf-header__menu-item:hover,
+.cbf-header__menu-item--active
+        background-color: $color-secondary
+        box-shadow: $shadow
