@@ -14,3 +14,9 @@ export const login = (username, password) => dispatch => (
         console.log
     )
 );
+
+export const logout = () => () => {
+    Cookies.remove('access-token');
+
+    window.location.reload();
+};

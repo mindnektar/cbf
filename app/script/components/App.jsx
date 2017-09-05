@@ -1,12 +1,18 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Switch, Route } from 'react-router-dom';
 import connectWithRouter from 'helpers/connectWithRouter';
+import { load } from 'actions/populate';
 import Header from './App/Header';
 import Home from './App/Home';
 import Login from './App/Login';
 import Play from './App/Play';
 
 class App extends React.Component {
+    componentWillMount() {
+        this.props.load();
+    }
+
     render() {
         return (
             <div>
@@ -24,4 +30,14 @@ class App extends React.Component {
     }
 }
 
-export default connectWithRouter(null, null, App);
+App.propTypes = {
+    load: PropTypes.func.isRequired,
+};
+
+export default connectWithRouter(
+    null,
+    {
+        load,
+    },
+    App
+);
