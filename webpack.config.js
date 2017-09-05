@@ -26,6 +26,7 @@ module.exports = {
         extensions: ['.js', '.jsx'],
         modules: [
             path.join(__dirname, 'app/script'),
+            path.join(__dirname, 'app/script/components/ui'),
             path.resolve(__dirname, 'node_modules'),
         ],
     },

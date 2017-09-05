@@ -33,6 +33,18 @@ class Header extends React.Component {
                         </div>
                     )}
                 </div>
+
+                <div className="cbf-header__login">
+                    <div
+                        className={classNames(
+                            'cbf-header__menu-item',
+                            { 'cbf-header__menu-item--active': this.props.path.includes('login') }
+                        )}
+                        onTouchTap={this.changePageHandler('login')}
+                    >
+                        Login
+                    </div>
+                </div>
             </div>
         );
     }
