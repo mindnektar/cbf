@@ -19,12 +19,16 @@ app.knex = knex({
 
 app.use(bodyParser.json());
 
-app.get('/script/:path', (request, response) => {
-    response.sendFile(path.join(__dirname, '../..', 'public', 'script/', request.params.path));
+app.get('/script/*', (request, response) => {
+    response.sendFile(path.join(__dirname, '../../public', request.url));
 });
 
-app.get('/style/:path', (request, response) => {
-    response.sendFile(path.join(__dirname, '../..', 'public', 'style/', request.params.path));
+app.get('/style/*', (request, response) => {
+    response.sendFile(path.join(__dirname, '../../public', request.url));
+});
+
+app.get('/img/*', (request, response) => {
+    response.sendFile(path.join(__dirname, '../../public', request.url));
 });
 
 apiAuth(app);

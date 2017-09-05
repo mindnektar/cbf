@@ -1,11 +1,12 @@
 import React from 'react';
 import connectWithRouter from 'helpers/connectWithRouter';
+import AllGames from './Play/AllGames';
 
 class Play extends React.Component {
     render() {
         return (
             <div>
-                Play
+                <AllGames />
             </div>
         );
     }
