@@ -1,7 +1,12 @@
 import api from 'api';
 
+export const CLEAR_GAME_STATES = 'CLEAR_GAME_STATES';
 export const LOAD = 'LOAD';
 export const LOAD_GAME_STATES = 'LOAD_GAME_STATES';
+
+export const clearGameStates = () => ({
+    type: CLEAR_GAME_STATES,
+});
 
 export const load = () => dispatch => (
     Promise.all([

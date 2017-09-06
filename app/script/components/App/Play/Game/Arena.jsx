@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import connectWithRouter from 'helpers/connectWithRouter';
 import { replace } from 'actions/history';
-import { loadGameStates } from 'actions/populate';
+import { clearGameStates, loadGameStates } from 'actions/populate';
 import gameConstants from 'shared/constants/games';
 import gameComponents from 'components/App/games';
 
@@ -21,6 +21,10 @@ class Arena extends React.Component {
         this.props.loadGameStates(this.props.game.id);
     }
 
+    componentWillUnmount() {
+        this.props.clearGameStates();
+    }
+
     render() {
         return (
             <div>
@@ -37,6 +41,7 @@ Arena.defaultProps = {
 };
 
 Arena.propTypes = {
+    clearGameStates: PropTypes.func.isRequired,
     game: PropTypes.object.isRequired,
     gameStates: PropTypes.array,
     loadGameStates: PropTypes.func.isRequired,
@@ -49,6 +54,7 @@ export default connectWithRouter(
         gameStates: state.gameStates,
     }),
     {
+        clearGameStates,
         loadGameStates,
         replace,
     },
