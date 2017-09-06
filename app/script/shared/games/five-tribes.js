@@ -1,7 +1,7 @@
 const assets = {
     meeples: [
-        ...Array(18).fill('Vizier'),
-        ...Array(18).fill('Elder'),
+        ...Array(16).fill('Vizier'),
+        ...Array(20).fill('Elder'),
         ...Array(18).fill('Merchant'),
         ...Array(18).fill('Builder'),
         ...Array(18).fill('Assassin'),

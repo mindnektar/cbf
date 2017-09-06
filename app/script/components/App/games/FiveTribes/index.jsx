@@ -11,12 +11,12 @@ class FiveTribes extends React.Component {
         return (
             <div className="five-tribes">
                 <div className="five-tribes__board">
-                    {gameState[0][0][0].map(row =>
+                    {gameState[0][0][0].map((row, rowIndex) =>
                         <div
                             className="five-tribes__board-row"
                             key={`row${row[0]}`}
                         >
-                            {row.map(tile =>
+                            {row.map((tile, tileIndex) =>
                                 <div
                                     className="five-tribes__tile"
                                     key={tile}
@@ -32,6 +32,18 @@ class FiveTribes extends React.Component {
 
                                     <div className="five-tribes__tile-action">
                                         {assets.tiles[tile].action}
+                                    </div>
+
+                                    <div className="five-tribes__tile-meeples">
+                                        {gameState[0][0][1][rowIndex][tileIndex].map(meeple =>
+                                            <div
+                                                className={classNames(
+                                                    'five-tribes__meeple',
+                                                    `five-tribes__meeple--${assets.meeples[meeple]}`
+                                                )}
+                                                key={meeple}
+                                            />
+                                        )}
                                     </div>
                                 </div>
                             )}
