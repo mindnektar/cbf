@@ -52,6 +52,12 @@ class FiveTribes extends React.Component {
                 </div>
 
                 <div className="five-tribes__market">
+                    <div className="five-tribes__market-item five-tribes__market-item--deck">
+                        <div className="five-tribes__market-item-name">
+                            {gameState[0][0][3]} resources remaining
+                        </div>
+                    </div>
+
                     {gameState[0][0][2].map(resource =>
                         <div
                             className={classNames(
