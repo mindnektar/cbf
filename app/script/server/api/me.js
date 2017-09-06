@@ -12,7 +12,8 @@ module.exports = (app) => {
                 app.knex('user_in_game').where('user_id', user.id).select().then((games) => {
                     response.json({
                         email: user.email,
-                        games: games.map(game => game.game_id),
+                        games: games.map(game => ({ id: game.game_id, admin: game.admin })),
+                        id: user.id,
                         username: user.username,
                     });
                 });

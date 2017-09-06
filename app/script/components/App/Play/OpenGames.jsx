@@ -1,22 +1,33 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import connectWithRouter from 'helpers/connectWithRouter';
+import { joinGame } from 'actions/games';
 import { push } from 'actions/history';
 import Button from 'Button';
 import Headline from 'Headline';
 import games from 'data/games';
+import gameConstants from 'shared/constants/games';
 
-class MyGames extends React.Component {
-    openGameHandler = id => () => {
-        this.props.push('play', id);
+class OpenGames extends React.Component {
+    getFilteredGames() {
+        return Object.values(this.props.games).filter(game => (
+            !this.props.myGames.find(myGame => myGame.id === game.id) &&
+            game.status === gameConstants.GAME_STATUS_OPEN
+        ));
+    }
+
+    joinGameHandler = id => () => {
+        this.props.joinGame(id).then(() => {
+            this.props.push('play', id);
+        });
     }
 
     render() {
         return (
-            <div className="cbf-my-games">
-                <Headline>My active games</Headline>
+            <div className="cbf-open-games">
+                <Headline>Open invitations</Headline>
 
-                {this.props.myGames.map(game =>
+                {this.getFilteredGames().map(game =>
                     <div
                         className="cbf-all-games__item"
                         key={game.id}
@@ -50,9 +61,10 @@ class MyGames extends React.Component {
     }
 }
 
-MyGames.propTypes = {
+OpenGames.propTypes = {
     games: PropTypes.object.isRequired,
     myGames: PropTypes.array.isRequired,
+    joinGame: PropTypes.func.isRequired,
     push: PropTypes.func.isRequired,
 };
 
@@ -62,7 +74,8 @@ export default connectWithRouter(
         myGames: state.me.games,
     }),
     {
+        joinGame,
         push,
     },
-    MyGames,
+    OpenGames,
 );

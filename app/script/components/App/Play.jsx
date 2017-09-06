@@ -4,6 +4,7 @@ import { Switch, Route } from 'react-router-dom';
 import connectWithRouter from 'helpers/connectWithRouter';
 import AllGames from './Play/AllGames';
 import MyGames from './Play/MyGames';
+import OpenGames from './Play/OpenGames';
 import Game from './Play/Game';
 
 class Play extends React.Component {
@@ -15,6 +16,10 @@ class Play extends React.Component {
                     <div>
                         {this.props.me &&
                             <MyGames />
+                        }
+
+                        {this.props.me &&
+                            <OpenGames />
                         }
 
                         <AllGames />

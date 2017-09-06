@@ -1,6 +1,5 @@
 const uuid = require('uuid/v4');
-
-const GAME_STATUS_SETTING_UP = 0;
+const gameConstants = require('../../shared/constants/games');
 
 module.exports = (app) => {
     app.get('/api/games', (request, response) => {
@@ -23,7 +22,7 @@ module.exports = (app) => {
                 const id = uuid();
                 const game = {
                     id,
-                    status: GAME_STATUS_SETTING_UP,
+                    status: gameConstants.GAME_STATUS_SETTING_UP,
                     title: request.body.game,
                 };
 

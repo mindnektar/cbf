@@ -19,11 +19,13 @@ class App extends React.Component {
                 <Header />
 
                 <div className="cbf-content">
-                    <Switch>
-                        <Route path="/play" component={Play} />
-                        <Route path="/login" component={Login} />
-                        <Route path="/" component={Home} />
-                    </Switch>
+                    {this.props.isSystemLoaded &&
+                        <Switch>
+                            <Route path="/play" component={Play} />
+                            <Route path="/login" component={Login} />
+                            <Route path="/" component={Home} />
+                        </Switch>
+                    }
                 </div>
             </div>
         );
@@ -31,11 +33,14 @@ class App extends React.Component {
 }
 
 App.propTypes = {
+    isSystemLoaded: PropTypes.bool.isRequired,
     load: PropTypes.func.isRequired,
 };
 
 export default connectWithRouter(
-    null,
+    state => ({
+        isSystemLoaded: state.ui.isSystemLoaded,
+    }),
     {
         load,
     },

@@ -10,7 +10,7 @@ import games from 'data/games';
 class AllGames extends React.Component {
     createGameHandler = handle => () => {
         this.props.createGame(handle).then((newGame) => {
-            this.props.push('play', newGame.id, 'setup');
+            this.props.push('play', newGame.id);
         });
     }
 

@@ -27,7 +27,7 @@ module.exports = {
         knex.schema.createTable('user_in_game', (table) => {
             table.string('user_id').notNullable();
             table.string('game_id').notNullable();
-            table.boolean('admin').notNullable();
+            table.boolean('admin').notNullable().defaultTo(0);
             table.unique(['user_id', 'game_id']);
             table.foreign('user_id').references('user.id');
             table.foreign('game_id').references('game.id');
