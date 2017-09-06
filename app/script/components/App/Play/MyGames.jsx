@@ -33,6 +33,10 @@ class MyGames extends React.Component {
                                 <div className="cbf-all-games__item-title">
                                     {games[this.props.games[game.id].handle].title}
                                 </div>
+
+                                {this.props.games[game.id].players.map(userId =>
+                                    <div key={userId}>{this.props.users[userId].username}</div>
+                                )}
                             </div>
 
                             <div className="cbf-all-games__item-options">
@@ -54,12 +58,14 @@ MyGames.propTypes = {
     games: PropTypes.object.isRequired,
     myGames: PropTypes.object.isRequired,
     push: PropTypes.func.isRequired,
+    users: PropTypes.object.isRequired,
 };
 
 export default connectWithRouter(
     state => ({
         games: state.games,
         myGames: state.me.games,
+        users: state.users,
     }),
     {
         push,

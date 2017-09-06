@@ -44,7 +44,9 @@ class Lobby extends React.Component {
                     </div>
                 )}
 
-                {this.props.game.players.length === 2 &&
+                {
+                    this.props.game.players.length === 2 &&
+                    !!this.props.me.games[this.props.game.id].admin &&
                     <Button
                         onTouchTap={this.startGame}
                     >

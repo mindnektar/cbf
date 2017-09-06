@@ -6,12 +6,12 @@ export default createReducer(null, {
     [LOAD]: (state, action) => action.payload.me,
     [actions.JOIN_GAME]: (state, action) => ({
         ...state,
-        games: [
+        games: {
             ...state.games,
-            {
+            [action.payload.id]: {
                 id: action.payload.id,
                 admin: action.payload.admin,
             },
-        ],
+        },
     }),
 });
