@@ -1,6 +1,7 @@
 import api from 'api';
 
 export const LOAD = 'LOAD';
+export const LOAD_GAME_STATES = 'LOAD_GAME_STATES';
 
 export const load = () => dispatch => (
     Promise.all([
@@ -18,6 +19,15 @@ export const load = () => dispatch => (
                 },
                 users,
             },
+        });
+    })
+);
+
+export const loadGameStates = id => dispatch => (
+    api.fetchGameStates(id).then((gameStates) => {
+        dispatch({
+            type: LOAD_GAME_STATES,
+            payload: { gameStates },
         });
     })
 );

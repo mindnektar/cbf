@@ -51,6 +51,8 @@ const createGame = game => request('games', 'POST', { game });
 
 const fetchGames = () => request('games');
 
+const fetchGameStates = id => request(`game_states/${id}`);
+
 const joinGame = id => request('user_in_game', 'POST', { id });
 
 // users
@@ -64,6 +66,7 @@ export default {
     changeGame,
     createGame,
     fetchGames,
+    fetchGameStates,
     fetchUsers,
     joinGame,
     fetchMe,

@@ -10,8 +10,10 @@ import gameConstants from 'shared/constants/games';
 
 class OpenGames extends React.Component {
     getFilteredGames() {
+        const myGames = Object.values(this.props.myGames);
+
         return Object.values(this.props.games).filter(game => (
-            !this.props.myGames.find(myGame => myGame.id === game.id) &&
+            !myGames.find(myGame => myGame.id === game.id) &&
             game.status === gameConstants.GAME_STATUS_OPEN
         ));
     }
@@ -63,7 +65,7 @@ class OpenGames extends React.Component {
 
 OpenGames.propTypes = {
     games: PropTypes.object.isRequired,
-    myGames: PropTypes.array.isRequired,
+    myGames: PropTypes.object.isRequired,
     joinGame: PropTypes.func.isRequired,
     push: PropTypes.func.isRequired,
 };

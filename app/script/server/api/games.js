@@ -79,4 +79,14 @@ module.exports = (app) => {
                 }).then(() => response.status(204).send());
             });
     });
+
+    app.get('/api/game_states/:id', (request, response) => {
+        app.knex('game_state')
+            .where('game_id', request.params.id)
+            .orderBy('order')
+            .select()
+            .then((gameStates) => {
+                response.json(gameStates.map(item => JSON.parse(item.state)));
+            });
+    });
 };
