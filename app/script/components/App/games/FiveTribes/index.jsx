@@ -52,7 +52,25 @@ class FiveTribes extends React.Component {
                 </div>
 
                 <div className="five-tribes__market">
+                    {gameState[0][0][2].map(resource =>
+                        <div
+                            className={classNames(
+                                'five-tribes__market-item',
+                                { 'five-tribes__market-item--fakir': assets.resources[resource] === 'Fakir' }
+                            )}
+                            key={resource}
+                        >
+                            <div className="five-tribes__market-item-name">
+                                {assets.resources[resource]}
+                            </div>
 
+                            <div className="five-tribes__market-item-frequency">
+                                {assets.resources.filter(
+                                    name => name === assets.resources[resource]
+                                ).length}x
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <div className="five-tribes__djinns">
