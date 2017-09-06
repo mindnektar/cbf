@@ -1,19 +1,23 @@
 .five-tribes__board
+    display: flex
+    flex-direction: column
+    height: 50vw
     margin-bottom: 5%
-    width: 80%
+    width: 60vw
 
 .five-tribes__board-row
+    align-items: stretch
     display: flex
+    flex-grow: 1
+    height: 20%
 
 .five-tribes__tile
     background-color: #efb26c
     border-radius: 10%
     box-shadow: $shadow
-    height: 0
-    margin: .5%
-    padding-bottom: 15.66%
+    flex-grow: 1
     position: relative
-    width: 15.66%
+    transform: scale(.95)
 
 .five-tribes__tile-value
     align-items: center
@@ -72,14 +76,15 @@
 
 .five-tribes__market
     display: flex
+    height: 10vw
+    width: 78vw
 
 .five-tribes__market-item
     background-color: #c4dc91
     border-radius: 10%
     box-shadow: $shadow
-    height: 0
+    height: 100%
     margin: .5%
-    padding-bottom: 13%
     position: relative
     width: 9%
 
@@ -89,6 +94,7 @@
 .five-tribes__market-item-name
     align-items: center
     display: flex
+    font-size: .9em
     height: 100%
     left: 0
     justify-content: center
