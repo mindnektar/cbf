@@ -23,7 +23,7 @@ module.exports = (app) => {
                 const game = {
                     id,
                     status: gameConstants.GAME_STATUS_SETTING_UP,
-                    title: request.body.game,
+                    handle: request.body.game,
                 };
 
                 app.knex('game').insert(game).then(() => {
@@ -35,6 +35,24 @@ module.exports = (app) => {
                         response.json(game);
                     });
                 });
+            });
+    });
+
+    app.patch('/api/games', (request, response) => {
+        app.knex('game').where('id', request.body.id).update(request.body.data).then(() => {
+            response.status(204).send();
+        });
+    });
+
+    app.post('/api/user_in_game', (request, response) => {
+        app.knex('user')
+            .where('access_token', request.header('X-Access-token'))
+            .select()
+            .then(([user]) => {
+                app.knex('user_in_game').insert({
+                    game_id: request.body.id,
+                    user_id: user.id,
+                }).then(() => response.status(204).send());
             });
     });
 };

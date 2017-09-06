@@ -10,4 +10,11 @@ export default createReducer({
         ...state,
         [action.payload.id]: action.payload,
     }),
+    [actions.CHANGE_GAME_STATUS]: (state, action) => ({
+        ...state,
+        [action.payload.id]: {
+            ...state[action.payload.id],
+            status: action.payload.status,
+        },
+    }),
 });

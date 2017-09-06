@@ -45,9 +45,13 @@ const login = (username, password) => (
 
 // games
 
-const createGame = (game) => request('games', 'POST', { game });
+const changeGame = (id, data) => request('games', 'PATCH', { id, data });
+
+const createGame = game => request('games', 'POST', { game });
 
 const fetchGames = () => request('games');
+
+const joinGame = id => request('user_in_game', 'POST', { id });
 
 // me
 
@@ -55,7 +59,9 @@ const fetchMe = () => request('me');
 
 export default {
     login,
+    changeGame,
     createGame,
     fetchGames,
+    joinGame,
     fetchMe,
 };

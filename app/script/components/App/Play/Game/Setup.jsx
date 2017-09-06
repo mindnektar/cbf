@@ -2,7 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import connectWithRouter from 'helpers/connectWithRouter';
 import { replace } from 'actions/history';
+import { openGame } from 'actions/games';
 import gameConstants from 'shared/constants/games';
+import Button from 'Button';
 
 class Setup extends React.Component {
     componentWillMount() {
@@ -15,10 +17,20 @@ class Setup extends React.Component {
         }
     }
 
+    openGame = () => {
+        this.props.openGame(this.props.game.id).then(() => {
+            this.props.replace('play', this.props.game.id, 'lobby');
+        });
+    }
+
     render() {
         return (
             <div>
-                Setup
+                <Button
+                    onTouchTap={this.openGame}
+                >
+                    Open game for joining
+                </Button>
             </div>
         );
     }
@@ -26,6 +38,7 @@ class Setup extends React.Component {
 
 Setup.propTypes = {
     game: PropTypes.object.isRequired,
+    openGame: PropTypes.func.isRequired,
     replace: PropTypes.func.isRequired,
 };
 
@@ -34,6 +47,7 @@ export default connectWithRouter(
         game: state.games[ownProps.match.params.gameId],
     }),
     {
+        openGame,
         replace,
     },
     Setup

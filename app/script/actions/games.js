@@ -1,9 +1,11 @@
 import api from 'api';
+import gameConstants from 'shared/constants/games';
+import { JOIN_GAME } from 'actions/me';
 
 export const CREATE_GAME = 'CREATE_GAME';
-export const JOIN_GAME = 'JOIN_GAME';
+export const CHANGE_GAME_STATUS = 'CHANGE_GAME_STATUS';
 
-export const createGame = game => (dispatch, getState) => (
+export const createGame = game => dispatch => (
     api.createGame(game).then((newGame) => {
         dispatch({
             type: CREATE_GAME,
@@ -12,18 +14,20 @@ export const createGame = game => (dispatch, getState) => (
 
         dispatch({
             type: JOIN_GAME,
-            payload: { id: newGame.id, userId: getState().me.id, admin: true },
+            payload: { id: newGame.id, admin: true },
         });
 
         return newGame;
     })
 );
 
-export const joinGame = id => (dispatch, getState) => (
-    api.joinGame(id).then(() => {
+export const openGame = id => (dispatch) => {
+    const status = gameConstants.GAME_STATUS_OPEN;
+
+    return api.changeGame(id, { status }).then(() => {
         dispatch({
-            type: JOIN_GAME,
-            payload: { id, userId: getState().me.id, admin: false },
+            type: CHANGE_GAME_STATUS,
+            payload: { id, status },
         });
-    })
-);
+    });
+};

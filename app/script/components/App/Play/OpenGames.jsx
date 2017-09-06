@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import connectWithRouter from 'helpers/connectWithRouter';
-import { joinGame } from 'actions/games';
+import { joinGame } from 'actions/me';
 import { push } from 'actions/history';
 import Button from 'Button';
 import Headline from 'Headline';
@@ -48,9 +48,9 @@ class OpenGames extends React.Component {
 
                             <div className="cbf-all-games__item-options">
                                 <Button
-                                    onTouchTap={this.openGameHandler(game.id)}
+                                    onTouchTap={this.joinGameHandler(game.id)}
                                 >
-                                    Open game
+                                    Join game
                                 </Button>
                             </div>
                         </div>
