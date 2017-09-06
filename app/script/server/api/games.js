@@ -50,6 +50,20 @@ module.exports = (app) => {
 
     app.patch('/api/games', (request, response) => {
         app.knex('game').where('id', request.body.id).update(request.body.data).then(() => {
+            if (request.body.data.status === gameConstants.GAME_STATUS_ACTIVE) {
+                app.knex('game').where('id', request.body.id).select().then(([game]) => {
+                    const state = JSON.stringify(require(`../games/${game.handle}`).setup());
+
+                    app.knex('game_state').insert({
+                        game_id: game.id,
+                        order: 0,
+                        state,
+                    }).then(() => response.status(204).send());
+                });
+
+                return;
+            }
+
             response.status(204).send();
         });
     });
