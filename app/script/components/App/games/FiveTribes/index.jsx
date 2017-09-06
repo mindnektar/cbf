@@ -10,6 +10,27 @@ class FiveTribes extends React.Component {
 
         return (
             <div className="five-tribes">
+                <div className="five-tribes__tracks">
+                    <div className="five-tribes__bid-order">
+                        <div>4</div>
+                        <div>3</div>
+                        <div>2</div>
+                        <div>1</div>
+                    </div>
+
+                    <div className="five-tribes__turn-order">
+                        <div>0</div>
+                        <div>0</div>
+                        <div>0</div>
+                        <div>1</div>
+                        <div>3</div>
+                        <div>5</div>
+                        <div>8</div>
+                        <div>12</div>
+                        <div>18</div>
+                    </div>
+                </div>
+
                 <div className="five-tribes__board">
                     {gameState[0][0][0].map((row, rowIndex) =>
                         <div
