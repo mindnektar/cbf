@@ -5,6 +5,7 @@ import { replace } from 'actions/history';
 import { openGame } from 'actions/games';
 import gameConstants from 'shared/constants/games';
 import Button from 'Button';
+import Headline from 'Headline';
 
 class Setup extends React.Component {
     componentWillMount() {
@@ -26,6 +27,8 @@ class Setup extends React.Component {
     render() {
         return (
             <div>
+                <Headline>Configure your game</Headline>
+
                 <Button
                     onTouchTap={this.openGame}
                 >

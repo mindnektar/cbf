@@ -4,7 +4,8 @@ const knex = require('knex');
 const path = require('path');
 const apiAuth = require('./server/api/auth');
 const apiGames = require('./server/api/games');
-const apiMe = require('./server/api/me');
+const apiUsers = require('./server/api/users');
+
 const app = express();
 
 app.knex = knex({
@@ -33,7 +34,7 @@ app.get('/img/*', (request, response) => {
 
 apiAuth(app);
 apiGames(app);
-apiMe(app);
+apiUsers(app);
 
 app.get('/*', (request, response) => {
     response.sendFile(path.join(__dirname, '../..', 'public', 'index.html'));

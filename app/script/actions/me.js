@@ -6,7 +6,7 @@ export const joinGame = id => dispatch => (
     api.joinGame(id).then(() => {
         dispatch({
             type: JOIN_GAME,
-            payload: { id, admin: false },
+            payload: { id, admin: 0 },
         });
     })
 );

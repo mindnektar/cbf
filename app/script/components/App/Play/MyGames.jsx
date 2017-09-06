@@ -16,7 +16,7 @@ class MyGames extends React.Component {
             <div className="cbf-my-games">
                 <Headline>My active games</Headline>
 
-                {this.props.myGames.map(game =>
+                {Object.values(this.props.myGames).map(game =>
                     <div
                         className="cbf-all-games__item"
                         key={game.id}
@@ -52,7 +52,7 @@ class MyGames extends React.Component {
 
 MyGames.propTypes = {
     games: PropTypes.object.isRequired,
-    myGames: PropTypes.array.isRequired,
+    myGames: PropTypes.object.isRequired,
     push: PropTypes.func.isRequired,
 };
 

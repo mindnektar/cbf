@@ -14,7 +14,7 @@ export const createGame = game => dispatch => (
 
         dispatch({
             type: JOIN_GAME,
-            payload: { id: newGame.id, admin: true },
+            payload: { id: newGame.id, admin: 1 },
         });
 
         return newGame;
@@ -23,6 +23,17 @@ export const createGame = game => dispatch => (
 
 export const openGame = id => (dispatch) => {
     const status = gameConstants.GAME_STATUS_OPEN;
+
+    return api.changeGame(id, { status }).then(() => {
+        dispatch({
+            type: CHANGE_GAME_STATUS,
+            payload: { id, status },
+        });
+    });
+};
+
+export const startGame = id => (dispatch) => {
+    const status = gameConstants.GAME_STATUS_ACTIVE;
 
     return api.changeGame(id, { status }).then(() => {
         dispatch({

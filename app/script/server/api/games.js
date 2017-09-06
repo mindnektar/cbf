@@ -3,15 +3,25 @@ const gameConstants = require('../../shared/constants/games');
 
 module.exports = (app) => {
     app.get('/api/games', (request, response) => {
-        app.knex('game').select().then((result) => {
-            const games = {};
+        app.knex('game')
+            .innerJoin('user_in_game', 'game.id', 'user_in_game.game_id')
+            .groupBy('game.id')
+            .select('game.*', app.knex.raw('group_concat(user_in_game.user_id) as players'))
+            .then((result) => {
+                const games = {};
 
-            result.forEach((row) => {
-                games[row.id] = row;
+                result.forEach((row) => {
+                    games[row.id] = {
+                        created_at: row.created_at,
+                        handle: row.handle,
+                        id: row.id,
+                        players: row.players.split(','),
+                        status: row.status,
+                    };
+                });
+
+                response.json(games);
             });
-
-            response.json(games);
-        });
     });
 
     app.post('/api/games', (request, response) => {

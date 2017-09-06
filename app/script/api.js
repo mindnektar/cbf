@@ -53,15 +53,18 @@ const fetchGames = () => request('games');
 
 const joinGame = id => request('user_in_game', 'POST', { id });
 
-// me
+// users
 
 const fetchMe = () => request('me');
+
+const fetchUsers = () => request('users');
 
 export default {
     login,
     changeGame,
     createGame,
     fetchGames,
+    fetchUsers,
     joinGame,
     fetchMe,
 };
