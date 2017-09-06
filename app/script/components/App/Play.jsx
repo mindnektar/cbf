@@ -1,15 +1,44 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import { Switch, Route } from 'react-router-dom';
 import connectWithRouter from 'helpers/connectWithRouter';
 import AllGames from './Play/AllGames';
+import MyGames from './Play/MyGames';
+import Game from './Play/Game';
 
 class Play extends React.Component {
     render() {
         return (
-            <div>
-                <AllGames />
-            </div>
+            <Switch>
+                <Route path={`${this.props.url}/:gameId`} component={Game} />
+                <Route path={this.props.url}>
+                    <div>
+                        {this.props.me &&
+                            <MyGames />
+                        }
+
+                        <AllGames />
+                    </div>
+                </Route>
+            </Switch>
         );
     }
 }
 
-export default connectWithRouter(null, null, Play);
+Play.defaultProps = {
+    me: null,
+};
+
+Play.propTypes = {
+    me: PropTypes.object,
+    url: PropTypes.string.isRequired,
+};
+
+export default connectWithRouter(
+    (state, ownProps) => ({
+        me: state.me,
+        url: ownProps.match.url,
+    }),
+    null,
+    Play
+);

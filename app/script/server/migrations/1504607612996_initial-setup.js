@@ -12,7 +12,7 @@ module.exports = {
         knex.schema.createTable('game', (table) => {
             table.string('id').notNullable();
             table.integer('status').unsigned().notNullable().defaultTo(0);
-            table.string('title').notNullable();
+            table.string('handle').notNullable();
             table.timestamps();
             table.unique('id');
         }),

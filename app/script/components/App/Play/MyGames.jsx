@@ -1,46 +1,45 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import connectWithRouter from 'helpers/connectWithRouter';
-import { createGame } from 'actions/games';
 import { push } from 'actions/history';
 import Button from 'Button';
 import Headline from 'Headline';
 import games from 'data/games';
 
-class AllGames extends React.Component {
-    createGameHandler = handle => () => {
-        this.props.createGame(handle).then((newGame) => {
-            this.props.push('play', newGame.id, 'setup');
-        });
+class MyGames extends React.Component {
+    openGameHandler = id => () => {
+        this.props.push('play', id);
     }
 
     render() {
         return (
-            <div className="cbf-all-games">
-                <Headline>All games</Headline>
+            <div className="cbf-my-games">
+                <Headline>My active games</Headline>
 
-                {Object.values(games).map(game =>
+                {this.props.myGames.map(gameId =>
                     <div
                         className="cbf-all-games__item"
-                        key={game.handle}
+                        key={gameId}
                     >
                         <div className="cbf-all-games__item-image">
-                            <img src={`/img/games/${game.handle}/box.jpg`} alt={game.title} />
+                            <img
+                                src={`/img/games/${this.props.games[gameId].handle}/box.jpg`}
+                                alt={games[this.props.games[gameId].handle].title}
+                            />
                         </div>
 
                         <div className="cbf-all-games__item-content">
                             <div className="cbf-all-games__item-details">
-                                <div className="cbf-all-games__item-title">{game.title}</div>
-                                <div>{game.author}</div>
-                                <div>{game.playerCount} players</div>
-                                <div>{game.playTime} minutes</div>
+                                <div className="cbf-all-games__item-title">
+                                    {games[this.props.games[gameId].handle].title}
+                                </div>
                             </div>
 
                             <div className="cbf-all-games__item-options">
                                 <Button
-                                    onTouchTap={this.createGameHandler(game.handle)}
+                                    onTouchTap={this.openGameHandler(gameId)}
                                 >
-                                    Start new game
+                                    Open game
                                 </Button>
                             </div>
                         </div>
@@ -51,16 +50,19 @@ class AllGames extends React.Component {
     }
 }
 
-AllGames.propTypes = {
-    createGame: PropTypes.func.isRequired,
+MyGames.propTypes = {
+    games: PropTypes.object.isRequired,
+    myGames: PropTypes.array.isRequired,
     push: PropTypes.func.isRequired,
 };
 
 export default connectWithRouter(
-    null,
+    state => ({
+        games: state.games,
+        myGames: state.me.games,
+    }),
     {
-        createGame,
         push,
     },
-    AllGames,
+    MyGames,
 );
