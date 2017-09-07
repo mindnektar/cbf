@@ -1,9 +1,9 @@
 const shuffle = require('knuth-shuffle').knuthShuffle;
-const assets = require('../../shared/games/five-tribes').assets;
+const game = require('../../shared/games/five-tribes');
 
 const setup = () => {
-    const remainingTiles = shuffle(Object.keys(assets.tiles));
-    const remainingMeeples = shuffle(Object.keys(assets.meeples));
+    const remainingTiles = shuffle(Object.keys(game.assets.tiles));
+    const remainingMeeples = shuffle(Object.keys(game.assets.meeples));
     const board = [];
 
     while (remainingTiles.length > 0) {
@@ -27,10 +27,10 @@ const setup = () => {
         }
     }
 
-    const remainingResources = shuffle(Object.keys(assets.resources));
+    const remainingResources = shuffle(Object.keys(game.assets.resources));
     const availableResources = remainingResources.splice(remainingResources.length - 9, 9);
 
-    const remainingDjinns = shuffle(Object.keys(assets.djinns));
+    const remainingDjinns = shuffle(Object.keys(game.assets.djinns));
     const availableDjinns = remainingDjinns.splice(remainingDjinns.length - 3, 3);
 
     const bidOrder = shuffle([0, 0, 1, 1]);
@@ -52,9 +52,9 @@ const setup = () => {
                 // number of remaining djinns
                 remainingDjinns.length,
                 // number of remaining palm trees
-                assets.palm_trees,
+                game.assets.palm_trees,
                 // number of remaining palaces
-                assets.palaces,
+                game.assets.palaces,
                 // player order for bidding
                 bidOrder,
                 // player order for turns
@@ -93,6 +93,8 @@ const setup = () => {
                 [],
             ]),
         ],
+        // action state
+        game.states.BID_FOR_TURN_ORDER,
     ];
 };
 

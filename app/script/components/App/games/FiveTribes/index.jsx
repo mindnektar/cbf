@@ -2,10 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
-import { assets } from 'shared/games/five-tribes';
+import { assets, states } from 'shared/games/five-tribes';
+import Game from '../helpers/Game';
 import Sidebar from '../helpers/Sidebar';
 import Player from '../helpers/Player';
 import Status from '../helpers/Status';
+import Action from '../helpers/Action';
 
 const playerColors = [
     '#7dcee2',
@@ -25,7 +27,7 @@ class FiveTribes extends React.Component {
         const bidOrder = this.props.gameState[0][0][7];
         const turnOrder = [...this.props.gameState[0][0][8]];
 
-        if (bidOrder.length > 0) {
+        if (this.props.gameState[2] === states.BID_FOR_TURN_ORDER) {
             return this.props.playerOrder[bidOrder[bidOrder.length - 1]];
         }
 
@@ -45,7 +47,17 @@ class FiveTribes extends React.Component {
             return `It's ${this.props.users[currentPlayer].username}'s turn.`;
         }
 
-        return 'Make your move!';
+        switch (this.props.gameState[2]) {
+            case states.BID_FOR_TURN_ORDER:
+                return 'Select a spot on the turn order track.';
+
+            default:
+                return 'End your turn';
+        }
+    }
+
+    selectTurnOrderSpotHandler = spotIndex => () => {
+
     }
 
     render() {
@@ -55,159 +67,180 @@ class FiveTribes extends React.Component {
         const djinns = this.props.gameState[0][0][3];
         const remainingDjinns = this.props.gameState[0][0][4];
         const bidOrder = this.props.gameState[0][0][7];
+        const turnOrder = this.props.gameState[0][0][8];
         const playerData = this.props.gameState[0][1];
 
         return (
-            <div className="five-tribes">
-                <Status>
-                    {this.getStatusMessage()}
-                </Status>
+            <Game awaitsAction={this.props.me.id === this.getCurrentPlayer()}>
+                <div className="five-tribes">
+                    <Status>
+                        {this.getStatusMessage()}
+                    </Status>
 
-                <Sidebar>
-                    {this.props.playerOrder.map((userId, playerIndex) =>
-                        <Player
-                            color={playerColors[playerIndex]}
-                            key={userId}
-                            username={this.props.users[userId].username}
-                        >
-                            <div className="five-tribes__player-data">
-                                <div>Camels: {playerData[playerIndex][0]}</div>
-                                <div>Viziers: {playerData[playerIndex][1]}</div>
-                                <div>Elders: {playerData[playerIndex][2]}</div>
-                                <div>Resources: {playerData[playerIndex][3]}</div>
-                                <div>Djinns: {getDjinnNames(playerData[playerIndex][4])}</div>
-                            </div>
-                        </Player>
-                    )}
-                </Sidebar>
+                    <Sidebar>
+                        {this.props.playerOrder.map((userId, playerIndex) =>
+                            <Player
+                                color={playerColors[playerIndex]}
+                                key={userId}
+                                username={this.props.users[userId].username}
+                            >
+                                <div className="five-tribes__player-data">
+                                    <div>Camels: {playerData[playerIndex][0]}</div>
+                                    <div>Viziers: {playerData[playerIndex][1]}</div>
+                                    <div>Elders: {playerData[playerIndex][2]}</div>
+                                    <div>Resources: {playerData[playerIndex][3]}</div>
+                                    <div>Djinns: {getDjinnNames(playerData[playerIndex][4])}</div>
+                                </div>
+                            </Player>
+                        )}
+                    </Sidebar>
 
-                <div className="five-tribes__top">
-                    <div className="five-tribes__left">
-                        <div className="five-tribes__tracks">
-                            <div>
-                                {[4, 3, 2, 1].map((spot, spotIndex) =>
-                                    <div key={spot}>
-                                        <div className="five-tribes__track-number">
-                                            {spot}
+                    <div className="five-tribes__top">
+                        <div className="five-tribes__left">
+                            <div className="five-tribes__tracks">
+                                <div>
+                                    {[4, 3, 2, 1].map((spot, spotIndex) =>
+                                        <div className="five-tribes__track-item" key={spot}>
+                                            <div className="five-tribes__track-number">
+                                                {spot}
+                                            </div>
+
+                                            {bidOrder[spotIndex] !== null &&
+                                                <div
+                                                    className={classNames(
+                                                        'five-tribes__track-player',
+                                                        `five-tribes__track-player-${bidOrder[spotIndex]}`
+                                                    )}
+                                                />
+                                            }
                                         </div>
+                                    )}
+                                </div>
 
-                                        <div
-                                            className={classNames(
-                                                'five-tribes__track-player',
-                                                `five-tribes__track-player-${bidOrder[spotIndex]}`
-                                            )}
-                                        />
+                                <div>
+                                    {[0, 0, 0, 1, 3, 5, 8, 12, 18].map((spot, spotIndex) =>
+                                        <Action
+                                            active={
+                                                this.props.gameState[2] === states.BID_FOR_TURN_ORDER
+                                            }
+                                            // eslint-disable-next-line react/no-array-index-key
+                                            key={spotIndex}
+                                            onTouchTap={this.selectTurnOrderSpotHandler(spotIndex)}
+                                        >
+                                            <div className="five-tribes__track-item">
+                                                <div className="five-tribes__track-number">
+                                                    {spot}
+                                                </div>
+
+                                                {turnOrder[spotIndex] !== null &&
+                                                    <div
+                                                        className={classNames(
+                                                            'five-tribes__track-player',
+                                                            `five-tribes__track-player-${turnOrder[spotIndex]}`
+                                                        )}
+                                                    />
+                                                }
+                                            </div>
+                                        </Action>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="five-tribes__board">
+                                {board.map(row =>
+                                    <div
+                                        className="five-tribes__board-row"
+                                        key={`row${row[0][0]}`}
+                                    >
+                                        {row.map(item =>
+                                            <div
+                                                className="five-tribes__tile"
+                                                key={item[0]}
+                                            >
+                                                <div
+                                                    className={classNames(
+                                                        'five-tribes__tile-value',
+                                                        `five-tribes__tile-value--${assets.tiles[item[0]].color}`
+                                                    )}
+                                                >
+                                                    {assets.tiles[item[0]].value}
+                                                </div>
+
+                                                <div className="five-tribes__tile-action">
+                                                    {assets.tiles[item[0]].action}
+                                                </div>
+
+                                                <div className="five-tribes__tile-meeples">
+                                                    {item[1].map(meeple =>
+                                                        <div
+                                                            className={classNames(
+                                                                'five-tribes__meeple',
+                                                                `five-tribes__meeple--${assets.meeples[meeple]}`
+                                                            )}
+                                                            key={meeple}
+                                                        />
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
-
-                            <div>
-                                <div>0</div>
-                                <div>0</div>
-                                <div>0</div>
-                                <div>1</div>
-                                <div>3</div>
-                                <div>5</div>
-                                <div>8</div>
-                                <div>12</div>
-                                <div>18</div>
-                            </div>
                         </div>
 
-                        <div className="five-tribes__board">
-                            {board.map(row =>
+                        <div className="five-tribes__djinns">
+                            <div className="five-tribes__djinn-item five-tribes__djinn-item--deck">
+                                <div className="five-tribes__djinn-item-name">
+                                    {remainingDjinns} djinn{remainingDjinns !== 1 ? 's' : ''} remaining
+                                </div>
+                            </div>
+
+                            {djinns.map(djinn =>
                                 <div
-                                    className="five-tribes__board-row"
-                                    key={`row${row[0][0]}`}
+                                    className="five-tribes__djinn-item"
+                                    key={djinn}
                                 >
-                                    {row.map(item =>
-                                        <div
-                                            className="five-tribes__tile"
-                                            key={item[0]}
-                                        >
-                                            <div
-                                                className={classNames(
-                                                    'five-tribes__tile-value',
-                                                    `five-tribes__tile-value--${assets.tiles[item[0]].color}`
-                                                )}
-                                            >
-                                                {assets.tiles[item[0]].value}
-                                            </div>
+                                    <div className="five-tribes__djinn-item-name">
+                                        {assets.djinns[djinn].name}
+                                    </div>
 
-                                            <div className="five-tribes__tile-action">
-                                                {assets.tiles[item[0]].action}
-                                            </div>
-
-                                            <div className="five-tribes__tile-meeples">
-                                                {item[1].map(meeple =>
-                                                    <div
-                                                        className={classNames(
-                                                            'five-tribes__meeple',
-                                                            `five-tribes__meeple--${assets.meeples[meeple]}`
-                                                        )}
-                                                        key={meeple}
-                                                    />
-                                                )}
-                                            </div>
-                                        </div>
-                                    )}
+                                    <div className="five-tribes__djinn-item-value">
+                                        {assets.djinns[djinn].value}
+                                    </div>
                                 </div>
                             )}
                         </div>
                     </div>
 
-                    <div className="five-tribes__djinns">
-                        <div className="five-tribes__djinn-item five-tribes__djinn-item--deck">
-                            <div className="five-tribes__djinn-item-name">
-                                {remainingDjinns} djinn{remainingDjinns !== 1 ? 's' : ''} remaining
+                    <div className="five-tribes__market">
+                        <div className="five-tribes__market-item five-tribes__market-item--deck">
+                            <div className="five-tribes__market-item-name">
+                                {remainingResources} resource{remainingResources !== 1 ? 's' : ''} remaining
                             </div>
                         </div>
 
-                        {djinns.map(djinn =>
+                        {resources.map(resource =>
                             <div
-                                className="five-tribes__djinn-item"
-                                key={djinn}
+                                className={classNames(
+                                    'five-tribes__market-item',
+                                    { 'five-tribes__market-item--fakir': assets.resources[resource] === 'Fakir' }
+                                )}
+                                key={resource}
                             >
-                                <div className="five-tribes__djinn-item-name">
-                                    {assets.djinns[djinn].name}
+                                <div className="five-tribes__market-item-name">
+                                    {assets.resources[resource]}
                                 </div>
 
-                                <div className="five-tribes__djinn-item-value">
-                                    {assets.djinns[djinn].value}
+                                <div className="five-tribes__market-item-frequency">
+                                    {assets.resources.filter(
+                                        name => name === assets.resources[resource]
+                                    ).length}x
                                 </div>
                             </div>
                         )}
                     </div>
                 </div>
-
-                <div className="five-tribes__market">
-                    <div className="five-tribes__market-item five-tribes__market-item--deck">
-                        <div className="five-tribes__market-item-name">
-                            {remainingResources} resource{remainingResources !== 1 ? 's' : ''} remaining
-                        </div>
-                    </div>
-
-                    {resources.map(resource =>
-                        <div
-                            className={classNames(
-                                'five-tribes__market-item',
-                                { 'five-tribes__market-item--fakir': assets.resources[resource] === 'Fakir' }
-                            )}
-                            key={resource}
-                        >
-                            <div className="five-tribes__market-item-name">
-                                {assets.resources[resource]}
-                            </div>
-
-                            <div className="five-tribes__market-item-frequency">
-                                {assets.resources.filter(
-                                    name => name === assets.resources[resource]
-                                ).length}x
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
+            </Game>
         );
     }
 }
