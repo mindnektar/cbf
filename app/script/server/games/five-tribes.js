@@ -70,6 +70,8 @@ const setup = () => {
                 0,
                 // number of resources
                 0,
+                // djinns
+                [],
             ]),
         ],
         // private data
@@ -87,7 +89,7 @@ const setup = () => {
             Array(2).fill([
                 // money
                 50,
-                // list of resources
+                // resources
                 [],
             ]),
         ],
