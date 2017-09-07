@@ -29,10 +29,12 @@ export const load = () => dispatch => (
 );
 
 export const loadGameStates = id => dispatch => (
-    api.fetchGameStates(id).then((gameStates) => {
+    api.fetchGameStates(id).then(({ playerOrder, gameStates }) => {
         dispatch({
             type: LOAD_GAME_STATES,
-            payload: { gameStates },
+            payload: { id, playerOrder, gameStates },
         });
+
+        return gameStates;
     })
 );

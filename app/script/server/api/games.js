@@ -1,4 +1,5 @@
 const uuid = require('uuid/v4');
+const shuffle = require('knuth-shuffle').knuthShuffle;
 const gameConstants = require('../../shared/constants/games');
 
 module.exports = (app) => {
@@ -15,6 +16,7 @@ module.exports = (app) => {
                         created_at: row.created_at,
                         handle: row.handle,
                         id: row.id,
+                        playerOrder: row.playerOrder,
                         players: row.players.split(','),
                         status: row.status,
                     };
@@ -54,11 +56,23 @@ module.exports = (app) => {
                 app.knex('game').where('id', request.body.id).select().then(([game]) => {
                     const state = JSON.stringify(require(`../games/${game.handle}`).setup());
 
-                    app.knex('game_state').insert({
-                        game_id: game.id,
-                        order: 0,
-                        state,
-                    }).then(() => response.status(204).send());
+                    app.knex('user_in_game').where('game_id', game.id).select().then((players) => {
+                        const playerOrder = shuffle(
+                            players.map(player => player.user_id)
+                        ).join(',');
+
+                        app.knex('game')
+                            .where('id', game.id)
+                            .update('player_order', playerOrder)
+                            .then(() => (
+                                app.knex('game_state').insert({
+                                    game_id: game.id,
+                                    order: 0,
+                                    state,
+                                })
+                            ))
+                            .then(() => response.status(204).send());
+                    });
                 });
 
                 return;
@@ -86,7 +100,12 @@ module.exports = (app) => {
             .orderBy('order')
             .select()
             .then((gameStates) => {
-                response.json(gameStates.map(item => JSON.parse(item.state)));
+                app.knex('game').where('id', request.params.id).select().then(([game]) => {
+                    response.json({
+                        gameStates: gameStates.map(item => JSON.parse(item.state)),
+                        playerOrder: game.player_order.split(','),
+                    });
+                });
             });
     });
 };

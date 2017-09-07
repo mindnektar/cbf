@@ -13,6 +13,7 @@ module.exports = {
             table.string('id').notNullable();
             table.integer('status').unsigned().notNullable().defaultTo(0);
             table.string('handle').notNullable();
+            table.string('player_order');
             table.timestamps();
             table.unique('id');
         }),

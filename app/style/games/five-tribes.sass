@@ -1,7 +1,9 @@
 .five-tribes__tracks
     display: flex
     height: 3vw
+    justify-content: center
     margin-bottom: 2%
+    width: 60vw
 
     > div
         align-items: center
@@ -20,7 +22,23 @@
             height: 2.5vw
             justify-content: center
             margin: 0 .15vw
+            position: relative
             width: 2.5vw
+
+.five-tribes__track-player
+    border-radius: 100%
+    box-shadow: $shadow
+    height: 80%
+    left: 10%
+    position: absolute
+    top: 10%
+    width: 80%
+
+.five-tribes__track-player-0
+    background-color: rgba(#7dcee2, .8)
+
+.five-tribes__track-player-1
+    background-color: rgba(#f1bed7, .8)
 
 .five-tribes__board
     display: flex
@@ -117,6 +135,7 @@
 
 .five-tribes__market-item--deck
     background-color: #824d54
+    color: $color-white
 
 .five-tribes__market-item-name
     align-items: center

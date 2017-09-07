@@ -9,7 +9,7 @@ import Arena from './Game/Arena';
 
 class Game extends React.Component {
     componentWillMount() {
-        if (!this.props.gameExists) {
+        if (!this.props.gameExists || !this.props.me) {
             this.props.replace('play');
         }
     }
@@ -25,14 +25,20 @@ class Game extends React.Component {
     }
 }
 
+Game.defaultProps = {
+    me: null,
+};
+
 Game.propTypes = {
     gameExists: PropTypes.bool.isRequired,
+    me: PropTypes.object,
     replace: PropTypes.func.isRequired,
 };
 
 export default connectWithRouter(
     (state, ownProps) => ({
         gameExists: !!state.games[ownProps.match.params.gameId],
+        me: state.me,
     }),
     {
         replace,

@@ -7,18 +7,32 @@ import { assets } from 'shared/games/five-tribes';
 class FiveTribes extends React.Component {
     render() {
         const gameState = this.props.gameStates[this.props.gameStates.length - 1];
+        const board = gameState[0][0][0];
+        const resources = gameState[0][0][1];
+        const remainingResources = gameState[0][0][2];
+        const bidOrder = gameState[0][0][7];
 
         return (
             <div className="five-tribes">
                 <div className="five-tribes__tracks">
-                    <div className="five-tribes__bid-order">
-                        <div>4</div>
-                        <div>3</div>
-                        <div>2</div>
-                        <div>1</div>
+                    <div>
+                        {[4, 3, 2, 1].map((spot, spotIndex) =>
+                            <div key={spot}>
+                                <div className="five-tribes__track-number">
+                                    {spot}
+                                </div>
+
+                                <div
+                                    className={classNames(
+                                        'five-tribes__track-player',
+                                        `five-tribes__track-player-${bidOrder[spotIndex]}`
+                                    )}
+                                />
+                            </div>
+                        )}
                     </div>
 
-                    <div className="five-tribes__turn-order">
+                    <div>
                         <div>0</div>
                         <div>0</div>
                         <div>0</div>
@@ -32,31 +46,31 @@ class FiveTribes extends React.Component {
                 </div>
 
                 <div className="five-tribes__board">
-                    {gameState[0][0][0].map((row, rowIndex) =>
+                    {board.map(row =>
                         <div
                             className="five-tribes__board-row"
-                            key={`row${row[0]}`}
+                            key={`row${row[0][0]}`}
                         >
-                            {row.map((tile, tileIndex) =>
+                            {row.map(item =>
                                 <div
                                     className="five-tribes__tile"
-                                    key={tile}
+                                    key={item[0]}
                                 >
                                     <div
                                         className={classNames(
                                             'five-tribes__tile-value',
-                                            `five-tribes__tile-value--${assets.tiles[tile].color}`
+                                            `five-tribes__tile-value--${assets.tiles[item[0]].color}`
                                         )}
                                     >
-                                        {assets.tiles[tile].value}
+                                        {assets.tiles[item[0]].value}
                                     </div>
 
                                     <div className="five-tribes__tile-action">
-                                        {assets.tiles[tile].action}
+                                        {assets.tiles[item[0]].action}
                                     </div>
 
                                     <div className="five-tribes__tile-meeples">
-                                        {gameState[0][0][1][rowIndex][tileIndex].map(meeple =>
+                                        {item[1].map(meeple =>
                                             <div
                                                 className={classNames(
                                                     'five-tribes__meeple',
@@ -75,11 +89,11 @@ class FiveTribes extends React.Component {
                 <div className="five-tribes__market">
                     <div className="five-tribes__market-item five-tribes__market-item--deck">
                         <div className="five-tribes__market-item-name">
-                            {gameState[0][0][3]} resources remaining
+                            {remainingResources} resource{remainingResources !== 1 ? 's' : ''} remaining
                         </div>
                     </div>
 
-                    {gameState[0][0][2].map(resource =>
+                    {resources.map(resource =>
                         <div
                             className={classNames(
                                 'five-tribes__market-item',
