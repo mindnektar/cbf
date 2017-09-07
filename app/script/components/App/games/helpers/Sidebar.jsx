@@ -5,7 +5,10 @@ import connectWithRouter from 'helpers/connectWithRouter';
 class Sidebar extends React.Component {
     render() {
         return (
-            <div className="cbf-helper-sidebar">
+            <div
+                className="cbf-helper-sidebar"
+                onMouseDown={event => event.stopPropagation()}
+            >
                 <div className="cbf-helper-sidebar__players">
                     {this.props.children}
                 </div>

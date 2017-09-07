@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
 import { replace } from 'actions/history';
 import { clearGameStates, loadGameStates } from 'actions/populate';
@@ -7,6 +8,12 @@ import gameConstants from 'shared/constants/games';
 import gameComponents from 'components/App/games';
 
 class Arena extends React.Component {
+    state = {
+        moving: false,
+        x: 0,
+        y: 0,
+    };
+
     componentWillMount() {
         if (this.props.game.status === gameConstants.GAME_STATUS_SETTING_UP) {
             this.props.replace('play', this.props.game.id, 'setup');
@@ -25,12 +32,49 @@ class Arena extends React.Component {
         this.props.clearGameStates();
     }
 
+    onMouseDown = () => {
+        this.setState({ moving: true });
+    }
+
+    onMouseLeave = () => {
+        this.setState({ moving: false });
+    }
+
+    onMouseMove = (event) => {
+        if (this.state.moving) {
+            this.setState({
+                x: this.state.x - event.nativeEvent.movementX,
+                y: this.state.y - event.nativeEvent.movementY,
+            });
+        }
+    }
+
+    onMouseUp = () => {
+        this.setState({ moving: false });
+    }
+
     render() {
         return (
-            <div className="cbf-arena">
-                {this.props.gameStates &&
-                    React.createElement(gameComponents[this.props.game.handle])
-                }
+            <div
+                className="cbf-arena"
+                onMouseDown={this.onMouseDown}
+                onMouseLeave={this.onMouseLeave}
+                onMouseMove={this.onMouseMove}
+                onMouseUp={this.onMouseUp}
+            >
+                <div
+                    className={classNames(
+                        'cbf-arena-canvas',
+                        { 'cbf-arena-canvas--moving': this.state.moving }
+                    )}
+                    style={{
+                        margin: `${-this.state.y}px 0 0 ${-this.state.x}px`,
+                    }}
+                >
+                    {this.props.gameStates &&
+                        React.createElement(gameComponents[this.props.game.handle])
+                    }
+                </div>
             </div>
         );
     }
