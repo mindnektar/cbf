@@ -27,7 +27,7 @@ class Arena extends React.Component {
 
     render() {
         return (
-            <div>
+            <div className="cbf-arena">
                 {this.props.gameStates &&
                     React.createElement(gameComponents[this.props.game.handle])
                 }

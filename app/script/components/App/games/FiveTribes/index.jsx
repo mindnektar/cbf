@@ -3,6 +3,13 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
 import { assets } from 'shared/games/five-tribes';
+import Sidebar from '../helpers/Sidebar';
+import Player from '../helpers/Player';
+
+const playerColors = [
+    '#7dcee2',
+    '#f1bed7',
+];
 
 class FiveTribes extends React.Component {
     render() {
@@ -11,9 +18,27 @@ class FiveTribes extends React.Component {
         const resources = gameState[0][0][1];
         const remainingResources = gameState[0][0][2];
         const bidOrder = gameState[0][0][7];
+        const playerData = gameState[0][1];
 
         return (
             <div className="five-tribes">
+                <Sidebar>
+                    {this.props.playerOrder.map((userId, playerIndex) =>
+                        <Player
+                            color={playerColors[playerIndex]}
+                            key={userId}
+                            username={this.props.users[userId].username}
+                        >
+                            <div className="five-tribes__player-data">
+                                <div>Camels: {playerData[playerIndex][0]}</div>
+                                <div>Viziers: {playerData[playerIndex][1]}</div>
+                                <div>Elders: {playerData[playerIndex][2]}</div>
+                                <div>Resources: {playerData[playerIndex][3]}</div>
+                            </div>
+                        </Player>
+                    )}
+                </Sidebar>
+
                 <div className="five-tribes__tracks">
                     <div>
                         {[4, 3, 2, 1].map((spot, spotIndex) =>
@@ -124,11 +149,15 @@ class FiveTribes extends React.Component {
 
 FiveTribes.propTypes = {
     gameStates: PropTypes.array.isRequired,
+    playerOrder: PropTypes.array.isRequired,
+    users: PropTypes.object.isRequired,
 };
 
 export default connectWithRouter(
-    state => ({
+    (state, ownProps) => ({
         gameStates: state.gameStates,
+        playerOrder: state.games[ownProps.match.params.gameId].playerOrder,
+        users: state.users,
     }),
     null,
     FiveTribes

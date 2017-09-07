@@ -63,7 +63,7 @@ const setup = () => {
             // player states
             Array(2).fill([
                 // camels
-                assets.camels,
+                11,
                 // viziers
                 0,
                 // elders
