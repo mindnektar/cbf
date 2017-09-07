@@ -5,6 +5,7 @@ import connectWithRouter from 'helpers/connectWithRouter';
 import { assets } from 'shared/games/five-tribes';
 import Sidebar from '../helpers/Sidebar';
 import Player from '../helpers/Player';
+import Status from '../helpers/Status';
 
 const playerColors = [
     '#7dcee2',
@@ -20,18 +21,48 @@ const getDjinnNames = (djinns) => {
 };
 
 class FiveTribes extends React.Component {
+    getCurrentPlayer() {
+        const bidOrder = this.props.gameState[0][0][7];
+        const turnOrder = [...this.props.gameState[0][0][8]];
+
+        if (bidOrder.length > 0) {
+            return this.props.playerOrder[bidOrder[bidOrder.length - 1]];
+        }
+
+        let highestTurnOrderSpot;
+
+        do {
+            highestTurnOrderSpot = turnOrder.pop();
+        } while (!highestTurnOrderSpot);
+
+        return this.props.playerOrder[highestTurnOrderSpot];
+    }
+
+    getStatusMessage() {
+        const currentPlayer = this.getCurrentPlayer();
+
+        if (currentPlayer !== this.props.me.id) {
+            return `It's ${this.props.users[currentPlayer].username}'s turn.`;
+        }
+
+        return 'Make your move!';
+    }
+
     render() {
-        const gameState = this.props.gameStates[this.props.gameStates.length - 1];
-        const board = gameState[0][0][0];
-        const resources = gameState[0][0][1];
-        const remainingResources = gameState[0][0][2];
-        const djinns = gameState[0][0][3];
-        const remainingDjinns = gameState[0][0][4];
-        const bidOrder = gameState[0][0][7];
-        const playerData = gameState[0][1];
+        const board = this.props.gameState[0][0][0];
+        const resources = this.props.gameState[0][0][1];
+        const remainingResources = this.props.gameState[0][0][2];
+        const djinns = this.props.gameState[0][0][3];
+        const remainingDjinns = this.props.gameState[0][0][4];
+        const bidOrder = this.props.gameState[0][0][7];
+        const playerData = this.props.gameState[0][1];
 
         return (
             <div className="five-tribes">
+                <Status>
+                    {this.getStatusMessage()}
+                </Status>
+
                 <Sidebar>
                     {this.props.playerOrder.map((userId, playerIndex) =>
                         <Player
@@ -128,7 +159,7 @@ class FiveTribes extends React.Component {
                     <div className="five-tribes__djinns">
                         <div className="five-tribes__djinn-item five-tribes__djinn-item--deck">
                             <div className="five-tribes__djinn-item-name">
-                                {remainingDjinns} djinns{remainingDjinns !== 1 ? 's' : ''} remaining
+                                {remainingDjinns} djinn{remainingDjinns !== 1 ? 's' : ''} remaining
                             </div>
                         </div>
 
@@ -182,14 +213,16 @@ class FiveTribes extends React.Component {
 }
 
 FiveTribes.propTypes = {
-    gameStates: PropTypes.array.isRequired,
+    gameState: PropTypes.array.isRequired,
+    me: PropTypes.object.isRequired,
     playerOrder: PropTypes.array.isRequired,
     users: PropTypes.object.isRequired,
 };
 
 export default connectWithRouter(
     (state, ownProps) => ({
-        gameStates: state.gameStates,
+        gameState: state.gameStates[state.gameStates.length - 1],
+        me: state.me,
         playerOrder: state.games[ownProps.match.params.gameId].playerOrder,
         users: state.users,
     }),

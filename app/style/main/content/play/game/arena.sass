@@ -3,13 +3,13 @@
     left: 0
     position: fixed
     right: $sidebar-width
-    top: $header-height
+    top: #{$header-height + $status-height}
 
     *
         user-select: none
 
-.cbf-arena-canvas
+.cbf-arena__canvas
     width: 100%
 
-.cbf-arena-canvas--moving
+.cbf-arena__canvas--moving
     cursor: move

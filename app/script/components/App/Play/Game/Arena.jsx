@@ -64,8 +64,8 @@ class Arena extends React.Component {
             >
                 <div
                     className={classNames(
-                        'cbf-arena-canvas',
-                        { 'cbf-arena-canvas--moving': this.state.moving }
+                        'cbf-arena__canvas',
+                        { 'cbf-arena__canvas--moving': this.state.moving }
                     )}
                     style={{
                         margin: `${-this.state.y}px 0 0 ${-this.state.x}px`,
