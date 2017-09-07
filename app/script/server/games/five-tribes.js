@@ -37,34 +37,59 @@ const setup = () => {
     const turnOrder = Array(9).fill(null);
 
     return [
+        // public data
         [
+            // game state
             [
+                // board layout
                 board,
+                // resources in the market
                 availableResources,
+                // number of remaining resources
                 remainingResources.length,
+                // djinns up for grabs
                 availableDjinns,
+                // number of remaining djinns
                 remainingDjinns.length,
+                // number of remaining palm trees
                 assets.palm_trees,
+                // number of remaining palaces
                 assets.palaces,
+                // player order for bidding
                 bidOrder,
+                // player order for turns
                 turnOrder,
             ],
-            [
-                [
-                    assets.camels,
-                ],
-                [
-                    assets.camels,
-                ],
-            ],
+            // player states
+            Array(2).fill([
+                // camels
+                assets.camels,
+                // viziers
+                0,
+                // elders
+                0,
+                // number of resources
+                0,
+            ]),
         ],
+        // private data
         [
+            // game state
             [
+                // meeples in the bag
                 remainingMeeples,
+                // resource draw stack
                 remainingResources,
+                // djinn draw stack
                 remainingDjinns,
             ],
-            [],
+            // player states
+            Array(2).fill([
+                // money
+                50,
+                // list of resources
+                [],
+            ]),
         ],
     ];
 };
