@@ -5,7 +5,7 @@ import { push } from 'actions/history';
 export const login = (username, password) => dispatch => (
     api.login(username, password).then(
         (response) => {
-            Cookies.set('access-token', response.token);
+            Cookies.set('auth-token', response.token);
 
             dispatch(push('play'));
 
@@ -16,7 +16,7 @@ export const login = (username, password) => dispatch => (
 );
 
 export const logout = () => () => {
-    Cookies.remove('access-token');
+    Cookies.remove('auth-token');
 
     window.location.reload();
 };
