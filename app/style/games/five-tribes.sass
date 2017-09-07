@@ -1,9 +1,25 @@
+.five-tribes
+    align-items: center
+    display: flex
+    flex-direction: column
+    margin-top: aw(2)
+
+.five-tribes__top
+    display: flex
+    justify-content: space-between
+    margin-bottom: aw(2)
+    width: aw(90)
+
+.five-tribes__left
+    align-items: center
+    display: flex
+    flex-direction: column
+
 .five-tribes__tracks
     display: flex
     height: aw(4)
     justify-content: center
-    margin: 0 auto aw(2)
-    width: aw(60)
+    margin-bottom: aw(2)
 
     > div
         align-items: center
@@ -43,9 +59,8 @@
 .five-tribes__board
     display: flex
     flex-direction: column
-    height: aw(50)
-    margin: 0 auto aw(4)
-    width: aw(60)
+    height: aw(55)
+    width: aw(66)
 
 .five-tribes__board-row
     align-items: stretch
@@ -69,8 +84,8 @@
     height: 25%
     justify-content: center
     position: absolute
-    right: 2%
-    top: 2%
+    right: 3%
+    top: 3%
     width: 25%
 
 .five-tribes__tile-value--blue
@@ -119,12 +134,11 @@
 .five-tribes__market
     display: flex
     height: aw(11)
-    margin: 0 auto aw(2)
     width: aw(90)
 
 .five-tribes__market-item
     background-color: #c4dc91
-    border-radius: 10%
+    border-radius: aw(1)
     box-shadow: $shadow
     height: 100%
     margin: .5%
@@ -136,7 +150,7 @@
 
 .five-tribes__market-item--deck
     background-color: #824d54
-    color: $color-white
+    color: $color-light
 
 .five-tribes__market-item-name
     align-items: center
@@ -158,3 +172,40 @@
     position: absolute
     text-align: center
     width: 100%
+
+.five-tribes__djinns
+    display: flex
+    flex-direction: column
+    justify-content: space-between
+
+.five-tribes__djinn-item
+    align-items: center
+    background-color: #b4b9a0
+    border-radius: aw(1)
+    box-shadow: $shadow
+    display: flex
+    height: aw(13)
+    justify-content: center
+    position: relative
+    text-align: center
+    width: aw(13)
+
+.five-tribes__djinn-item--deck
+    background-color: #925b2d
+    color: $color-light
+
+.five-tribes__djinn-item-name
+    font-size: .9em
+
+.five-tribes__djinn-item-value
+    align-items: center
+    background-color: #ce3c2c
+    border-radius: 100%
+    color: $color-white
+    display: flex
+    height: 20%
+    justify-content: center
+    position: absolute
+    right: 3%
+    top: 3%
+    width: 20%
