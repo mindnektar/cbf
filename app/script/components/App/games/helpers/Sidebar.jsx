@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
 
 class Sidebar extends React.Component {
@@ -15,7 +16,24 @@ class Sidebar extends React.Component {
 
                 <div className="cbf-helper-sidebar__history">
                     <div className="cbf-helper-sidebar__history-header">
-                        Move history
+                        Turn history
+                    </div>
+
+                    <div className="cbf-helper-sidebar__history-content">
+                        {this.props.gameStates.map((gameState, index) =>
+                            <div
+                                className={classNames(
+                                    'cbf-helper-sidebar__history-item',
+                                    { 'cbf-helper-sidebar__history-item--active': index === this.props.gameStates.length - 1 }
+                                )}
+                                key={index}
+                            >
+                                {this.props.messages[gameState[3][0]](
+                                    this.props.users[this.props.playerOrder[gameState[3][2]]],
+                                    gameState[3][1]
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -26,11 +44,16 @@ class Sidebar extends React.Component {
 Sidebar.propTypes = {
     children: PropTypes.node.isRequired,
     gameStates: PropTypes.array.isRequired,
+    messages: PropTypes.object.isRequired,
+    playerOrder: PropTypes.array.isRequired,
+    users: PropTypes.object.isRequired,
 };
 
 export default connectWithRouter(
-    state => ({
-        gameStates: state.gameStates.states,
+    (state, ownProps) => ({
+        gameStates: state.gameStates.states.slice(1),
+        playerOrder: state.games[ownProps.match.params.gameId].playerOrder,
+        users: state.users,
     }),
     null,
     Sidebar

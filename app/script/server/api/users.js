@@ -7,6 +7,7 @@ module.exports = (app) => {
 
                 result.forEach((row) => {
                     users[row.id] = {
+                        gender: row.gender,
                         id: row.id,
                         username: row.username,
                     };
@@ -37,6 +38,7 @@ module.exports = (app) => {
                     });
 
                     response.json({
+                        gender: user.gender,
                         email: user.email,
                         games: myGames,
                         id: user.id,

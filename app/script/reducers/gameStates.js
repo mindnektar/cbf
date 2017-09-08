@@ -8,18 +8,8 @@ export default createReducer(null, {
         states: action.payload.gameStates,
         actions: [],
     }),
-    [UPDATE_GAME_STATE]: (state, action) => {
-        const previousState = state.states[state.states.length - 1];
-        const nextAction = [action.payload.action, action.payload.data];
-        const nextState = action.payload.transformers[action.payload.action](
-            previousState, action.payload.data
-        );
-
-        nextState[3] = nextAction;
-
-        return {
-            states: [...state.states, nextState],
-            actions: [...state.actions, nextAction],
-        };
-    },
+    [UPDATE_GAME_STATE]: (state, action) => ({
+        actions: [...state.actions, action.payload.nextAction],
+        states: [...state.states, action.payload.nextState],
+    }),
 });

@@ -110,47 +110,71 @@ module.exports = (app) => {
     });
 
     app.post('/api/game_states/:id', (request, response) => {
-        app.knex('game').where('id', request.params.id).select().then(([game]) => {
-            app.knex('game_state')
-                .where('game_id', request.params.id)
-                .orderBy('order')
-                .select()
-                .then((gameStates) => {
-                    const { transformers, validators } = require(`../../shared/games/${game.handle}`);
-                    let currentState = JSON.parse(gameStates[gameStates.length - 1].state);
-                    const nextStates = [];
+        app.knex('user')
+            .where('access_token', request.header('X-Access-token'))
+            .select()
+            .then(([user]) => {
+                app.knex('game').where('id', request.params.id).select().then(([game]) => {
+                    app.knex('game_state')
+                        .where('game_id', request.params.id)
+                        .orderBy('order')
+                        .select()
+                        .then((gameStates) => {
+                            const {
+                                getCurrentPlayer, transformers, validators,
+                            } = require(`../../shared/games/${game.handle}`);
+                            let currentState = JSON.parse(gameStates[gameStates.length - 1].state);
+                            const playerOrder = game.player_order.split(',');
+                            const currentPlayer = getCurrentPlayer(
+                                currentState, playerOrder
+                            );
 
-                    try {
-                        app.knex
-                            .transaction((transaction) => {
-                                request.body.forEach(([action, payload = []]) => {
-                                    if (!validators[action](currentState, payload)) {
-                                        throw new Error(`invalid action: ${action}`);
-                                    }
+                            if (currentPlayer !== user.id) {
+                                response.status(403).json({ errors: 'forbidden' });
+                            }
 
-                                    currentState = transformers[action](currentState, payload);
+                            const nextStates = [];
 
-                                    currentState[3] = [action, payload];
+                            try {
+                                app.knex
+                                    .transaction((transaction) => {
+                                        request.body.forEach(([action, payload = []]) => {
+                                            if (!validators[action](currentState, payload)) {
+                                                throw new Error(`invalid action: ${action}`);
+                                            }
 
-                                    nextStates.push(JSON.stringify(currentState));
-                                });
+                                            currentState = transformers[action](
+                                                currentState, payload
+                                            );
+// XXX: when the action is END_TURN, figure out the next current player
+                                            currentState[3] = [
+                                                action,
+                                                payload,
+                                                playerOrder.findIndex(
+                                                    userId => userId === currentPlayer
+                                                ),
+                                            ];
 
-                                return transaction
-                                    .insert(nextStates.map((nextState, index) => ({
-                                        game_id: game.id,
-                                        order: gameStates.length + index,
-                                        state: nextState,
-                                    })))
-                                    .into('game_state');
-                            })
-                            .then(() => response.status(204).send())
-                            .catch(error => (
-                                response.status(400).json({ errors: JSON.stringify(error) })
-                            ));
-                    } catch (error) {
-                        response.status(400).json({ errors: error });
-                    }
+                                            nextStates.push(JSON.stringify(currentState));
+                                        });
+
+                                        return transaction
+                                            .insert(nextStates.map((nextState, index) => ({
+                                                game_id: game.id,
+                                                order: gameStates.length + index,
+                                                state: nextState,
+                                            })))
+                                            .into('game_state');
+                                    })
+                                    .then(() => response.status(204).send())
+                                    .catch(error => (
+                                        response.status(400).json({ errors: JSON.stringify(error) })
+                                    ));
+                            } catch (error) {
+                                response.status(400).json({ errors: error });
+                            }
+                        });
                 });
-        });
+            });
     });
 };

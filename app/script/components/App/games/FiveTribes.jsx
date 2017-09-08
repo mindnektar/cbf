@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
 import { updateGameState } from 'actions/games';
-import { actions, assets, states, transformers, validators } from 'shared/games/five-tribes';
+import {
+    actions, assets, getCurrentPlayer, messages, states, transformers, validators,
+} from 'shared/games/five-tribes';
 import Game from './helpers/Game';
 import Sidebar from './helpers/Sidebar';
 import Player from './helpers/Player';
@@ -24,32 +26,8 @@ const getDjinnNames = (djinns) => {
 };
 
 class FiveTribes extends React.Component {
-    getCurrentPlayer() {
-        const bidOrder = this.props.gameState[0][0][7];
-        const turnOrder = [...this.props.gameState[0][0][8]];
-
-        if (this.props.gameState[2] === states.BID_FOR_TURN_ORDER) {
-            return this.props.playerOrder[bidOrder[bidOrder.length - 1]];
-        }
-
-        let highestTurnOrderSpot;
-
-        do {
-            highestTurnOrderSpot = turnOrder.pop();
-        } while (highestTurnOrderSpot === null);
-
-        if (
-            this.props.gameState[2] === states.END_TURN &&
-            this.props.playerOrder[highestTurnOrderSpot] !== this.props.me.id
-        ) {
-            return this.props.me.id;
-        }
-
-        return this.props.playerOrder[highestTurnOrderSpot];
-    }
-
     getStatusMessage() {
-        const currentPlayer = this.getCurrentPlayer();
+        const currentPlayer = getCurrentPlayer(this.props.gameState, this.props.playerOrder);
 
         if (currentPlayer !== this.props.me.id) {
             return `It's ${this.props.users[currentPlayer].username}'s turn.`;
@@ -68,7 +46,9 @@ class FiveTribes extends React.Component {
     }
 
     selectTurnOrderSpotHandler = spotIndex => () => {
-        this.props.updateGameState(actions.SELECT_TURN_ORDER_SPOT, transformers, [spotIndex]);
+        this.props.updateGameState(
+            this.props.gameId, actions.SELECT_TURN_ORDER_SPOT, transformers, [spotIndex]
+        );
     }
 
     render() {
@@ -79,10 +59,12 @@ class FiveTribes extends React.Component {
         const remainingDjinns = this.props.gameState[0][0][4];
         const bidOrder = this.props.gameState[0][0][7];
         const turnOrder = this.props.gameState[0][0][8];
+        const nextTurnsBidOrder = this.props.gameState[0][0][9];
         const playerData = this.props.gameState[0][1];
+        const currentPlayer = getCurrentPlayer(this.props.gameState, this.props.playerOrder);
 
         return (
-            <Game awaitsAction={this.props.me.id === this.getCurrentPlayer()}>
+            <Game awaitsAction={this.props.me.id === currentPlayer}>
                 <div className="five-tribes">
                     <Status
                         endTurnAction={actions.END_TURN}
@@ -91,7 +73,7 @@ class FiveTribes extends React.Component {
                         {this.getStatusMessage()}
                     </Status>
 
-                    <Sidebar>
+                    <Sidebar messages={messages}>
                         {this.props.playerOrder.map((userId, playerIndex) =>
                             <Player
                                 color={playerColors[playerIndex]}
@@ -119,7 +101,9 @@ class FiveTribes extends React.Component {
                                                 {spot}
                                             </div>
 
-                                            {bidOrder.length > spotIndex && [spotIndex] !== null &&
+                                            {
+                                                bidOrder.length > spotIndex &&
+                                                bidOrder[spotIndex] !== null &&
                                                 <div
                                                     className={classNames(
                                                         'five-tribes__track-player',
@@ -261,6 +245,7 @@ class FiveTribes extends React.Component {
 }
 
 FiveTribes.propTypes = {
+    gameId: PropTypes.string.isRequired,
     gameState: PropTypes.array.isRequired,
     me: PropTypes.object.isRequired,
     playerOrder: PropTypes.array.isRequired,
@@ -270,6 +255,7 @@ FiveTribes.propTypes = {
 
 export default connectWithRouter(
     (state, ownProps) => ({
+        gameId: ownProps.match.params.gameId,
         gameState: state.gameStates.states[state.gameStates.states.length - 1],
         me: state.me,
         playerOrder: state.games[ownProps.match.params.gameId].playerOrder,

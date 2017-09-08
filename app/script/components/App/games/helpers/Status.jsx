@@ -10,7 +10,7 @@ class Status extends React.Component {
             this.props.gameId,
             [
                 ...this.props.actions,
-                [this.props.endTurnAction],
+                [this.props.endTurnAction, []],
             ]
         );
     }

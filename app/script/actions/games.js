@@ -50,7 +50,21 @@ export const startGame = id => (dispatch) => {
     });
 };
 
-export const updateGameState = (action, transformers, data = []) => ({
-    type: UPDATE_GAME_STATE,
-    payload: { action, data, transformers },
-});
+export const updateGameState = (
+    gameId, action, transformers, data = []
+) => (dispatch, getState) => {
+    const { games, gameStates, me } = getState();
+    const previousState = gameStates.states[gameStates.states.length - 1];
+    const nextAction = [action, data];
+    const nextState = transformers[action](previousState, data);
+
+    nextState[3] = [
+        ...nextAction,
+        games[gameId].playerOrder.findIndex(userId => userId === me.id),
+    ];
+
+    dispatch({
+        type: UPDATE_GAME_STATE,
+        payload: { nextAction, nextState },
+    });
+};
