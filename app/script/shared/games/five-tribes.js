@@ -1,3 +1,5 @@
+const turnOrderTrack = [0, 0, 0, 1, 3, 5, 8, 12, 18];
+
 module.exports = {
     assets: {
         meeples: [
@@ -55,6 +57,7 @@ module.exports = {
         ],
         palmTrees: 12,
         palaces: 10,
+        turnOrderTrack,
     },
     states: {
         BID_FOR_TURN_ORDER: 0,
@@ -69,5 +72,25 @@ module.exports = {
         SELECT_DJINN_FROM_DISPLAY: 9,
         SELL_RESOURCES: 10,
         END_TURN: 11,
+    },
+    actions: {
+        SELECT_TURN_ORDER_SPOT: 'FIVE_TRIBES$0',
+    },
+    validators: {
+        maySelectTurnOrderSpot: (state, spotIndex) => {
+            const currentPlayer = state[0][0][7][state[0][0][7].length - 1];
+            const isSpotFree = state[0][0][8][spotIndex] === null;
+            const isSpotAffordable = state[1][1][currentPlayer][0] >= turnOrderTrack[spotIndex];
+
+            if (turnOrderTrack[spotIndex] === 0) {
+                for (let i = spotIndex - 1; i >= 0; i -= 1) {
+                    if (state[0][0][8][i] === null) {
+                        return false;
+                    }
+                }
+            }
+
+            return isSpotFree && isSpotAffordable;
+        },
     },
 };

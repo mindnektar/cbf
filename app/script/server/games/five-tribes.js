@@ -95,6 +95,8 @@ const setup = () => {
         ],
         // action state
         game.states.BID_FOR_TURN_ORDER,
+        // last action
+        null,
     ];
 };
 

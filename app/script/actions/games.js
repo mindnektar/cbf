@@ -42,3 +42,5 @@ export const startGame = id => (dispatch) => {
         });
     });
 };
+
+export const updateGameState = (type, ...payload) => ({ type, payload });

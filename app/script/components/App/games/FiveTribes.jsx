@@ -2,12 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
-import { assets, states } from 'shared/games/five-tribes';
-import Game from '../helpers/Game';
-import Sidebar from '../helpers/Sidebar';
-import Player from '../helpers/Player';
-import Status from '../helpers/Status';
-import Action from '../helpers/Action';
+import { updateGameState } from 'actions/games';
+import { actions, assets, states, validators } from 'shared/games/five-tribes';
+import Game from './helpers/Game';
+import Sidebar from './helpers/Sidebar';
+import Player from './helpers/Player';
+import Status from './helpers/Status';
+import Action from './helpers/Action';
 
 const playerColors = [
     '#7dcee2',
@@ -52,12 +53,12 @@ class FiveTribes extends React.Component {
                 return 'Select a spot on the turn order track.';
 
             default:
-                return 'End your turn';
+                return 'End your turn.';
         }
     }
 
     selectTurnOrderSpotHandler = spotIndex => () => {
-
+        this.props.updateGameState(actions.SELECT_TURN_ORDER_SPOT, spotIndex);
     }
 
     render() {
@@ -105,7 +106,7 @@ class FiveTribes extends React.Component {
                                                 {spot}
                                             </div>
 
-                                            {bidOrder[spotIndex] !== null &&
+                                            {bidOrder.length > spotIndex && [spotIndex] !== null &&
                                                 <div
                                                     className={classNames(
                                                         'five-tribes__track-player',
@@ -118,10 +119,11 @@ class FiveTribes extends React.Component {
                                 </div>
 
                                 <div>
-                                    {[0, 0, 0, 1, 3, 5, 8, 12, 18].map((spot, spotIndex) =>
+                                    {assets.turnOrderTrack.map((spot, spotIndex) =>
                                         <Action
                                             active={
-                                                this.props.gameState[2] === states.BID_FOR_TURN_ORDER
+                                                this.props.gameState[2] === states.BID_FOR_TURN_ORDER &&
+                                                validators.maySelectTurnOrderSpot(this.props.gameState, spotIndex)
                                             }
                                             // eslint-disable-next-line react/no-array-index-key
                                             key={spotIndex}
@@ -249,6 +251,7 @@ FiveTribes.propTypes = {
     gameState: PropTypes.array.isRequired,
     me: PropTypes.object.isRequired,
     playerOrder: PropTypes.array.isRequired,
+    updateGameState: PropTypes.func.isRequired,
     users: PropTypes.object.isRequired,
 };
 
@@ -259,6 +262,8 @@ export default connectWithRouter(
         playerOrder: state.games[ownProps.match.params.gameId].playerOrder,
         users: state.users,
     }),
-    null,
+    {
+        updateGameState,
+    },
     FiveTribes
 );
