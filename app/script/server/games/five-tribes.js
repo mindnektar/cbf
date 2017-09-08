@@ -59,6 +59,8 @@ const setup = () => {
                 bidOrder,
                 // player order for turns
                 turnOrder,
+                // next turn's bid order
+                [],
             ],
             // player states
             Array(2).fill([

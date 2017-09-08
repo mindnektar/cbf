@@ -39,9 +39,7 @@ const request = (path, method = 'GET', body) => (
 
 // auth
 
-const login = (username, password) => (
-    request('auth', 'POST', { username, password })
-);
+const login = (username, password) => request('auth', 'POST', { username, password });
 
 // games
 
@@ -52,6 +50,8 @@ const createGame = game => request('games', 'POST', { game });
 const fetchGames = () => request('games');
 
 const fetchGameStates = id => request(`game_states/${id}`);
+
+const handleGameActions = (id, actions) => request(`game_states/${id}`, 'POST', actions);
 
 const joinGame = id => request('user_in_game', 'POST', { id });
 
@@ -67,7 +67,8 @@ export default {
     createGame,
     fetchGames,
     fetchGameStates,
-    fetchUsers,
+    handleGameActions,
     joinGame,
     fetchMe,
+    fetchUsers,
 };

@@ -30,7 +30,7 @@ Sidebar.propTypes = {
 
 export default connectWithRouter(
     state => ({
-        gameStates: state.gameStates,
+        gameStates: state.gameStates.states,
     }),
     null,
     Sidebar

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
 import { updateGameState } from 'actions/games';
-import { actions, assets, states, validators } from 'shared/games/five-tribes';
+import { actions, assets, states, transformers, validators } from 'shared/games/five-tribes';
 import Game from './helpers/Game';
 import Sidebar from './helpers/Sidebar';
 import Player from './helpers/Player';
@@ -36,7 +36,14 @@ class FiveTribes extends React.Component {
 
         do {
             highestTurnOrderSpot = turnOrder.pop();
-        } while (!highestTurnOrderSpot);
+        } while (highestTurnOrderSpot === null);
+
+        if (
+            this.props.gameState[2] === states.END_TURN &&
+            this.props.playerOrder[highestTurnOrderSpot] !== this.props.me.id
+        ) {
+            return this.props.me.id;
+        }
 
         return this.props.playerOrder[highestTurnOrderSpot];
     }
@@ -52,13 +59,16 @@ class FiveTribes extends React.Component {
             case states.BID_FOR_TURN_ORDER:
                 return 'Select a spot on the turn order track.';
 
+            case states.SELECT_TILE_FOR_MOVEMENT:
+                return 'Select a tile to start your movement.';
+
             default:
                 return 'End your turn.';
         }
     }
 
     selectTurnOrderSpotHandler = spotIndex => () => {
-        this.props.updateGameState(actions.SELECT_TURN_ORDER_SPOT, spotIndex);
+        this.props.updateGameState(actions.SELECT_TURN_ORDER_SPOT, transformers, [spotIndex]);
     }
 
     render() {
@@ -74,7 +84,10 @@ class FiveTribes extends React.Component {
         return (
             <Game awaitsAction={this.props.me.id === this.getCurrentPlayer()}>
                 <div className="five-tribes">
-                    <Status>
+                    <Status
+                        endTurnAction={actions.END_TURN}
+                        mayEndTurn={validators[actions.END_TURN](this.props.gameState)}
+                    >
                         {this.getStatusMessage()}
                     </Status>
 
@@ -123,7 +136,7 @@ class FiveTribes extends React.Component {
                                         <Action
                                             active={
                                                 this.props.gameState[2] === states.BID_FOR_TURN_ORDER &&
-                                                validators.maySelectTurnOrderSpot(this.props.gameState, spotIndex)
+                                                validators[actions.SELECT_TURN_ORDER_SPOT](this.props.gameState, [spotIndex])
                                             }
                                             // eslint-disable-next-line react/no-array-index-key
                                             key={spotIndex}
@@ -257,7 +270,7 @@ FiveTribes.propTypes = {
 
 export default connectWithRouter(
     (state, ownProps) => ({
-        gameState: state.gameStates[state.gameStates.length - 1],
+        gameState: state.gameStates.states[state.gameStates.states.length - 1],
         me: state.me,
         playerOrder: state.games[ownProps.match.params.gameId].playerOrder,
         users: state.users,

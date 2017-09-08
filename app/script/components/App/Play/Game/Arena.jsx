@@ -87,7 +87,7 @@ Arena.defaultProps = {
 Arena.propTypes = {
     clearGameStates: PropTypes.func.isRequired,
     game: PropTypes.object.isRequired,
-    gameStates: PropTypes.array,
+    gameStates: PropTypes.object,
     loadGameStates: PropTypes.func.isRequired,
     replace: PropTypes.func.isRequired,
 };

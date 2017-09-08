@@ -1,11 +1,13 @@
 .cbf-arena
     bottom: 0
+    box-shadow: $shadow inset
     left: 0
     position: fixed
     right: $sidebar-width
     top: #{$header-height + $status-height}
 
     *
+        -moz-user-select: none
         user-select: none
 
 .cbf-arena__canvas
