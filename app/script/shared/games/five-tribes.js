@@ -3,20 +3,22 @@ const clone = require('clone');
 const turnOrderTrack = [0, 0, 0, 1, 3, 5, 8, 12, 18];
 const states = {
     BID_FOR_TURN_ORDER: 0,
-    SELECT_TILE_FOR_MOVEMENT: 1,
-    SELECT_TILE_FOR_PLACEMENT: 2,
-    SELECT_MEEPLE_TO_PLACE: 3,
-    USE_FAKIRS_TO_IMPROVE_MEEPLE_ACTION: 4,
-    SELECT_MEEPLE_TO_KILL: 5,
-    GO_TO_MARKET: 6,
-    SELECT_RESOURCES_FROM_MARKET: 7,
-    COLLECT_DJINN: 8,
-    SELECT_DJINN_FROM_DISPLAY: 9,
-    SELL_RESOURCES: 10,
-    END_TURN: 11,
+    MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK: 1,
+    SELECT_TILE_FOR_MOVEMENT: 2,
+    SELECT_TILE_FOR_PLACEMENT: 3,
+    SELECT_MEEPLE_TO_PLACE: 4,
+    USE_FAKIRS_TO_IMPROVE_MEEPLE_ACTION: 5,
+    SELECT_MEEPLE_TO_KILL: 6,
+    GO_TO_MARKET: 7,
+    SELECT_RESOURCES_FROM_MARKET: 8,
+    COLLECT_DJINN: 9,
+    SELECT_DJINN_FROM_DISPLAY: 10,
+    SELL_RESOURCES: 11,
+    END_TURN: 12,
 };
 const actions = {
     SELECT_TURN_ORDER_SPOT: 0,
+    MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK: 1,
     END_TURN: 100,
 };
 
@@ -91,6 +93,9 @@ module.exports = {
 
             return `${user.username} pays ${cost} gold coin${cost !== 1 ? 's' : ''} for ${user.gender === 0 ? 'his' : 'her'} spot on the turn order track.`;
         },
+        [actions.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK]: user => (
+            `${user.username} moves ${user.gender === 0 ? 'his' : 'her'} player marker to the bid order track.`
+        ),
         [actions.END_TURN]: user => (
             `${user.username} ends ${user.gender === 0 ? 'his' : 'her'} turn.`
         ),
@@ -111,6 +116,9 @@ module.exports = {
 
             return isSpotFree && isSpotAffordable;
         },
+        [actions.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK]: state => (
+            state[2] === states.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK
+        ),
         [actions.END_TURN]: state => (
             state[2] === states.END_TURN
         ),
@@ -121,7 +129,6 @@ module.exports = {
             const bidOrder = nextState[0][0][7];
             const currentPlayer = nextState[4];
             const turnOrder = nextState[0][0][8];
-            const nextTurnsBidOrder = nextState[0][0][9];
 
             // Remove player marker from bid order track
             bidOrder[bidOrder.lastIndexOf(currentPlayer)] = null;
@@ -141,13 +148,7 @@ module.exports = {
 
                     // The active player is ahead on the turn order track, let him continue his turn
                     if (turnOrder[i] === currentPlayer) {
-                        const occupiedTurnOrderSpots = turnOrder.filter(spot => spot !== null);
-                        const player = occupiedTurnOrderSpots.pop();
-
-                        nextTurnsBidOrder.unshift(player);
-                        turnOrder[turnOrder.lastIndexOf(player)] = null;
-
-                        nextState[2] = states.SELECT_TILE_FOR_MOVEMENT;
+                        nextState[2] = states.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK;
                     // Someone else is ahead on the turn order track
                     } else {
                         nextState[2] = states.END_TURN;
@@ -165,11 +166,23 @@ module.exports = {
 
             return nextState;
         },
+        [actions.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK]: (state) => {
+            const nextState = clone(state);
+            const turnOrder = nextState[0][0][8];
+            const nextTurnsBidOrder = nextState[0][0][9];
+            const occupiedTurnOrderSpots = turnOrder.filter(spot => spot !== null);
+            const player = occupiedTurnOrderSpots.pop();
+
+            nextTurnsBidOrder[nextTurnsBidOrder.lastIndexOf(null)] = player;
+            turnOrder[turnOrder.lastIndexOf(player)] = null;
+
+            nextState[2] = states.SELECT_TILE_FOR_MOVEMENT;
+
+            return nextState;
+        },
         [actions.END_TURN]: (state) => {
             const nextState = clone(state);
             const bidOrder = nextState[0][0][7].filter(spot => spot !== null);
-            const turnOrder = nextState[0][0][8];
-            const nextTurnsBidOrder = nextState[0][0][9];
 
             // There are still players on the bid order track, so continue bidding
             if (bidOrder.length > 0) {
@@ -177,13 +190,11 @@ module.exports = {
                 nextState[4] = bidOrder.pop();
             // Nobody on the bid order track, so continue with regular actions
             } else {
+                const turnOrder = nextState[0][0][8];
                 const occupiedTurnOrderSpots = turnOrder.filter(spot => spot !== null);
                 const player = occupiedTurnOrderSpots.pop();
 
-                nextTurnsBidOrder.unshift(player);
-                turnOrder[turnOrder.lastIndexOf(player)] = null;
-
-                nextState[2] = states.SELECT_TILE_FOR_MOVEMENT;
+                nextState[2] = states.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK;
                 nextState[4] = player;
             }
 

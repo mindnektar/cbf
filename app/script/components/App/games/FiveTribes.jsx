@@ -26,6 +26,14 @@ const getDjinnNames = (djinns) => {
 };
 
 class FiveTribes extends React.Component {
+    componentDidMount() {
+        this.checkAutomaticActions();
+    }
+
+    componentDidUpdate() {
+        this.checkAutomaticActions();
+    }
+
     getStatusMessage() {
         const currentPlayer = this.props.playerOrder[this.props.gameState[4]];
 
@@ -42,6 +50,14 @@ class FiveTribes extends React.Component {
 
             default:
                 return 'End your turn.';
+        }
+    }
+
+    checkAutomaticActions() {
+        if (this.props.gameState[2] === states.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK) {
+            this.props.updateGameState(
+                this.props.gameId, actions.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK, transformers
+            );
         }
     }
 
@@ -102,12 +118,17 @@ class FiveTribes extends React.Component {
                                             </div>
 
                                             {
-                                                bidOrder.length > spotIndex &&
-                                                bidOrder[spotIndex] !== null &&
+                                                this.props.gameState[2] === states.BID_FOR_TURN_ORDER ? (
+                                                    bidOrder.length > spotIndex &&
+                                                    bidOrder[spotIndex] !== null
+                                                ) : (
+                                                    nextTurnsBidOrder.length > spotIndex &&
+                                                    nextTurnsBidOrder[spotIndex] !== null
+                                                ) &&
                                                 <div
                                                     className={classNames(
                                                         'five-tribes__track-player',
-                                                        `five-tribes__track-player-${bidOrder[spotIndex]}`
+                                                        `five-tribes__track-player-${this.props.gameState[2] === states.BID_FOR_TURN_ORDER ? bidOrder[spotIndex] : nextTurnsBidOrder[spotIndex]}`
                                                     )}
                                                 />
                                             }
