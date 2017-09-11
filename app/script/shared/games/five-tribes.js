@@ -22,20 +22,39 @@ const states = {
     SELECT_DJINN_FROM_DISPLAY: 10,
     SELL_RESOURCES: 11,
     END_TURN: 12,
+    EXECUTE_MEEPLE_ACTION: 13,
 };
 const actions = {
     SELECT_TURN_ORDER_SPOT: 0,
     MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK: 1,
     SELECT_TILE_FOR_MOVEMENT: 2,
+    PLACE_MEEPLE: 3,
     END_TURN: 100,
 };
 
 const canMakeMovementFromTile = (state, rowIndex, itemIndex, meeples, meepleCount) => {
     const meepleNames = meeples.map(meeple => allMeeples[meeple]);
+    const dropHistory = state[0][0][11];
 
     for (let i = 0; i < state[0][0][0].length; i += 1) {
         for (let j = 0; j < state[0][0][0][i].length; j += 1) {
             const distance = Math.abs(rowIndex - i) + Math.abs(itemIndex - j);
+
+            if (
+                dropHistory.length >= 1 &&
+                dropHistory[dropHistory.length - 1][0] === i &&
+                dropHistory[dropHistory.length - 1][1] === j
+            ) {
+                continue;
+            }
+
+            if (
+                dropHistory.length >= 2 &&
+                dropHistory[dropHistory.length - 2][0] === i &&
+                dropHistory[dropHistory.length - 2][1] === j
+            ) {
+                continue;
+            }
 
             if (
                 distance !== 0 &&
@@ -127,6 +146,9 @@ module.exports = {
         [actions.SELECT_TILE_FOR_PLACEMENT]: (user, state, [rowIndex, itemIndex]) => (
             `${user.username} selects the tile at position ${rowIndex}-${itemIndex} to drop a meeple.`
         ),
+        [actions.PLACE_MEEPLE]: (user, state, [meepleIndex]) => (
+            `${user.username} drops a ${allMeeples[state[0][0][10][meepleIndex]]}.`
+        ),
         [actions.END_TURN]: user => (
             `${user.username} ends ${user.gender === 0 ? 'his' : 'her'} turn.`
         ),
@@ -174,7 +196,7 @@ module.exports = {
             const horizontalDistance = Math.abs(rowIndex - dropHistory[dropHistory.length - 1][0]);
             const verticalDistance = Math.abs(itemIndex - dropHistory[dropHistory.length - 1][1]);
 
-            return (
+            if (
                 (
                     (horizontalDistance === 1 && verticalDistance === 0) ||
                     (horizontalDistance === 0 && verticalDistance === 1)
@@ -182,13 +204,47 @@ module.exports = {
                 (
                     !dropHistory[dropHistory.length - 2] ||
                     (
-                        dropHistory[dropHistory.length - 2][0] !== rowIndex &&
+                        dropHistory[dropHistory.length - 2][0] !== rowIndex ||
                         dropHistory[dropHistory.length - 2][1] !== itemIndex
                     )
-                ) &&
-                canMakeMovementFromTile(
-                    state, rowIndex, itemIndex, state[0][0][10], state[0][0][10].length - 1
                 )
+            ) {
+                if (state[0][0][10].length === 1) {
+                    const meeplesOnTile = state[0][0][0][rowIndex][itemIndex][1].map(
+                        meeple => allMeeples[meeple]
+                    );
+
+                    return meeplesOnTile.includes(allMeeples[state[0][0][10][0]]);
+                }
+
+                return canMakeMovementFromTile(
+                    state, rowIndex, itemIndex, state[0][0][10], state[0][0][10].length - 1
+                );
+            }
+
+            return false;
+        },
+        [actions.PLACE_MEEPLE]: (state, [meepleIndex]) => {
+            if (state[2] !== states.SELECT_MEEPLE_TO_PLACE) {
+                return false;
+            }
+
+            const dropHistory = state[0][0][11];
+            const rowIndex = dropHistory[dropHistory.length - 1][0];
+            const itemIndex = dropHistory[dropHistory.length - 1][1];
+            const meeplesOnTile = state[0][0][0][rowIndex][itemIndex][1].map(
+                meeple => allMeeples[meeple]
+            );
+            const meeplesOnHandAfterPlacement = [...state[0][0][10]];
+
+            meeplesOnHandAfterPlacement.splice(meepleIndex, 1);
+
+            if (state[0][0][10].length === 1) {
+                return meeplesOnTile.includes(allMeeples[state[0][0][10][meepleIndex]]);
+            }
+
+            return canMakeMovementFromTile(
+                state, rowIndex, itemIndex, meeplesOnHandAfterPlacement, meeplesOnHandAfterPlacement.length
             );
         },
         [actions.END_TURN]: state => (
@@ -274,6 +330,25 @@ module.exports = {
             nextState[0][0][11].push([rowIndex, itemIndex]);
 
             nextState[2] = states.SELECT_MEEPLE_TO_PLACE;
+
+            return nextState;
+        },
+        [actions.PLACE_MEEPLE]: (state, [meepleIndex]) => {
+            const nextState = clone(state);
+
+            const dropHistory = state[0][0][11];
+            const rowIndex = dropHistory[dropHistory.length - 1][0];
+            const itemIndex = dropHistory[dropHistory.length - 1][1];
+
+            const meeple = nextState[0][0][10].splice(meepleIndex, 1);
+
+            nextState[0][0][0][rowIndex][itemIndex][1].push(meeple);
+
+            if (nextState[0][0][10].length === 0) {
+                nextState[2] = states.EXECUTE_MEEPLE_ACTION;
+            } else {
+                nextState[2] = states.SELECT_TILE_FOR_PLACEMENT;
+            }
 
             return nextState;
         },

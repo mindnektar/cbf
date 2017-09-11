@@ -14,6 +14,7 @@ import TurnOrder from './FiveTribes/TurnOrder';
 import Board from './FiveTribes/Board';
 import Djinns from './FiveTribes/Djinns';
 import Market from './FiveTribes/Market';
+import Hand from './FiveTribes/Hand';
 
 const playerColors = [
     '#7dcee2',
@@ -112,6 +113,8 @@ class FiveTribes extends React.Component {
 
                             <Board />
                         </div>
+
+                        <Hand />
 
                         <Djinns />
                     </div>
