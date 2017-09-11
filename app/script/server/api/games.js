@@ -121,15 +121,13 @@ module.exports = (app) => {
                         .select()
                         .then((gameStates) => {
                             const {
-                                getCurrentPlayer, transformers, validators,
+                                transformers, validators,
                             } = require(`../../shared/games/${game.handle}`);
                             let currentState = JSON.parse(gameStates[gameStates.length - 1].state);
                             const playerOrder = game.player_order.split(',');
-                            const currentPlayer = getCurrentPlayer(
-                                currentState, playerOrder
-                            );
+                            const currentPlayer = currentState[4];
 
-                            if (currentPlayer !== user.id) {
+                            if (playerOrder[currentPlayer] !== user.id) {
                                 response.status(403).json({ errors: 'forbidden' });
                             }
 
@@ -146,13 +144,11 @@ module.exports = (app) => {
                                             currentState = transformers[action](
                                                 currentState, payload
                                             );
-// XXX: when the action is END_TURN, figure out the next current player
+
                                             currentState[3] = [
                                                 action,
                                                 payload,
-                                                playerOrder.findIndex(
-                                                    userId => userId === currentPlayer
-                                                ),
+                                                currentPlayer,
                                             ];
 
                                             nextStates.push(JSON.stringify(currentState));

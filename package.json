@@ -2,7 +2,8 @@
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --env=dev",
-    "prod": "webpack --env=prod; git add .; git commit -m \"bundle assets\""
+    "prod": "webpack --env=prod; git add .; git commit -m \"bundle assets\"",
+    "server": "node app/script/server.js"
   },
   "dependencies": {
     "classnames": "2.2.5",

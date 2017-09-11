@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
 import { updateGameState } from 'actions/games';
 import {
-    actions, assets, getCurrentPlayer, messages, states, transformers, validators,
+    actions, assets, messages, states, transformers, validators,
 } from 'shared/games/five-tribes';
 import Game from './helpers/Game';
 import Sidebar from './helpers/Sidebar';
@@ -27,7 +27,7 @@ const getDjinnNames = (djinns) => {
 
 class FiveTribes extends React.Component {
     getStatusMessage() {
-        const currentPlayer = getCurrentPlayer(this.props.gameState, this.props.playerOrder);
+        const currentPlayer = this.props.playerOrder[this.props.gameState[4]];
 
         if (currentPlayer !== this.props.me.id) {
             return `It's ${this.props.users[currentPlayer].username}'s turn.`;
@@ -61,7 +61,7 @@ class FiveTribes extends React.Component {
         const turnOrder = this.props.gameState[0][0][8];
         const nextTurnsBidOrder = this.props.gameState[0][0][9];
         const playerData = this.props.gameState[0][1];
-        const currentPlayer = getCurrentPlayer(this.props.gameState, this.props.playerOrder);
+        const currentPlayer = this.props.playerOrder[this.props.gameState[4]];
 
         return (
             <Game awaitsAction={this.props.me.id === currentPlayer}>

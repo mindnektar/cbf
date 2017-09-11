@@ -35,6 +35,7 @@ const setup = () => {
 
     const bidOrder = shuffle([0, 0, 1, 1]);
     const turnOrder = Array(9).fill(null);
+    const nextTurnsBidOrder = Array(4).fill(null);
 
     return [
         // public data
@@ -60,7 +61,7 @@ const setup = () => {
                 // player order for turns
                 turnOrder,
                 // next turn's bid order
-                [],
+                nextTurnsBidOrder,
             ],
             // player states
             Array(2).fill([
@@ -99,6 +100,8 @@ const setup = () => {
         game.states.BID_FOR_TURN_ORDER,
         // last action
         null,
+        // current player
+        bidOrder[bidOrder.length - 1],
     ];
 };
 
