@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
 import { updateGameState } from 'actions/games';
 import {
@@ -10,7 +9,11 @@ import Game from './helpers/Game';
 import Sidebar from './helpers/Sidebar';
 import Player from './helpers/Player';
 import Status from './helpers/Status';
-import Action from './helpers/Action';
+import BidOrder from './FiveTribes/BidOrder';
+import TurnOrder from './FiveTribes/TurnOrder';
+import Board from './FiveTribes/Board';
+import Djinns from './FiveTribes/Djinns';
+import Market from './FiveTribes/Market';
 
 const playerColors = [
     '#7dcee2',
@@ -61,21 +64,7 @@ class FiveTribes extends React.Component {
         }
     }
 
-    selectTurnOrderSpotHandler = spotIndex => () => {
-        this.props.updateGameState(
-            this.props.gameId, actions.SELECT_TURN_ORDER_SPOT, transformers, [spotIndex]
-        );
-    }
-
     render() {
-        const board = this.props.gameState[0][0][0];
-        const resources = this.props.gameState[0][0][1];
-        const remainingResources = this.props.gameState[0][0][2];
-        const djinns = this.props.gameState[0][0][3];
-        const remainingDjinns = this.props.gameState[0][0][4];
-        const bidOrder = this.props.gameState[0][0][7];
-        const turnOrder = this.props.gameState[0][0][8];
-        const nextTurnsBidOrder = this.props.gameState[0][0][9];
         const playerData = this.props.gameState[0][1];
         const currentPlayer = this.props.playerOrder[this.props.gameState[4]];
 
@@ -110,155 +99,18 @@ class FiveTribes extends React.Component {
                     <div className="five-tribes__top">
                         <div className="five-tribes__left">
                             <div className="five-tribes__tracks">
-                                <div>
-                                    {[4, 3, 2, 1].map((spot, spotIndex) =>
-                                        <div className="five-tribes__track-item" key={spot}>
-                                            <div className="five-tribes__track-number">
-                                                {spot}
-                                            </div>
+                                <BidOrder />
 
-                                            {
-                                                this.props.gameState[2] === states.BID_FOR_TURN_ORDER ? (
-                                                    bidOrder.length > spotIndex &&
-                                                    bidOrder[spotIndex] !== null
-                                                ) : (
-                                                    nextTurnsBidOrder.length > spotIndex &&
-                                                    nextTurnsBidOrder[spotIndex] !== null
-                                                ) &&
-                                                <div
-                                                    className={classNames(
-                                                        'five-tribes__track-player',
-                                                        `five-tribes__track-player-${this.props.gameState[2] === states.BID_FOR_TURN_ORDER ? bidOrder[spotIndex] : nextTurnsBidOrder[spotIndex]}`
-                                                    )}
-                                                />
-                                            }
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div>
-                                    {assets.turnOrderTrack.map((spot, spotIndex) =>
-                                        <Action
-                                            active={
-                                                this.props.gameState[2] === states.BID_FOR_TURN_ORDER &&
-                                                validators[actions.SELECT_TURN_ORDER_SPOT](this.props.gameState, [spotIndex])
-                                            }
-                                            // eslint-disable-next-line react/no-array-index-key
-                                            key={spotIndex}
-                                            onTouchTap={this.selectTurnOrderSpotHandler(spotIndex)}
-                                        >
-                                            <div className="five-tribes__track-item">
-                                                <div className="five-tribes__track-number">
-                                                    {spot}
-                                                </div>
-
-                                                {turnOrder[spotIndex] !== null &&
-                                                    <div
-                                                        className={classNames(
-                                                            'five-tribes__track-player',
-                                                            `five-tribes__track-player-${turnOrder[spotIndex]}`
-                                                        )}
-                                                    />
-                                                }
-                                            </div>
-                                        </Action>
-                                    )}
-                                </div>
+                                <TurnOrder />
                             </div>
 
-                            <div className="five-tribes__board">
-                                {board.map(row =>
-                                    <div
-                                        className="five-tribes__board-row"
-                                        key={`row${row[0][0]}`}
-                                    >
-                                        {row.map(item =>
-                                            <div
-                                                className="five-tribes__tile"
-                                                key={item[0]}
-                                            >
-                                                <div
-                                                    className={classNames(
-                                                        'five-tribes__tile-value',
-                                                        `five-tribes__tile-value--${assets.tiles[item[0]].color}`
-                                                    )}
-                                                >
-                                                    {assets.tiles[item[0]].value}
-                                                </div>
-
-                                                <div className="five-tribes__tile-action">
-                                                    {assets.tiles[item[0]].action}
-                                                </div>
-
-                                                <div className="five-tribes__tile-meeples">
-                                                    {item[1].map(meeple =>
-                                                        <div
-                                                            className={classNames(
-                                                                'five-tribes__meeple',
-                                                                `five-tribes__meeple--${assets.meeples[meeple]}`
-                                                            )}
-                                                            key={meeple}
-                                                        />
-                                                    )}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
+                            <Board />
                         </div>
 
-                        <div className="five-tribes__djinns">
-                            <div className="five-tribes__djinn-item five-tribes__djinn-item--deck">
-                                <div className="five-tribes__djinn-item-name">
-                                    {remainingDjinns} djinn{remainingDjinns !== 1 ? 's' : ''} remaining
-                                </div>
-                            </div>
-
-                            {djinns.map(djinn =>
-                                <div
-                                    className="five-tribes__djinn-item"
-                                    key={djinn}
-                                >
-                                    <div className="five-tribes__djinn-item-name">
-                                        {assets.djinns[djinn].name}
-                                    </div>
-
-                                    <div className="five-tribes__djinn-item-value">
-                                        {assets.djinns[djinn].value}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
+                        <Djinns />
                     </div>
 
-                    <div className="five-tribes__market">
-                        <div className="five-tribes__market-item five-tribes__market-item--deck">
-                            <div className="five-tribes__market-item-name">
-                                {remainingResources} resource{remainingResources !== 1 ? 's' : ''} remaining
-                            </div>
-                        </div>
-
-                        {resources.map(resource =>
-                            <div
-                                className={classNames(
-                                    'five-tribes__market-item',
-                                    { 'five-tribes__market-item--fakir': assets.resources[resource] === 'Fakir' }
-                                )}
-                                key={resource}
-                            >
-                                <div className="five-tribes__market-item-name">
-                                    {assets.resources[resource]}
-                                </div>
-
-                                <div className="five-tribes__market-item-frequency">
-                                    {assets.resources.filter(
-                                        name => name === assets.resources[resource]
-                                    ).length}x
-                                </div>
-                            </div>
-                        )}
-                    </div>
+                    <Market />
                 </div>
             </Game>
         );

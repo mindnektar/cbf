@@ -26,6 +26,7 @@ class Sidebar extends React.Component {
                                     'cbf-helper-sidebar__history-item',
                                     { 'cbf-helper-sidebar__history-item--active': index === this.props.gameStates.length - 1 }
                                 )}
+                                // eslint-disable-next-line react/no-array-index-key
                                 key={index}
                             >
                                 <div className="cbf-helper-sidebar__history-index">
