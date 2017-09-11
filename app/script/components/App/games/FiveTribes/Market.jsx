@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
 import { assets } from 'shared/games/five-tribes';
 
-class Djinns extends React.Component {
+class Market extends React.Component {
     render() {
         const resources = this.props.gameState[0][0][1];
         const remainingResources = this.props.gameState[0][0][2];
@@ -41,7 +41,7 @@ class Djinns extends React.Component {
     }
 }
 
-Djinns.propTypes = {
+Market.propTypes = {
     gameState: PropTypes.array.isRequired,
 };
 
@@ -50,5 +50,5 @@ export default connectWithRouter(
         gameState: state.gameStates.states[state.gameStates.states.length - 1],
     }),
     null,
-    Djinns
+    Market
 );

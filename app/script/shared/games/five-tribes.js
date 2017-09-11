@@ -102,6 +102,10 @@ module.exports = {
     },
     validators: {
         [actions.SELECT_TURN_ORDER_SPOT]: (state, [spotIndex]) => {
+            if (state[2] !== states.BID_FOR_TURN_ORDER) {
+                return false;
+            }
+
             const currentPlayer = state[4];
             const isSpotFree = state[0][0][8][spotIndex] === null;
             const isSpotAffordable = state[1][1][currentPlayer][0] >= turnOrderTrack[spotIndex];

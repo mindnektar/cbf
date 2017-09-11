@@ -3,12 +3,11 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
 import { updateGameState } from 'actions/games';
-import { actions, assets, states, transformers, validators } from 'shared/games/five-tribes';
+import { actions, assets, transformers, validators } from 'shared/games/five-tribes';
 import Action from '../helpers/Action';
 
 class TurnOrder extends React.Component {
     maySelectTurnOrderSpot = spotIndex => (
-        this.props.gameState[2] === states.BID_FOR_TURN_ORDER &&
         validators[actions.SELECT_TURN_ORDER_SPOT](this.props.gameState, [spotIndex])
     )
 
