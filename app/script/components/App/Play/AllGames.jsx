@@ -37,11 +37,13 @@ class AllGames extends React.Component {
                             </div>
 
                             <div className="cbf-all-games__item-options">
-                                <Button
-                                    onTouchTap={this.createGameHandler(game.handle)}
-                                >
-                                    Start new game
-                                </Button>
+                                {this.props.me &&
+                                    <Button
+                                        onTouchTap={this.createGameHandler(game.handle)}
+                                    >
+                                        Start new game
+                                    </Button>
+                                }
                             </div>
                         </div>
                     </div>
@@ -51,13 +53,20 @@ class AllGames extends React.Component {
     }
 }
 
+AllGames.defaultProps = {
+    me: null,
+};
+
 AllGames.propTypes = {
     createGame: PropTypes.func.isRequired,
+    me: PropTypes.object,
     push: PropTypes.func.isRequired,
 };
 
 export default connectWithRouter(
-    null,
+    state => ({
+        me: state.me,
+    }),
     {
         createGame,
         push,

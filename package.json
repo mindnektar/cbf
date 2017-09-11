@@ -3,7 +3,7 @@
   "scripts": {
     "dev": "webpack-dev-server --env=dev",
     "prod": "webpack --env=prod; git add .; git commit -m \"bundle assets\"",
-    "server": "node app/script/server.js"
+    "server": "babel-node --presets es2015 app/script/server.js"
   },
   "dependencies": {
     "classnames": "2.2.5",
@@ -28,6 +28,7 @@
     "redux-thunk": "2.2.0"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "babel-core": "^6.24.1",
     "babel-eslint": "^7.2.3",
     "babel-loader": "^7.0.0",

@@ -18,8 +18,15 @@ module.exports = (app) => {
     });
 
     app.get('/api/me', (request, response) => {
+        const authToken = request.header('X-Access-token');
+
+        if (!authToken) {
+            response.status(204).send();
+            return;
+        }
+
         app.knex('user')
-            .where('access_token', request.header('X-Access-token'))
+            .where('access_token', authToken)
             .select()
             .then(([user]) => {
                 if (!user) {

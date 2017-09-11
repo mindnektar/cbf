@@ -6,7 +6,7 @@ const request = (path, method = 'GET', body) => (
         method,
         body: body ? JSON.stringify(body) : null,
         headers: {
-            'X-Access-token': Cookies.get('auth-token'),
+            'X-Access-token': Cookies.get('auth-token') || '',
             'Content-type': 'application/json',
         },
     })

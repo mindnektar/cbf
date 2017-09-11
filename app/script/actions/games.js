@@ -3,16 +3,20 @@ import gameConstants from 'shared/constants/games';
 import { JOIN_GAME } from 'actions/me';
 import { loadGameStates } from 'actions/populate';
 
+export const ADD_PLAYER_TO_GAME = 'ADD_PLAYER_TO_GAME';
 export const CREATE_GAME = 'CREATE_GAME';
 export const CHANGE_GAME_STATUS = 'CHANGE_GAME_STATUS';
 export const PUSH_GAME_STATE = 'PUSH_GAME_STATE';
 export const UPDATE_GAME_STATE = 'UPDATE_GAME_STATE';
 
-export const createGame = game => dispatch => (
+export const createGame = game => (dispatch, getState) => (
     api.createGame(game).then((newGame) => {
         dispatch({
             type: CREATE_GAME,
-            payload: newGame,
+            payload: {
+                ...newGame,
+                players: [getState().me.id],
+            },
         });
 
         dispatch({

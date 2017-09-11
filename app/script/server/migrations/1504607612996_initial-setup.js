@@ -5,7 +5,7 @@ module.exports = {
             table.string('username').notNullable();
             table.string('email').notNullable();
             table.string('password').notNullable();
-            table.string('access-token');
+            table.string('access_token');
             table.boolean('gender').notNullable().defaultTo(0);
             table.timestamps();
             table.unique('id');

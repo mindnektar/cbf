@@ -5,6 +5,11 @@ import { push } from 'actions/history';
 export const login = (username, password) => dispatch => (
     api.login(username, password).then(
         (response) => {
+            if (response.error) {
+                console.log(response.error);
+                return;
+            }
+
             Cookies.set('auth-token', response.token);
 
             dispatch(push('play'));
