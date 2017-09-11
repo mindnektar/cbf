@@ -51,6 +51,12 @@ class FiveTribes extends React.Component {
             case states.SELECT_TILE_FOR_MOVEMENT:
                 return 'Select a tile to start your movement.';
 
+            case states.SELECT_TILE_FOR_PLACEMENT:
+                return 'Select a neighbouring tile to drop a meeple.';
+
+            case states.SELECT_MEEPLE_TO_PLACE:
+                return 'Select a meeple to drop.';
+
             default:
                 return 'End your turn.';
         }

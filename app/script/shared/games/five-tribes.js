@@ -1,5 +1,12 @@
 const clone = require('clone');
 
+const allMeeples = [
+    ...Array(16).fill('Vizier'),
+    ...Array(20).fill('Elder'),
+    ...Array(18).fill('Merchant'),
+    ...Array(18).fill('Builder'),
+    ...Array(18).fill('Assassin'),
+];
 const turnOrderTrack = [0, 0, 0, 1, 3, 5, 8, 12, 18];
 const states = {
     BID_FOR_TURN_ORDER: 0,
@@ -19,18 +26,36 @@ const states = {
 const actions = {
     SELECT_TURN_ORDER_SPOT: 0,
     MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK: 1,
+    SELECT_TILE_FOR_MOVEMENT: 2,
     END_TURN: 100,
+};
+
+const canMakeMovementFromTile = (state, rowIndex, itemIndex, meeples, meepleCount) => {
+    const meepleNames = meeples.map(meeple => allMeeples[meeple]);
+
+    for (let i = 0; i < state[0][0][0].length; i += 1) {
+        for (let j = 0; j < state[0][0][0][i].length; j += 1) {
+            const distance = Math.abs(rowIndex - i) + Math.abs(itemIndex - j);
+
+            if (
+                distance !== 0 &&
+                distance <= meepleCount &&
+                distance % 2 === meepleCount % 2 &&
+                state[0][0][0][i][j][1].some(
+                    meeple => meepleNames.includes(allMeeples[meeple])
+                )
+            ) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 };
 
 module.exports = {
     assets: {
-        meeples: [
-            ...Array(16).fill('Vizier'),
-            ...Array(20).fill('Elder'),
-            ...Array(18).fill('Merchant'),
-            ...Array(18).fill('Builder'),
-            ...Array(18).fill('Assassin'),
-        ],
+        meeples: allMeeples,
         tiles: [
             ...Array(4).fill({ color: 'red', value: 4, action: 'Big market' }),
             ...Array(8).fill({ color: 'red', value: 6, action: 'Small market' }),
@@ -84,7 +109,7 @@ module.exports = {
     states,
     actions,
     messages: {
-        [actions.SELECT_TURN_ORDER_SPOT]: (user, [spotIndex]) => {
+        [actions.SELECT_TURN_ORDER_SPOT]: (user, state, [spotIndex]) => {
             const cost = turnOrderTrack[spotIndex];
 
             if (cost === 0) {
@@ -95,6 +120,12 @@ module.exports = {
         },
         [actions.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK]: user => (
             `${user.username} moves ${user.gender === 0 ? 'his' : 'her'} player marker to the bid order track.`
+        ),
+        [actions.SELECT_TILE_FOR_MOVEMENT]: (user, state, [rowIndex, itemIndex]) => (
+            `${user.username} selects the tile at position ${rowIndex}-${itemIndex} to start moving meeples.`
+        ),
+        [actions.SELECT_TILE_FOR_PLACEMENT]: (user, state, [rowIndex, itemIndex]) => (
+            `${user.username} selects the tile at position ${rowIndex}-${itemIndex} to drop a meeple.`
         ),
         [actions.END_TURN]: user => (
             `${user.username} ends ${user.gender === 0 ? 'his' : 'her'} turn.`
@@ -123,6 +154,43 @@ module.exports = {
         [actions.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK]: state => (
             state[2] === states.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK
         ),
+        [actions.SELECT_TILE_FOR_MOVEMENT]: (state, [rowIndex, itemIndex]) => {
+            if (state[2] !== states.SELECT_TILE_FOR_MOVEMENT) {
+                return false;
+            }
+
+            const selectedTile = state[0][0][0][rowIndex][itemIndex];
+
+            return canMakeMovementFromTile(
+                state, rowIndex, itemIndex, selectedTile[1], selectedTile[1].length
+            );
+        },
+        [actions.SELECT_TILE_FOR_PLACEMENT]: (state, [rowIndex, itemIndex]) => {
+            if (state[2] !== states.SELECT_TILE_FOR_PLACEMENT) {
+                return false;
+            }
+
+            const dropHistory = state[0][0][11];
+            const horizontalDistance = Math.abs(rowIndex - dropHistory[dropHistory.length - 1][0]);
+            const verticalDistance = Math.abs(itemIndex - dropHistory[dropHistory.length - 1][1]);
+
+            return (
+                (
+                    (horizontalDistance === 1 && verticalDistance === 0) ||
+                    (horizontalDistance === 0 && verticalDistance === 1)
+                ) &&
+                (
+                    !dropHistory[dropHistory.length - 2] ||
+                    (
+                        dropHistory[dropHistory.length - 2][0] !== rowIndex &&
+                        dropHistory[dropHistory.length - 2][1] !== itemIndex
+                    )
+                ) &&
+                canMakeMovementFromTile(
+                    state, rowIndex, itemIndex, state[0][0][10], state[0][0][10].length - 1
+                )
+            );
+        },
         [actions.END_TURN]: state => (
             state[2] === states.END_TURN
         ),
@@ -181,6 +249,31 @@ module.exports = {
             turnOrder[turnOrder.lastIndexOf(player)] = null;
 
             nextState[2] = states.SELECT_TILE_FOR_MOVEMENT;
+
+            return nextState;
+        },
+        [actions.SELECT_TILE_FOR_MOVEMENT]: (state, [rowIndex, itemIndex]) => {
+            const nextState = clone(state);
+
+            // Pick up all meeples from the selected spot
+            nextState[0][0][10] = [...nextState[0][0][0][rowIndex][itemIndex][1]];
+
+            // Remove all meeples from the selected spot
+            nextState[0][0][0][rowIndex][itemIndex][1] = [];
+
+            // Remember where the move was started
+            nextState[0][0][11].push([rowIndex, itemIndex]);
+
+            nextState[2] = states.SELECT_TILE_FOR_PLACEMENT;
+
+            return nextState;
+        },
+        [actions.SELECT_TILE_FOR_PLACEMENT]: (state, [rowIndex, itemIndex]) => {
+            const nextState = clone(state);
+
+            nextState[0][0][11].push([rowIndex, itemIndex]);
+
+            nextState[2] = states.SELECT_MEEPLE_TO_PLACE;
 
             return nextState;
         },

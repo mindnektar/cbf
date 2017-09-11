@@ -10,16 +10,17 @@ class Action extends React.Component {
     }
 
     render() {
-        return (
-            <div
-                className={classNames(
-                    'cbf-helper-action',
-                    { 'cbf-helper-action--active': this.props.active }
-                )}
-                onTouchTap={this.onTouchTap}
-            >
-                {this.props.children}
-            </div>
+        const helperClassNames = classNames(
+            'cbf-helper-action',
+            { 'cbf-helper-action--active': this.props.active }
+        );
+
+        return React.cloneElement(
+            this.props.children,
+            {
+                className: `${this.props.children.props.className} ${helperClassNames}`,
+                onTouchTap: this.onTouchTap,
+            }
         );
     }
 }

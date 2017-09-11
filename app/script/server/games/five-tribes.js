@@ -62,6 +62,10 @@ const setup = () => {
                 turnOrder,
                 // next turn's bid order
                 nextTurnsBidOrder,
+                // meeples in hand
+                [],
+                // history of meeple drops,
+                [],
             ],
             // player states
             Array(2).fill([
