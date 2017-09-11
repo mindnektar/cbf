@@ -28,10 +28,16 @@ class Sidebar extends React.Component {
                                 )}
                                 key={index}
                             >
-                                {this.props.messages[gameState[3][0]](
-                                    this.props.users[this.props.playerOrder[gameState[3][2]]],
-                                    gameState[3][1]
-                                )}
+                                <div className="cbf-helper-sidebar__history-index">
+                                    {index + 1}
+                                </div>
+
+                                <div className="cbf-helper-sidebar__history-message">
+                                    {this.props.messages[gameState[3][0]](
+                                        this.props.users[this.props.playerOrder[gameState[3][2]]],
+                                        gameState[3][1]
+                                    )}
+                                </div>
                             </div>
                         )}
                     </div>
