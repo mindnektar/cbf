@@ -5,18 +5,17 @@ import { assets } from 'shared/games/five-tribes';
 
 class Djinns extends React.Component {
     render() {
-        const djinns = this.props.gameState[0][0][3];
-        const remainingDjinns = this.props.gameState[0][0][4];
+        const remainingDjinnCount = this.props.gameState.public.game.remainingDjinnCount;
 
         return (
             <div className="five-tribes__djinns">
                 <div className="five-tribes__djinn-item five-tribes__djinn-item--deck">
                     <div className="five-tribes__djinn-item-name">
-                        {remainingDjinns} djinn{remainingDjinns !== 1 ? 's' : ''} remaining
+                        {remainingDjinnCount} djinn{remainingDjinnCount !== 1 ? 's' : ''} remaining
                     </div>
                 </div>
 
-                {djinns.map(djinn =>
+                {this.props.gameState.public.game.availableDjinns.map(djinn =>
                     <div
                         className="five-tribes__djinn-item"
                         key={djinn}
@@ -36,7 +35,7 @@ class Djinns extends React.Component {
 }
 
 Djinns.propTypes = {
-    gameState: PropTypes.array.isRequired,
+    gameState: PropTypes.object.isRequired,
 };
 
 export default connectWithRouter(

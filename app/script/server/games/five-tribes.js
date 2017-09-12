@@ -1,6 +1,43 @@
 const shuffle = require('knuth-shuffle').knuthShuffle;
 const game = require('../../shared/games/five-tribes');
 
+const gameStateMapping = {
+    public: {
+        game: [
+            'board',
+            'availableResources',
+            'remainingResourceCount',
+            'availableDjinns',
+            'remainingDjinnCount',
+            'palmTreeCount',
+            'palaceCount',
+            'bidOrder',
+            'turnOrder',
+            'nextTurnsBidOrder',
+            'meeplesInHand',
+            'dropHistory',
+        ],
+        players: [
+            'camelCount',
+            'vizierCount',
+            'elderCount',
+            'resourceCount',
+            'djinns',
+        ],
+    },
+    private: {
+        game: [
+            'remainingMeeples',
+            'remainingResources',
+            'remainingDjinns',
+        ],
+        players: [
+            'goldCoinCount',
+            'resources',
+        ],
+    },
+};
+
 const setup = () => {
     const remainingTiles = shuffle(Object.keys(game.assets.tiles));
     const remainingMeeples = shuffle(Object.keys(game.assets.meeples));
@@ -37,78 +74,48 @@ const setup = () => {
     const turnOrder = Array(9).fill(null);
     const nextTurnsBidOrder = Array(4).fill(null);
 
-    return [
-        // public data
-        [
-            // game state
-            [
-                // board layout
+    return {
+        public: {
+            game: {
                 board,
-                // resources in the market
                 availableResources,
-                // number of remaining resources
-                remainingResources.length,
-                // djinns up for grabs
+                remainingResourceCount: remainingResources.length,
                 availableDjinns,
-                // number of remaining djinns
-                remainingDjinns.length,
-                // number of remaining palm trees
-                game.assets.palm_trees,
-                // number of remaining palaces
-                game.assets.palaces,
-                // player order for bidding
+                remainingDjinnCount: remainingDjinns.length,
+                palmTreeCount: game.assets.palm_trees,
+                palaceCount: game.assets.palaces,
                 bidOrder,
-                // player order for turns
                 turnOrder,
-                // next turn's bid order
                 nextTurnsBidOrder,
-                // meeples in hand
-                [],
-                // history of meeple drops,
-                [],
-            ],
-            // player states
-            Array(2).fill([
-                // camels
-                11,
-                // viziers
-                0,
-                // elders
-                0,
-                // number of resources
-                0,
-                // djinns
-                [],
-            ]),
-        ],
-        // private data
-        [
-            // game state
-            [
-                // meeples in the bag
+                meeplesInHand: [],
+                dropHistory: [],
+            },
+            players: Array(2).fill({
+                camelCount: 11,
+                vizierCount: 0,
+                elderCount: 0,
+                resourceCount: 0,
+                djinns: [],
+            }),
+        },
+        private: {
+            game: {
                 remainingMeeples,
-                // resource draw stack
                 remainingResources,
-                // djinn draw stack
                 remainingDjinns,
-            ],
-            // player states
-            Array(2).fill([
-                // money
-                50,
-                // resources
-                [],
-            ]),
-        ],
-        // action state
-        game.states.BID_FOR_TURN_ORDER,
-        // last action
-        null,
-        // current player
-        bidOrder[bidOrder.length - 1],
-    ];
+            },
+            players: Array(2).fill({
+                goldCoinCount: 50,
+                resources: [],
+            }),
+        },
+        state: game.states.BID_FOR_TURN_ORDER,
+        action: null,
+        currentPlayer: bidOrder[bidOrder.length - 1],
+    };
 };
 
 module.exports = {
+    gameStateMapping,
     setup,
 };

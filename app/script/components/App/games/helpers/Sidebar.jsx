@@ -34,10 +34,11 @@ class Sidebar extends React.Component {
                                 </div>
 
                                 <div className="cbf-helper-sidebar__history-message">
-                                    {this.props.messages[gameState[3][0]](
-                                        this.props.users[this.props.playerOrder[gameState[3][2]]],
-                                        gameState,
-                                        gameState[3][1]
+                                    {this.props.messages[gameState.action[0]](
+                                        this.props.users[
+                                            this.props.playerOrder[gameState.action[2]]
+                                        ],
+                                        gameState.action[1]
                                     )}
                                 </div>
                             </div>

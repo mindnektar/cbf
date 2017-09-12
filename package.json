@@ -3,7 +3,7 @@
   "scripts": {
     "dev": "webpack-dev-server --env=dev",
     "prod": "webpack --env=prod; git add .; git commit -m \"bundle assets\"",
-    "server": "nodemon app/script/server.js --exec babel-node --presets es2015"
+    "server": "nodemon app/script/server.js --exec babel-node --presets es2015 --plugins transform-object-rest-spread"
   },
   "dependencies": {
     "classnames": "2.2.5",

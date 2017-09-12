@@ -7,7 +7,7 @@ import Action from '../helpers/Action';
 
 class TurnOrder extends React.Component {
     render() {
-        const turnOrder = this.props.gameState[0][0][8];
+        const turnOrder = this.props.gameState.public.game.turnOrder;
 
         return (
             <div>
@@ -42,7 +42,7 @@ class TurnOrder extends React.Component {
 }
 
 TurnOrder.propTypes = {
-    gameState: PropTypes.array.isRequired,
+    gameState: PropTypes.object.isRequired,
 };
 
 export default connectWithRouter(

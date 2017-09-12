@@ -7,7 +7,7 @@ import Action from '../helpers/Action';
 
 class Board extends React.Component {
     getAction() {
-        if (this.props.gameState[2] === states.SELECT_TILE_FOR_MOVEMENT) {
+        if (this.props.gameState.state === states.SELECT_TILE_FOR_MOVEMENT) {
             return actions.SELECT_TILE_FOR_MOVEMENT;
         }
 
@@ -15,12 +15,11 @@ class Board extends React.Component {
     }
 
     render() {
-        const board = this.props.gameState[0][0][0];
         const action = this.getAction();
 
         return (
             <div className="five-tribes__board">
-                {board.map((row, rowIndex) =>
+                {this.props.gameState.public.game.board.map((row, rowIndex) =>
                     <div
                         className="five-tribes__board-row"
                         key={`row${row[0][0]}`}
@@ -69,7 +68,7 @@ class Board extends React.Component {
 }
 
 Board.propTypes = {
-    gameState: PropTypes.array.isRequired,
+    gameState: PropTypes.object.isRequired,
 };
 
 export default connectWithRouter(

@@ -5,10 +5,20 @@ import connectWithRouter from 'helpers/connectWithRouter';
 import { states } from 'shared/games/five-tribes';
 
 class BidOrder extends React.Component {
+    getBidOrder() {
+        let state = this.props.gameState.state;
+
+        if (state === states.END_TURN) {
+            state = this.props.gameState.action[0];
+        }
+
+        return state === states.BID_FOR_TURN_ORDER ?
+            this.props.gameState.public.game.bidOrder :
+            this.props.gameState.public.game.nextTurnsBidOrder;
+    }
+
     render() {
-        const currentBidOrder = this.props.gameState[2] === states.BID_FOR_TURN_ORDER ?
-            this.props.gameState[0][0][7] :
-            this.props.gameState[0][0][9];
+        const bidOrder = this.getBidOrder();
 
         return (
             <div>
@@ -19,12 +29,12 @@ class BidOrder extends React.Component {
                         </div>
 
                         {
-                            currentBidOrder.length > spotIndex &&
-                            currentBidOrder[spotIndex] !== null &&
+                            bidOrder.length > spotIndex &&
+                            bidOrder[spotIndex] !== null &&
                             <div
                                 className={classNames(
                                     'five-tribes__track-player',
-                                    `five-tribes__track-player-${currentBidOrder[spotIndex]}`
+                                    `five-tribes__track-player-${bidOrder[spotIndex]}`
                                 )}
                             />
                         }
@@ -36,7 +46,7 @@ class BidOrder extends React.Component {
 }
 
 BidOrder.propTypes = {
-    gameState: PropTypes.array.isRequired,
+    gameState: PropTypes.object.isRequired,
 };
 
 export default connectWithRouter(

@@ -6,18 +6,17 @@ import { assets } from 'shared/games/five-tribes';
 
 class Market extends React.Component {
     render() {
-        const resources = this.props.gameState[0][0][1];
-        const remainingResources = this.props.gameState[0][0][2];
+        const remainingResourceCount = this.props.gameState.public.game.remainingResourceCount;
 
         return (
             <div className="five-tribes__market">
                 <div className="five-tribes__market-item five-tribes__market-item--deck">
                     <div className="five-tribes__market-item-name">
-                        {remainingResources} resource{remainingResources !== 1 ? 's' : ''} remaining
+                        {remainingResourceCount} resource{remainingResourceCount !== 1 ? 's' : ''} remaining
                     </div>
                 </div>
 
-                {resources.map(resource =>
+                {this.props.gameState.public.game.availableResources.map(resource =>
                     <div
                         className={classNames(
                             'five-tribes__market-item',
@@ -42,7 +41,7 @@ class Market extends React.Component {
 }
 
 Market.propTypes = {
-    gameState: PropTypes.array.isRequired,
+    gameState: PropTypes.object.isRequired,
 };
 
 export default connectWithRouter(

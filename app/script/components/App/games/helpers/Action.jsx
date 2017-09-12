@@ -41,7 +41,7 @@ Action.propTypes = {
     action: PropTypes.number.isRequired,
     children: PropTypes.node.isRequired,
     gameId: PropTypes.string.isRequired,
-    gameState: PropTypes.array.isRequired,
+    gameState: PropTypes.object.isRequired,
     params: PropTypes.array,
     transformers: PropTypes.object.isRequired,
     updateGameState: PropTypes.func.isRequired,

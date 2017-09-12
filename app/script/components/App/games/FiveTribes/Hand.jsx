@@ -7,11 +7,9 @@ import Action from '../helpers/Action';
 
 class Hand extends React.Component {
     render() {
-        const hand = this.props.gameState[0][0][10];
-
         return (
             <div className="five-tribes__hand">
-                {hand.map(meeple =>
+                {this.props.gameState.public.game.meeplesInHand.map(meeple =>
                     <Action
                         action={actions.PLACE_MEEPLE}
                         key={meeple}
@@ -33,7 +31,7 @@ class Hand extends React.Component {
 }
 
 Hand.propTypes = {
-    gameState: PropTypes.array.isRequired,
+    gameState: PropTypes.object.isRequired,
 };
 
 export default connectWithRouter(

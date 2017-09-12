@@ -1,6 +1,7 @@
 const uuid = require('uuid/v4');
 const shuffle = require('knuth-shuffle').knuthShuffle;
 const gameConstants = require('../../shared/constants/games');
+const { serialize, unserialize } = require('../helpers/game-state');
 
 module.exports = (app) => {
     app.get('/api/games', (request, response) => {
@@ -54,7 +55,8 @@ module.exports = (app) => {
         app.knex('game').where('id', request.body.id).update(request.body.data).then(() => {
             if (request.body.data.status === gameConstants.GAME_STATUS_ACTIVE) {
                 app.knex('game').where('id', request.body.id).select().then(([game]) => {
-                    const state = JSON.stringify(require(`../games/${game.handle}`).setup());
+                    const { gameStateMapping, setup } = require(`../games/${game.handle}`);
+                    const state = JSON.stringify(serialize(setup(), gameStateMapping));
 
                     app.knex('user_in_game').where('game_id', game.id).select().then((players) => {
                         const playerOrder = shuffle(
@@ -101,8 +103,12 @@ module.exports = (app) => {
             .select()
             .then((gameStates) => {
                 app.knex('game').where('id', request.params.id).select().then(([game]) => {
+                    const { gameStateMapping } = require(`../games/${game.handle}`);
+
                     response.json({
-                        gameStates: gameStates.map(item => JSON.parse(item.state)),
+                        gameStates: gameStates.map(
+                            item => unserialize(JSON.parse(item.state), gameStateMapping)
+                        ),
                         playerOrder: game.player_order.split(','),
                     });
                 });
@@ -123,9 +129,13 @@ module.exports = (app) => {
                             const {
                                 transformers, validators,
                             } = require(`../../shared/games/${game.handle}`);
-                            let currentState = JSON.parse(gameStates[gameStates.length - 1].state);
+                            const { gameStateMapping } = require(`../games/${game.handle}`);
+                            let currentState = unserialize(
+                                JSON.parse(gameStates[gameStates.length - 1].state),
+                                gameStateMapping
+                            );
                             const playerOrder = game.player_order.split(',');
-                            const currentPlayer = currentState[4];
+                            const currentPlayer = currentState.currentPlayer;
 
                             if (playerOrder[currentPlayer] !== user.id) {
                                 response.status(403).json({ errors: 'forbidden' });
@@ -145,13 +155,15 @@ module.exports = (app) => {
                                                 currentState, payload
                                             );
 
-                                            currentState[3] = [
+                                            currentState.action = [
                                                 action,
                                                 payload,
                                                 currentPlayer,
                                             ];
 
-                                            nextStates.push(JSON.stringify(currentState));
+                                            nextStates.push(JSON.stringify(
+                                                serialize(currentState, gameStateMapping)
+                                            ));
                                         });
 
                                         return transaction

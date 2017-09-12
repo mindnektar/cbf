@@ -62,9 +62,9 @@ export const updateGameState = (
     const nextAction = [action, data];
     const nextState = transformers[action](previousState, data);
 
-    nextState[3] = [
+    nextState.action = [
         ...nextAction,
-        previousState[4],
+        previousState.currentPlayer,
     ];
 
     dispatch({

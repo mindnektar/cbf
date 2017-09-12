@@ -6,11 +6,13 @@ import Button from 'Button';
 
 class Status extends React.Component {
     endTurn = () => {
+        const currentPlayer = this.props.actions[this.props.actions.length - 1][2];
+
         this.props.handleGameActions(
             this.props.gameId,
             [
                 ...this.props.actions,
-                [this.props.endTurnAction, []],
+                [this.props.endTurnAction, [], currentPlayer],
             ]
         );
     }

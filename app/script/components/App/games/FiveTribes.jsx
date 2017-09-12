@@ -39,13 +39,13 @@ class FiveTribes extends React.Component {
     }
 
     getStatusMessage() {
-        const currentPlayer = this.props.playerOrder[this.props.gameState[4]];
+        const currentPlayer = this.props.playerOrder[this.props.gameState.currentPlayer];
 
         if (currentPlayer !== this.props.me.id) {
             return `It's ${this.props.users[currentPlayer].username}'s turn.`;
         }
 
-        switch (this.props.gameState[2]) {
+        switch (this.props.gameState.state) {
             case states.BID_FOR_TURN_ORDER:
                 return 'Select a spot on the turn order track.';
 
@@ -64,7 +64,7 @@ class FiveTribes extends React.Component {
     }
 
     checkAutomaticActions() {
-        if (this.props.gameState[2] === states.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK) {
+        if (this.props.gameState.state === states.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK) {
             this.props.updateGameState(
                 this.props.gameId, actions.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK, transformers
             );
@@ -72,8 +72,8 @@ class FiveTribes extends React.Component {
     }
 
     render() {
-        const playerData = this.props.gameState[0][1];
-        const currentPlayer = this.props.playerOrder[this.props.gameState[4]];
+        const playerData = this.props.gameState.public.players;
+        const currentPlayer = this.props.playerOrder[this.props.gameState.currentPlayer];
 
         return (
             <Game awaitsAction={this.props.me.id === currentPlayer}>
@@ -93,11 +93,13 @@ class FiveTribes extends React.Component {
                                 username={this.props.users[userId].username}
                             >
                                 <div className="five-tribes__player-data">
-                                    <div>Camels: {playerData[playerIndex][0]}</div>
-                                    <div>Viziers: {playerData[playerIndex][1]}</div>
-                                    <div>Elders: {playerData[playerIndex][2]}</div>
-                                    <div>Resources: {playerData[playerIndex][3]}</div>
-                                    <div>Djinns: {getDjinnNames(playerData[playerIndex][4])}</div>
+                                    <div>Camels: {playerData[playerIndex].camelCount}</div>
+                                    <div>Viziers: {playerData[playerIndex].vizierCount}</div>
+                                    <div>Elders: {playerData[playerIndex].elderCount}</div>
+                                    <div>Resources: {playerData[playerIndex].resourceCount}</div>
+                                    <div>
+                                        Djinns: {getDjinnNames(playerData[playerIndex].djinns)}
+                                    </div>
                                 </div>
                             </Player>
                         )}
@@ -128,7 +130,7 @@ class FiveTribes extends React.Component {
 
 FiveTribes.propTypes = {
     gameId: PropTypes.string.isRequired,
-    gameState: PropTypes.array.isRequired,
+    gameState: PropTypes.object.isRequired,
     me: PropTypes.object.isRequired,
     playerOrder: PropTypes.array.isRequired,
     updateGameState: PropTypes.func.isRequired,

@@ -35,10 +35,10 @@ const actions = {
 
 const canMakeMovementFromTile = (state, rowIndex, itemIndex, meeples, meepleCount) => {
     const meepleNames = meeples.map(meeple => allMeeples[meeple]);
-    const dropHistory = state[0][0][11];
+    const { board, dropHistory } = state.public.game;
 
-    for (let i = 0; i < state[0][0][0].length; i += 1) {
-        for (let j = 0; j < state[0][0][0][i].length; j += 1) {
+    for (let i = 0; i < board.length; i += 1) {
+        for (let j = 0; j < board[i].length; j += 1) {
             const distance = Math.abs(rowIndex - i) + Math.abs(itemIndex - j);
 
             if (
@@ -61,7 +61,7 @@ const canMakeMovementFromTile = (state, rowIndex, itemIndex, meeples, meepleCoun
                 distance !== 0 &&
                 distance <= meepleCount &&
                 distance % 2 === meepleCount % 2 &&
-                state[0][0][0][i][j][1].some(
+                board[i][j][1].some(
                     meeple => meepleNames.includes(allMeeples[meeple])
                 )
             ) {
@@ -129,7 +129,7 @@ module.exports = {
     states,
     actions,
     messages: {
-        [actions.SELECT_TURN_ORDER_SPOT]: (user, state, [spotIndex]) => {
+        [actions.SELECT_TURN_ORDER_SPOT]: (user, [spotIndex]) => {
             const cost = turnOrderTrack[spotIndex];
 
             if (cost === 0) {
@@ -141,13 +141,13 @@ module.exports = {
         [actions.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK]: user => (
             `${user.username} moves ${user.gender === 0 ? 'his' : 'her'} player marker to the bid order track.`
         ),
-        [actions.SELECT_TILE_FOR_MOVEMENT]: (user, state, [rowIndex, itemIndex]) => (
+        [actions.SELECT_TILE_FOR_MOVEMENT]: (user, [rowIndex, itemIndex]) => (
             `${user.username} selects the tile at position ${rowIndex}-${itemIndex} to start moving meeples.`
         ),
-        [actions.SELECT_TILE_FOR_PLACEMENT]: (user, state, [rowIndex, itemIndex]) => (
+        [actions.SELECT_TILE_FOR_PLACEMENT]: (user, [rowIndex, itemIndex]) => (
             `${user.username} selects the tile at position ${rowIndex}-${itemIndex} to drop a meeple.`
         ),
-        [actions.PLACE_MEEPLE]: (user, state, [meeple]) => {
+        [actions.PLACE_MEEPLE]: (user, [meeple]) => {
             let article = 'a';
 
             if (['Assassin', 'Elder'].includes(allMeeples[meeple])) {
@@ -162,17 +162,19 @@ module.exports = {
     },
     validators: {
         [actions.SELECT_TURN_ORDER_SPOT]: (state, [spotIndex]) => {
-            if (state[2] !== states.BID_FOR_TURN_ORDER) {
+            if (state.state !== states.BID_FOR_TURN_ORDER) {
                 return false;
             }
 
-            const currentPlayer = state[4];
-            const isSpotFree = state[0][0][8][spotIndex] === null;
-            const isSpotAffordable = state[1][1][currentPlayer][0] >= turnOrderTrack[spotIndex];
+            const { currentPlayer } = state;
+            const { goldCoinCount } = state.private.players[currentPlayer];
+            const { turnOrder } = state.public.game;
+            const isSpotFree = turnOrder[spotIndex] === null;
+            const isSpotAffordable = goldCoinCount >= turnOrderTrack[spotIndex];
 
             if (turnOrderTrack[spotIndex] === 0) {
                 for (let i = spotIndex - 1; i >= 0; i -= 1) {
-                    if (state[0][0][8][i] === null) {
+                    if (turnOrder[i] === null) {
                         return false;
                     }
                 }
@@ -181,25 +183,25 @@ module.exports = {
             return isSpotFree && isSpotAffordable;
         },
         [actions.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK]: state => (
-            state[2] === states.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK
+            state.state === states.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK
         ),
         [actions.SELECT_TILE_FOR_MOVEMENT]: (state, [rowIndex, itemIndex]) => {
-            if (state[2] !== states.SELECT_TILE_FOR_MOVEMENT) {
+            if (state.state !== states.SELECT_TILE_FOR_MOVEMENT) {
                 return false;
             }
 
-            const selectedTile = state[0][0][0][rowIndex][itemIndex];
+            const selectedTile = state.public.game.board[rowIndex][itemIndex];
 
             return canMakeMovementFromTile(
                 state, rowIndex, itemIndex, selectedTile[1], selectedTile[1].length
             );
         },
         [actions.SELECT_TILE_FOR_PLACEMENT]: (state, [rowIndex, itemIndex]) => {
-            if (state[2] !== states.SELECT_TILE_FOR_PLACEMENT) {
+            if (state.state !== states.SELECT_TILE_FOR_PLACEMENT) {
                 return false;
             }
 
-            const dropHistory = state[0][0][11];
+            const { board, dropHistory, meeplesInHand } = state.public.game;
             const horizontalDistance = Math.abs(rowIndex - dropHistory[dropHistory.length - 1][0]);
             const verticalDistance = Math.abs(itemIndex - dropHistory[dropHistory.length - 1][1]);
 
@@ -216,37 +218,37 @@ module.exports = {
                     )
                 )
             ) {
-                if (state[0][0][10].length === 1) {
-                    const meeplesOnTile = state[0][0][0][rowIndex][itemIndex][1].map(
+                if (meeplesInHand.length === 1) {
+                    const meeplesOnTile = board[rowIndex][itemIndex][1].map(
                         meeple => allMeeples[meeple]
                     );
 
-                    return meeplesOnTile.includes(allMeeples[state[0][0][10][0]]);
+                    return meeplesOnTile.includes(allMeeples[meeplesInHand[0]]);
                 }
 
                 return canMakeMovementFromTile(
-                    state, rowIndex, itemIndex, state[0][0][10], state[0][0][10].length - 1
+                    state, rowIndex, itemIndex, meeplesInHand, meeplesInHand.length - 1
                 );
             }
 
             return false;
         },
         [actions.PLACE_MEEPLE]: (state, [selectedMeeple]) => {
-            if (state[2] !== states.SELECT_MEEPLE_TO_PLACE) {
+            if (state.state !== states.SELECT_MEEPLE_TO_PLACE) {
                 return false;
             }
 
-            const dropHistory = state[0][0][11];
+            const { board, dropHistory, meeplesInHand } = state.public.game;
             const rowIndex = dropHistory[dropHistory.length - 1][0];
             const itemIndex = dropHistory[dropHistory.length - 1][1];
-            const meeplesOnTile = state[0][0][0][rowIndex][itemIndex][1].map(
+            const meeplesOnTile = board[rowIndex][itemIndex][1].map(
                 meeple => allMeeples[meeple]
             );
-            const meeplesOnHandAfterPlacement = [...state[0][0][10]].filter(
+            const meeplesOnHandAfterPlacement = meeplesInHand.filter(
                 meeple => meeple !== selectedMeeple
             );
 
-            if (state[0][0][10].length === 1) {
+            if (meeplesInHand.length === 1) {
                 return meeplesOnTile.includes(allMeeples[selectedMeeple]);
             }
 
@@ -259,15 +261,14 @@ module.exports = {
             );
         },
         [actions.END_TURN]: state => (
-            state[2] === states.END_TURN
+            state.state === states.END_TURN
         ),
     },
     transformers: {
         [actions.SELECT_TURN_ORDER_SPOT]: (state, [spotIndex]) => {
             const nextState = clone(state);
-            const bidOrder = nextState[0][0][7];
-            const currentPlayer = nextState[4];
-            const turnOrder = nextState[0][0][8];
+            const { bidOrder, turnOrder } = nextState.public.game;
+            const { currentPlayer } = nextState;
 
             // Remove player marker from bid order track
             bidOrder[bidOrder.lastIndexOf(currentPlayer)] = null;
@@ -276,7 +277,7 @@ module.exports = {
             turnOrder[spotIndex] = currentPlayer;
 
             // Subtract the respective amount of money from the player's stash
-            nextState[1][1][currentPlayer][0] -= turnOrderTrack[spotIndex];
+            nextState.private.players[currentPlayer].goldCoinCount -= turnOrderTrack[spotIndex];
 
             // Bidding is over
             if (bidOrder.filter(spot => spot !== null).length === 0) {
@@ -287,35 +288,34 @@ module.exports = {
 
                     // The active player is ahead on the turn order track, let him continue his turn
                     if (turnOrder[i] === currentPlayer) {
-                        nextState[2] = states.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK;
+                        nextState.state = states.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK;
                     // Someone else is ahead on the turn order track
                     } else {
-                        nextState[2] = states.END_TURN;
+                        nextState.state = states.END_TURN;
                     }
 
                     break;
                 }
             // Bidding continues with the same player
             } else if (bidOrder.filter(spot => spot !== null).pop() === currentPlayer) {
-                nextState[2] = states.BID_FOR_TURN_ORDER;
+                nextState.state = states.BID_FOR_TURN_ORDER;
             // Bidding continues with another player
             } else {
-                nextState[2] = states.END_TURN;
+                nextState.state = states.END_TURN;
             }
 
             return nextState;
         },
         [actions.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK]: (state) => {
             const nextState = clone(state);
-            const turnOrder = nextState[0][0][8];
-            const nextTurnsBidOrder = nextState[0][0][9];
+            const { nextTurnsBidOrder, turnOrder } = nextState.public.game;
             const occupiedTurnOrderSpots = turnOrder.filter(spot => spot !== null);
             const player = occupiedTurnOrderSpots.pop();
 
             nextTurnsBidOrder[nextTurnsBidOrder.lastIndexOf(null)] = player;
             turnOrder[turnOrder.lastIndexOf(player)] = null;
 
-            nextState[2] = states.SELECT_TILE_FOR_MOVEMENT;
+            nextState.state = states.SELECT_TILE_FOR_MOVEMENT;
 
             return nextState;
         },
@@ -323,62 +323,66 @@ module.exports = {
             const nextState = clone(state);
 
             // Pick up all meeples from the selected spot
-            nextState[0][0][10] = [...nextState[0][0][0][rowIndex][itemIndex][1]];
+            nextState.public.game.meeplesInHand = [
+                ...nextState.public.game.board[rowIndex][itemIndex][1],
+            ];
 
             // Remove all meeples from the selected spot
-            nextState[0][0][0][rowIndex][itemIndex][1] = [];
+            nextState.public.game.board[rowIndex][itemIndex][1] = [];
 
             // Remember where the move was started
-            nextState[0][0][11].push([rowIndex, itemIndex]);
+            nextState.public.game.dropHistory.push([rowIndex, itemIndex]);
 
-            nextState[2] = states.SELECT_TILE_FOR_PLACEMENT;
+            nextState.state = states.SELECT_TILE_FOR_PLACEMENT;
 
             return nextState;
         },
         [actions.SELECT_TILE_FOR_PLACEMENT]: (state, [rowIndex, itemIndex]) => {
             const nextState = clone(state);
 
-            nextState[0][0][11].push([rowIndex, itemIndex]);
+            nextState.public.game.dropHistory.push([rowIndex, itemIndex]);
 
-            nextState[2] = states.SELECT_MEEPLE_TO_PLACE;
+            nextState.state = states.SELECT_MEEPLE_TO_PLACE;
 
             return nextState;
         },
         [actions.PLACE_MEEPLE]: (state, [meeple]) => {
             const nextState = clone(state);
 
-            const dropHistory = state[0][0][11];
+            const { dropHistory } = state.public.game;
             const rowIndex = dropHistory[dropHistory.length - 1][0];
             const itemIndex = dropHistory[dropHistory.length - 1][1];
 
-            nextState[0][0][10].splice(nextState[0][0][10].indexOf(meeple), 1);
+            nextState.public.game.meeplesInHand.splice(
+                nextState.public.game.meeplesInHand.indexOf(meeple), 1
+            );
 
-            nextState[0][0][0][rowIndex][itemIndex][1].push(meeple);
+            nextState.public.game.board[rowIndex][itemIndex][1].push(meeple);
 
-            if (nextState[0][0][10].length === 0) {
-                nextState[2] = states.EXECUTE_MEEPLE_ACTION;
+            if (nextState.public.game.meeplesInHand.length === 0) {
+                nextState.state = states.EXECUTE_MEEPLE_ACTION;
             } else {
-                nextState[2] = states.SELECT_TILE_FOR_PLACEMENT;
+                nextState.state = states.SELECT_TILE_FOR_PLACEMENT;
             }
 
             return nextState;
         },
         [actions.END_TURN]: (state) => {
             const nextState = clone(state);
-            const bidOrder = nextState[0][0][7].filter(spot => spot !== null);
+            const bidOrder = nextState.public.game.bidOrder.filter(spot => spot !== null);
 
             // There are still players on the bid order track, so continue bidding
             if (bidOrder.length > 0) {
-                nextState[2] = states.BID_FOR_TURN_ORDER;
-                nextState[4] = bidOrder.pop();
+                nextState.state = states.BID_FOR_TURN_ORDER;
+                nextState.currentPlayer = bidOrder.pop();
             // Nobody on the bid order track, so continue with regular actions
             } else {
-                const turnOrder = nextState[0][0][8];
+                const { turnOrder } = nextState.public.game;
                 const occupiedTurnOrderSpots = turnOrder.filter(spot => spot !== null);
                 const player = occupiedTurnOrderSpots.pop();
 
-                nextState[2] = states.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK;
-                nextState[4] = player;
+                nextState.state = states.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK;
+                nextState.currentPlayer = player;
             }
 
             return nextState;
