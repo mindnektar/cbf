@@ -64,10 +64,16 @@ class FiveTribes extends React.Component {
     }
 
     checkAutomaticActions() {
-        if (this.props.gameState.state === states.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK) {
+        const { state } = this.props.gameState;
+
+        if (state === states.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK) {
             this.props.updateGameState(
                 this.props.gameId, actions.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK, transformers
             );
+        }
+
+        if (state === states.EXECUTE_MEEPLE_ACTION) {
+            this.props.updateGameState(this.props.gameId, actions.PICK_UP_MEEPLE, transformers);
         }
     }
 

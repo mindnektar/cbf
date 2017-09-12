@@ -7,6 +7,18 @@ const allMeeples = [
     ...Array(18).fill('Builder'),
     ...Array(18).fill('Assassin'),
 ];
+const allResources = [
+    ...Array(2).fill('Ivory'),
+    ...Array(2).fill('Jewels'),
+    ...Array(2).fill('Gold'),
+    ...Array(4).fill('Papyrus'),
+    ...Array(4).fill('Silk'),
+    ...Array(4).fill('Spice'),
+    ...Array(6).fill('Fish'),
+    ...Array(6).fill('Wheat'),
+    ...Array(6).fill('Pottery'),
+    ...Array(18).fill('Fakir'),
+];
 const turnOrderTrack = [0, 0, 0, 1, 3, 5, 8, 12, 18];
 const states = {
     BID_FOR_TURN_ORDER: 0,
@@ -23,6 +35,9 @@ const states = {
     SELL_RESOURCES: 11,
     END_TURN: 12,
     EXECUTE_MEEPLE_ACTION: 13,
+    SPEND_FAKIR_ON_MEEPLE_ACTION: 14,
+    COLLECT_MARKET_RESOURCES: 15,
+    COLLECT_GOLD_COINS: 16,
 };
 const actions = {
     SELECT_TURN_ORDER_SPOT: 0,
@@ -30,6 +45,7 @@ const actions = {
     SELECT_TILE_FOR_MOVEMENT: 2,
     SELECT_TILE_FOR_PLACEMENT: 3,
     PLACE_MEEPLE: 4,
+    PICK_UP_MEEPLE: 5,
     END_TURN: 100,
 };
 
@@ -86,18 +102,7 @@ module.exports = {
             { color: 'blue', value: 12, action: 'Sacred place' },
             { color: 'blue', value: 15, action: 'Sacred place' },
         ],
-        resources: [
-            ...Array(2).fill('Ivory'),
-            ...Array(2).fill('Jewels'),
-            ...Array(2).fill('Gold'),
-            ...Array(4).fill('Papyrus'),
-            ...Array(4).fill('Silk'),
-            ...Array(4).fill('Spice'),
-            ...Array(6).fill('Fish'),
-            ...Array(6).fill('Wheat'),
-            ...Array(6).fill('Pottery'),
-            ...Array(18).fill('Fakir'),
-        ],
+        resources: allResources,
         djinns: [
             { name: 'Al-Amin', value: 5, hasAction: false },
             { name: 'Anun-Nak', value: 8, hasAction: true },
@@ -129,7 +134,8 @@ module.exports = {
     states,
     actions,
     messages: {
-        [actions.SELECT_TURN_ORDER_SPOT]: (user, [spotIndex]) => {
+        [actions.SELECT_TURN_ORDER_SPOT]: (user, state) => {
+            const [spotIndex] = state.action[1];
             const cost = turnOrderTrack[spotIndex];
 
             if (cost === 0) {
@@ -141,13 +147,18 @@ module.exports = {
         [actions.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK]: user => (
             `${user.username} moves ${user.gender === 0 ? 'his' : 'her'} player marker to the bid order track.`
         ),
-        [actions.SELECT_TILE_FOR_MOVEMENT]: (user, [rowIndex, itemIndex]) => (
-            `${user.username} selects the tile at position ${rowIndex}-${itemIndex} to start moving meeples.`
-        ),
-        [actions.SELECT_TILE_FOR_PLACEMENT]: (user, [rowIndex, itemIndex]) => (
-            `${user.username} selects the tile at position ${rowIndex}-${itemIndex} to drop a meeple.`
-        ),
-        [actions.PLACE_MEEPLE]: (user, [meeple]) => {
+        [actions.SELECT_TILE_FOR_MOVEMENT]: (user, state) => {
+            const [rowIndex, itemIndex] = state.action[1];
+
+            return `${user.username} selects the tile at position ${rowIndex}-${itemIndex} to start moving meeples.`;
+        },
+        [actions.SELECT_TILE_FOR_PLACEMENT]: (user, state) => {
+            const [rowIndex, itemIndex] = state.action[1];
+
+            return `${user.username} selects the tile at position ${rowIndex}-${itemIndex} to drop a meeple.`;
+        },
+        [actions.PLACE_MEEPLE]: (user, state) => {
+            const [meeple] = state.action[1][0];
             let article = 'a';
 
             if (['Assassin', 'Elder'].includes(allMeeples[meeple])) {
@@ -155,6 +166,18 @@ module.exports = {
             }
 
             return `${user.username} drops ${article} ${allMeeples[meeple].toLowerCase()}.`;
+        },
+        [actions.PICK_UP_MEEPLE]: (user, state, previousState) => {
+            const { board, dropHistory } = previousState.public.game;
+            const rowIndex = dropHistory[dropHistory.length - 1][0];
+            const itemIndex = dropHistory[dropHistory.length - 1][1];
+            const meeplesOnTile = board[rowIndex][itemIndex][1];
+            const meepleType = allMeeples[meeplesOnTile[meeplesOnTile.length - 1]];
+            const meepleCount = meeplesOnTile.filter(
+                meeple => allMeeples[meeple] === meepleType
+            ).length;
+
+            return `${user.username} picks up ${meepleCount} ${meepleType.toLowerCase()}s.`;
         },
         [actions.END_TURN]: user => (
             `${user.username} ends ${user.gender === 0 ? 'his' : 'her'} turn.`
@@ -260,6 +283,9 @@ module.exports = {
                 meeplesOnHandAfterPlacement.length
             );
         },
+        [actions.PICK_UP_MEEPLE]: state => (
+            state.state === states.EXECUTE_MEEPLE_ACTION
+        ),
         [actions.END_TURN]: state => (
             state.state === states.END_TURN
         ),
@@ -363,6 +389,75 @@ module.exports = {
                 nextState.state = states.EXECUTE_MEEPLE_ACTION;
             } else {
                 nextState.state = states.SELECT_TILE_FOR_PLACEMENT;
+            }
+
+            return nextState;
+        },
+        [actions.PICK_UP_MEEPLE]: (state) => {
+            const nextState = clone(state);
+
+            const { board, dropHistory } = nextState.public.game;
+            const rowIndex = dropHistory[dropHistory.length - 1][0];
+            const itemIndex = dropHistory[dropHistory.length - 1][1];
+            const meeplesOnTile = board[rowIndex][itemIndex][1];
+            const meepleType = allMeeples[meeplesOnTile[meeplesOnTile.length - 1]];
+            const collectedMeeples = meeplesOnTile.filter(
+                meeple => allMeeples[meeple] === meepleType
+            );
+            const remainingMeeples = meeplesOnTile.filter(
+                meeple => allMeeples[meeple] !== meepleType
+            );
+            const meepleCount = collectedMeeples.length;
+
+            board[rowIndex][itemIndex][1] = remainingMeeples;
+
+            switch (meepleType) {
+                case 'Vizier':
+                    nextState.public.players[nextState.currentPlayer].vizierCount += meepleCount;
+                    nextState.state = states.EXECUTE_TILE_ACTION;
+                    break;
+
+                case 'Elder':
+                    nextState.public.players[nextState.currentPlayer].elderCount += meepleCount;
+                    nextState.state = states.EXECUTE_TILE_ACTION;
+                    break;
+
+                default:
+                    nextState.private.game.remainingMeeples = [
+                        ...nextState.private.game.remainingMeeples,
+                        ...collectedMeeples,
+                        nextState.action[1][0],
+                    ];
+
+                    nextState.public.game.collectedMeepleCount = meepleCount;
+            }
+
+            const hasFakir = nextState.private.players[nextState.currentPlayer].resources.find(
+                resource => allResources[resource] === 'Fakir'
+            );
+
+            if (meepleType === 'Merchant') {
+                if (hasFakir) {
+                    nextState.state = states.SPEND_FAKIR_ON_MEEPLE_ACTION;
+                } else {
+                    nextState.state = states.COLLECT_MARKET_RESOURCES;
+                }
+            }
+
+            if (meepleType === 'Builder') {
+                if (hasFakir) {
+                    nextState.state = states.SPEND_FAKIR_ON_MEEPLE_ACTION;
+                } else {
+                    nextState.state = states.COLLECT_GOLD_COINS;
+                }
+            }
+
+            if (meepleType === 'Assassin') {
+                if (hasFakir) {
+                    nextState.state = states.SPEND_FAKIR_ON_MEEPLE_ACTION;
+                } else {
+                    nextState.state = states.SELECT_MEEPLE_TO_KILL;
+                }
             }
 
             return nextState;

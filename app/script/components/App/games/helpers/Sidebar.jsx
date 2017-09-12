@@ -38,7 +38,8 @@ class Sidebar extends React.Component {
                                         this.props.users[
                                             this.props.playerOrder[gameState.action[2]]
                                         ],
-                                        gameState.action[1]
+                                        gameState,
+                                        this.props.gameStates[index - 1],
                                     )}
                                 </div>
                             </div>

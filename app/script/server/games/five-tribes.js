@@ -16,6 +16,7 @@ const gameStateMapping = {
             'nextTurnsBidOrder',
             'meeplesInHand',
             'dropHistory',
+            'collectedMeepleCount',
         ],
         players: [
             'camelCount',
@@ -89,6 +90,7 @@ const setup = () => {
                 nextTurnsBidOrder,
                 meeplesInHand: [],
                 dropHistory: [],
+                collectedMeepleCount: null,
             },
             players: Array(2).fill({
                 camelCount: 11,
