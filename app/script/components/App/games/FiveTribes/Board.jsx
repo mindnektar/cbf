@@ -2,38 +2,21 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
-import { updateGameState } from 'actions/games';
 import { actions, assets, states, transformers, validators } from 'shared/games/five-tribes';
 import Action from '../helpers/Action';
 
 class Board extends React.Component {
-    maySelectTile = (rowIndex, itemIndex) => (
-        validators[actions.SELECT_TILE_FOR_MOVEMENT](this.props.gameState, [rowIndex, itemIndex]) ||
-        validators[actions.SELECT_TILE_FOR_PLACEMENT](this.props.gameState, [rowIndex, itemIndex])
-    )
-
-    selectTileHandler = (rowIndex, itemIndex) => () => {
+    getAction() {
         if (this.props.gameState[2] === states.SELECT_TILE_FOR_MOVEMENT) {
-            this.props.updateGameState(
-                this.props.gameId,
-                actions.SELECT_TILE_FOR_MOVEMENT,
-                transformers,
-                [rowIndex, itemIndex]
-            );
+            return actions.SELECT_TILE_FOR_MOVEMENT;
         }
 
-        if (this.props.gameState[2] === states.SELECT_TILE_FOR_PLACEMENT) {
-            this.props.updateGameState(
-                this.props.gameId,
-                actions.SELECT_TILE_FOR_PLACEMENT,
-                transformers,
-                [rowIndex, itemIndex]
-            );
-        }
+        return actions.SELECT_TILE_FOR_PLACEMENT;
     }
 
     render() {
         const board = this.props.gameState[0][0][0];
+        const action = this.getAction();
 
         return (
             <div className="five-tribes__board">
@@ -44,9 +27,11 @@ class Board extends React.Component {
                     >
                         {row.map((item, itemIndex) =>
                             <Action
-                                active={this.maySelectTile(rowIndex, itemIndex)}
+                                action={action}
                                 key={item[0]}
-                                onTouchTap={this.selectTileHandler(rowIndex, itemIndex)}
+                                params={[rowIndex, itemIndex]}
+                                transformers={transformers}
+                                validators={validators}
                             >
                                 <div className="five-tribes__tile">
                                     <div
@@ -84,18 +69,13 @@ class Board extends React.Component {
 }
 
 Board.propTypes = {
-    gameId: PropTypes.string.isRequired,
     gameState: PropTypes.array.isRequired,
-    updateGameState: PropTypes.func.isRequired,
 };
 
 export default connectWithRouter(
-    (state, ownProps) => ({
-        gameId: ownProps.match.params.gameId,
+    state => ({
         gameState: state.gameStates.states[state.gameStates.states.length - 1],
     }),
-    {
-        updateGameState,
-    },
+    null,
     Board
 );

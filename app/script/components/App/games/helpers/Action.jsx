@@ -1,18 +1,26 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import connectWithRouter from 'helpers/connectWithRouter';
+import { updateGameState } from 'actions/games';
 
 class Action extends React.Component {
-    onTouchTap = (event) => {
-        if (this.props.active) {
-            this.props.onTouchTap(event);
-        }
+    onTouchTap = () => {
+        this.props.updateGameState(
+            this.props.gameId,
+            this.props.action,
+            this.props.transformers,
+            this.props.params
+        );
     }
 
     render() {
+        const isActive = this.props.validators[this.props.action](
+            this.props.gameState, this.props.params
+        );
         const helperClassNames = classNames(
             'cbf-helper-action',
-            { 'cbf-helper-action--active': this.props.active }
+            { 'cbf-helper-action--active': isActive }
         );
 
         return React.cloneElement(
@@ -25,10 +33,28 @@ class Action extends React.Component {
     }
 }
 
-Action.propTypes = {
-    active: PropTypes.bool.isRequired,
-    children: PropTypes.node.isRequired,
-    onTouchTap: PropTypes.func.isRequired,
+Action.defaultProps = {
+    params: [],
 };
 
-export default Action;
+Action.propTypes = {
+    action: PropTypes.number.isRequired,
+    children: PropTypes.node.isRequired,
+    gameId: PropTypes.string.isRequired,
+    gameState: PropTypes.array.isRequired,
+    params: PropTypes.array,
+    transformers: PropTypes.object.isRequired,
+    updateGameState: PropTypes.func.isRequired,
+    validators: PropTypes.object.isRequired,
+};
+
+export default connectWithRouter(
+    (state, ownProps) => ({
+        gameId: ownProps.match.params.gameId,
+        gameState: state.gameStates.states[state.gameStates.states.length - 1],
+    }),
+    {
+        updateGameState,
+    },
+    Action
+);

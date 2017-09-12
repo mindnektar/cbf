@@ -2,21 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
-import { updateGameState } from 'actions/games';
 import { actions, assets, transformers, validators } from 'shared/games/five-tribes';
 import Action from '../helpers/Action';
 
 class Hand extends React.Component {
-    mayPlaceMeeple = meeple => (
-        validators[actions.PLACE_MEEPLE](this.props.gameState, [meeple])
-    )
-
-    placeMeepleHandler = meeple => () => {
-        this.props.updateGameState(
-            this.props.gameId, actions.PLACE_MEEPLE, transformers, [meeple]
-        );
-    }
-
     render() {
         const hand = this.props.gameState[0][0][10];
 
@@ -24,9 +13,11 @@ class Hand extends React.Component {
             <div className="five-tribes__hand">
                 {hand.map(meeple =>
                     <Action
-                        active={this.mayPlaceMeeple(meeple)}
+                        action={actions.PLACE_MEEPLE}
                         key={meeple}
-                        onTouchTap={this.placeMeepleHandler(meeple)}
+                        params={[meeple]}
+                        transformers={transformers}
+                        validators={validators}
                     >
                         <div
                             className={classNames(
@@ -42,18 +33,13 @@ class Hand extends React.Component {
 }
 
 Hand.propTypes = {
-    gameId: PropTypes.string.isRequired,
     gameState: PropTypes.array.isRequired,
-    updateGameState: PropTypes.func.isRequired,
 };
 
 export default connectWithRouter(
-    (state, ownProps) => ({
-        gameId: ownProps.match.params.gameId,
+    state => ({
         gameState: state.gameStates.states[state.gameStates.states.length - 1],
     }),
-    {
-        updateGameState,
-    },
+    null,
     Hand
 );
