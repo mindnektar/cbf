@@ -1,4 +1,4 @@
-import { LOAD } from 'actions/populate';
+import { LOAD, UNLOAD } from 'actions/populate';
 import { createReducer } from './_helpers';
 
 export default createReducer({
@@ -7,5 +7,9 @@ export default createReducer({
     [LOAD]: (state, action) => ({
         ...state,
         ...action.payload.ui,
+    }),
+    [UNLOAD]: state => ({
+        ...state,
+        isSystemLoaded: false,
     }),
 });

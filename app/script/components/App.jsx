@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Switch, Route } from 'react-router-dom';
 import connectWithRouter from 'helpers/connectWithRouter';
-import { load } from 'actions/populate';
+import { load, unload } from 'actions/populate';
 import Header from './App/Header';
 import Home from './App/Home';
 import Login from './App/Login';
@@ -11,6 +11,10 @@ import Play from './App/Play';
 class App extends React.Component {
     componentWillMount() {
         this.props.load();
+    }
+
+    componentWillUnmount() {
+        this.props.unload();
     }
 
     render() {
@@ -35,6 +39,7 @@ class App extends React.Component {
 App.propTypes = {
     isSystemLoaded: PropTypes.bool.isRequired,
     load: PropTypes.func.isRequired,
+    unload: PropTypes.func.isRequired,
 };
 
 export default connectWithRouter(
@@ -43,6 +48,7 @@ export default connectWithRouter(
     }),
     {
         load,
+        unload,
     },
     App
 );

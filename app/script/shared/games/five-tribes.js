@@ -50,6 +50,7 @@ const actions = {
     PICK_UP_MEEPLE: 5,
     TAKE_CONTROL_OF_TILE: 6,
     COLLECT_MARKET_RESOURCES: 7,
+    COLLECT_GOLD_COINS: 8,
     END_TURN: 100,
 };
 
@@ -550,6 +551,9 @@ module.exports = {
             nextState.state = states.EXECUTE_TILE_ACTION;
 
             return nextState;
+        },
+        [actions.COLLECT_GOLD_COINS]: (state) => {
+
         },
         [actions.END_TURN]: (state) => {
             const nextState = clone(state);
