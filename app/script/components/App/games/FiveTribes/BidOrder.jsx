@@ -34,7 +34,7 @@ class BidOrder extends React.Component {
                             <div
                                 className={classNames(
                                     'five-tribes__track-player',
-                                    `five-tribes__track-player-${bidOrder[spotIndex]}`
+                                    `five-tribes__player-${bidOrder[spotIndex]}`
                                 )}
                             />
                         }

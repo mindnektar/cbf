@@ -17,6 +17,7 @@ const gameStateMapping = {
             'meeplesInHand',
             'dropHistory',
             'collectedMeepleCount',
+            'collectedMeepleType',
         ],
         players: [
             'camelCount',
@@ -91,6 +92,7 @@ const setup = () => {
                 meeplesInHand: [],
                 dropHistory: [],
                 collectedMeepleCount: null,
+                collectedMeepleType: null,
             },
             players: Array(2).fill({
                 camelCount: 11,

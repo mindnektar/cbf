@@ -75,6 +75,14 @@ class FiveTribes extends React.Component {
         if (state === states.EXECUTE_MEEPLE_ACTION) {
             this.props.updateGameState(this.props.gameId, actions.PICK_UP_MEEPLE, transformers);
         }
+
+        if (state === states.TAKE_CONTROL_OF_TILE) {
+            this.props.updateGameState(
+                this.props.gameId,
+                actions.TAKE_CONTROL_OF_TILE,
+                transformers
+            );
+        }
     }
 
     render() {

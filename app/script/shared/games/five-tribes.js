@@ -38,6 +38,7 @@ const states = {
     SPEND_FAKIR_ON_MEEPLE_ACTION: 14,
     COLLECT_MARKET_RESOURCES: 15,
     COLLECT_GOLD_COINS: 16,
+    TAKE_CONTROL_OF_TILE: 17,
 };
 const actions = {
     SELECT_TURN_ORDER_SPOT: 0,
@@ -46,6 +47,7 @@ const actions = {
     SELECT_TILE_FOR_PLACEMENT: 3,
     PLACE_MEEPLE: 4,
     PICK_UP_MEEPLE: 5,
+    TAKE_CONTROL_OF_TILE: 6,
     END_TURN: 100,
 };
 
@@ -179,6 +181,13 @@ module.exports = {
 
             return `${user.username} picks up ${meepleCount} ${meepleType.toLowerCase()}s.`;
         },
+        [actions.TAKE_CONTROL_OF_TILE]: (user, state) => {
+            const { dropHistory } = state.public.game;
+            const rowIndex = dropHistory[dropHistory.length - 1][0];
+            const itemIndex = dropHistory[dropHistory.length - 1][1];
+
+            return `${user.username} takes control of the tile at position ${rowIndex}-${itemIndex} and places one of ${user.gender === 0 ? 'his' : 'her'} camels there.`;
+        },
         [actions.END_TURN]: user => (
             `${user.username} ends ${user.gender === 0 ? 'his' : 'her'} turn.`
         ),
@@ -285,6 +294,9 @@ module.exports = {
         },
         [actions.PICK_UP_MEEPLE]: state => (
             state.state === states.EXECUTE_MEEPLE_ACTION
+        ),
+        [actions.TAKE_CONTROL_OF_TILE]: state => (
+            state.state === states.TAKE_CONTROL_OF_TILE
         ),
         [actions.END_TURN]: state => (
             state.state === states.END_TURN
@@ -411,6 +423,8 @@ module.exports = {
 
             board[rowIndex][itemIndex][1] = remainingMeeples;
 
+            nextState.public.game.collectedMeepleType = meepleType;
+
             switch (meepleType) {
                 case 'Vizier':
                     nextState.public.players[nextState.currentPlayer].vizierCount += meepleCount;
@@ -432,32 +446,71 @@ module.exports = {
                     nextState.public.game.collectedMeepleCount = meepleCount;
             }
 
+            if (board[rowIndex][itemIndex][1].length === 0) {
+                nextState.state = states.TAKE_CONTROL_OF_TILE;
+            } else {
+                const hasFakir = nextState.private.players[nextState.currentPlayer].resources.find(
+                    resource => allResources[resource] === 'Fakir'
+                );
+
+                if (meepleType === 'Merchant') {
+                    if (hasFakir) {
+                        nextState.state = states.SPEND_FAKIR_ON_MEEPLE_ACTION;
+                    } else {
+                        nextState.state = states.COLLECT_MARKET_RESOURCES;
+                    }
+                } else if (meepleType === 'Builder') {
+                    if (hasFakir) {
+                        nextState.state = states.SPEND_FAKIR_ON_MEEPLE_ACTION;
+                    } else {
+                        nextState.state = states.COLLECT_GOLD_COINS;
+                    }
+                } else if (meepleType === 'Assassin') {
+                    if (hasFakir) {
+                        nextState.state = states.SPEND_FAKIR_ON_MEEPLE_ACTION;
+                    } else {
+                        nextState.state = states.SELECT_MEEPLE_TO_KILL;
+                    }
+                }
+            }
+
+            return nextState;
+        },
+        [actions.TAKE_CONTROL_OF_TILE]: (state) => {
+            const nextState = clone(state);
+
+            const { board, collectedMeepleType, dropHistory } = nextState.public.game;
+            const rowIndex = dropHistory[dropHistory.length - 1][0];
+            const itemIndex = dropHistory[dropHistory.length - 1][1];
+
+            board[rowIndex][itemIndex][2] = nextState.currentPlayer;
+
+            nextState.public.players[nextState.currentPlayer].camelCount -= 1;
+
             const hasFakir = nextState.private.players[nextState.currentPlayer].resources.find(
                 resource => allResources[resource] === 'Fakir'
             );
 
-            if (meepleType === 'Merchant') {
+            if (collectedMeepleType === 'Merchant') {
                 if (hasFakir) {
                     nextState.state = states.SPEND_FAKIR_ON_MEEPLE_ACTION;
                 } else {
                     nextState.state = states.COLLECT_MARKET_RESOURCES;
                 }
-            }
-
-            if (meepleType === 'Builder') {
+            } else if (collectedMeepleType === 'Builder') {
                 if (hasFakir) {
                     nextState.state = states.SPEND_FAKIR_ON_MEEPLE_ACTION;
                 } else {
                     nextState.state = states.COLLECT_GOLD_COINS;
                 }
-            }
-
-            if (meepleType === 'Assassin') {
+            } else if (collectedMeepleType === 'Assassin') {
                 if (hasFakir) {
                     nextState.state = states.SPEND_FAKIR_ON_MEEPLE_ACTION;
                 } else {
                     nextState.state = states.SELECT_MEEPLE_TO_KILL;
                 }
+            } else {
+                nextState.state = states.EXECUTE_TILE_ACTION;
             }
 
             return nextState;

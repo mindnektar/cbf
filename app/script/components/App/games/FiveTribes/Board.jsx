@@ -57,6 +57,15 @@ class Board extends React.Component {
                                             />
                                         )}
                                     </div>
+
+                                    {item[2] !== null &&
+                                        <div
+                                            className={classNames(
+                                                'five-tribes__tile-camel',
+                                                `five-tribes__player-${item[2]}`
+                                            )}
+                                        />
+                                    }
                                 </div>
                             </Action>
                         )}

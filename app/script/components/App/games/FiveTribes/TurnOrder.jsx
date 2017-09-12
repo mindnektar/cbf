@@ -29,7 +29,7 @@ class TurnOrder extends React.Component {
                                 <div
                                     className={classNames(
                                         'five-tribes__track-player',
-                                        `five-tribes__track-player-${turnOrder[spotIndex]}`
+                                        `five-tribes__player-${turnOrder[spotIndex]}`
                                     )}
                                 />
                             }
