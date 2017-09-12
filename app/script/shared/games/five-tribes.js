@@ -146,9 +146,15 @@ module.exports = {
         [actions.SELECT_TILE_FOR_PLACEMENT]: (user, state, [rowIndex, itemIndex]) => (
             `${user.username} selects the tile at position ${rowIndex}-${itemIndex} to drop a meeple.`
         ),
-        [actions.PLACE_MEEPLE]: (user, state, [meepleIndex]) => (
-            `${user.username} drops a ${allMeeples[state[0][0][10][meepleIndex]]}.`
-        ),
+        [actions.PLACE_MEEPLE]: (user, state, [meeple]) => {
+            let article = 'a';
+
+            if (['Assassin', 'Elder'].includes(allMeeples[meeple])) {
+                article = 'an';
+            }
+
+            return `${user.username} drops ${article} ${allMeeples[meeple].toLowerCase()}.`;
+        },
         [actions.END_TURN]: user => (
             `${user.username} ends ${user.gender === 0 ? 'his' : 'her'} turn.`
         ),
@@ -224,7 +230,7 @@ module.exports = {
 
             return false;
         },
-        [actions.PLACE_MEEPLE]: (state, [meepleIndex]) => {
+        [actions.PLACE_MEEPLE]: (state, [selectedMeeple]) => {
             if (state[2] !== states.SELECT_MEEPLE_TO_PLACE) {
                 return false;
             }
@@ -235,16 +241,20 @@ module.exports = {
             const meeplesOnTile = state[0][0][0][rowIndex][itemIndex][1].map(
                 meeple => allMeeples[meeple]
             );
-            const meeplesOnHandAfterPlacement = [...state[0][0][10]];
-
-            meeplesOnHandAfterPlacement.splice(meepleIndex, 1);
+            const meeplesOnHandAfterPlacement = [...state[0][0][10]].filter(
+                meeple => meeple !== selectedMeeple
+            );
 
             if (state[0][0][10].length === 1) {
-                return meeplesOnTile.includes(allMeeples[state[0][0][10][meepleIndex]]);
+                return meeplesOnTile.includes(allMeeples[selectedMeeple]);
             }
 
             return canMakeMovementFromTile(
-                state, rowIndex, itemIndex, meeplesOnHandAfterPlacement, meeplesOnHandAfterPlacement.length
+                state,
+                rowIndex,
+                itemIndex,
+                meeplesOnHandAfterPlacement,
+                meeplesOnHandAfterPlacement.length
             );
         },
         [actions.END_TURN]: state => (
@@ -333,14 +343,14 @@ module.exports = {
 
             return nextState;
         },
-        [actions.PLACE_MEEPLE]: (state, [meepleIndex]) => {
+        [actions.PLACE_MEEPLE]: (state, [meeple]) => {
             const nextState = clone(state);
 
             const dropHistory = state[0][0][11];
             const rowIndex = dropHistory[dropHistory.length - 1][0];
             const itemIndex = dropHistory[dropHistory.length - 1][1];
 
-            const meeple = nextState[0][0][10].splice(meepleIndex, 1);
+            nextState[0][0][10].splice(nextState[0][0][10].indexOf(meeple), 1);
 
             nextState[0][0][0][rowIndex][itemIndex][1].push(meeple);
 

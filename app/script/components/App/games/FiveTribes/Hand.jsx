@@ -3,17 +3,17 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
 import { updateGameState } from 'actions/games';
-import { actions, assets, state, transformers, validators } from 'shared/games/five-tribes';
+import { actions, assets, transformers, validators } from 'shared/games/five-tribes';
 import Action from '../helpers/Action';
 
 class Hand extends React.Component {
-    mayPlaceMeeple = meepleIndex => (
-        validators[actions.PLACE_MEEPLE](this.props.gameState, [meepleIndex])
+    mayPlaceMeeple = meeple => (
+        validators[actions.PLACE_MEEPLE](this.props.gameState, [meeple])
     )
 
-    placeMeepleHandler = meepleIndex => () => {
+    placeMeepleHandler = meeple => () => {
         this.props.updateGameState(
-            this.props.gameId, actions.PLACE_MEEPLE, transformers, [meepleIndex]
+            this.props.gameId, actions.PLACE_MEEPLE, transformers, [meeple]
         );
     }
 
@@ -22,11 +22,11 @@ class Hand extends React.Component {
 
         return (
             <div className="five-tribes__hand">
-                {hand.map((meeple, meepleIndex) =>
+                {hand.map(meeple =>
                     <Action
-                        active={this.mayPlaceMeeple(meepleIndex)}
+                        active={this.mayPlaceMeeple(meeple)}
                         key={meeple}
-                        onTouchTap={this.placeMeepleHandler(meepleIndex)}
+                        onTouchTap={this.placeMeepleHandler(meeple)}
                     >
                         <div
                             className={classNames(
