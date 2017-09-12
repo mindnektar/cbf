@@ -83,6 +83,14 @@ class FiveTribes extends React.Component {
                 transformers
             );
         }
+
+        if (state === states.COLLECT_MARKET_RESOURCES) {
+            this.props.updateGameState(
+                this.props.gameId,
+                actions.COLLECT_MARKET_RESOURCES,
+                transformers
+            );
+        }
     }
 
     render() {

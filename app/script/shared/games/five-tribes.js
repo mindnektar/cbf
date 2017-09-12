@@ -39,6 +39,7 @@ const states = {
     COLLECT_MARKET_RESOURCES: 15,
     COLLECT_GOLD_COINS: 16,
     TAKE_CONTROL_OF_TILE: 17,
+    EXECUTE_TILE_ACTION: 18,
 };
 const actions = {
     SELECT_TURN_ORDER_SPOT: 0,
@@ -48,6 +49,7 @@ const actions = {
     PLACE_MEEPLE: 4,
     PICK_UP_MEEPLE: 5,
     TAKE_CONTROL_OF_TILE: 6,
+    COLLECT_MARKET_RESOURCES: 7,
     END_TURN: 100,
 };
 
@@ -188,6 +190,17 @@ module.exports = {
 
             return `${user.username} takes control of the tile at position ${rowIndex}-${itemIndex} and places one of ${user.gender === 0 ? 'his' : 'her'} camels there.`;
         },
+        [actions.COLLECT_MARKET_RESOURCES]: (user, state, previousState) => {
+            const previousPlayerData = previousState.public.players[previousState.currentPlayer];
+            const playerData = state.public.players[previousState.currentPlayer];
+            const resourceCount = playerData.resourceCount - previousPlayerData.resourceCount;
+
+            if (state.public.game.availableResources.length === 0) {
+                return `${user.username} collects all the remaining resources from the market.`;
+            }
+
+            return `${user.username} collects the first ${resourceCount} resources from the market.`;
+        },
         [actions.END_TURN]: user => (
             `${user.username} ends ${user.gender === 0 ? 'his' : 'her'} turn.`
         ),
@@ -297,6 +310,9 @@ module.exports = {
         ),
         [actions.TAKE_CONTROL_OF_TILE]: state => (
             state.state === states.TAKE_CONTROL_OF_TILE
+        ),
+        [actions.COLLECT_MARKET_RESOURCES]: state => (
+            state.state === states.COLLECT_MARKET_RESOURCES
         ),
         [actions.END_TURN]: state => (
             state.state === states.END_TURN
@@ -512,6 +528,26 @@ module.exports = {
             } else {
                 nextState.state = states.EXECUTE_TILE_ACTION;
             }
+
+            return nextState;
+        },
+        [actions.COLLECT_MARKET_RESOURCES]: (state) => {
+            const nextState = clone(state);
+
+            const { collectedMeepleCount } = nextState.public.game;
+
+            const resources = nextState.public.game.availableResources.splice(
+                0, collectedMeepleCount
+            );
+
+            nextState.public.players[state.currentPlayer].resourceCount += resources.length;
+
+            nextState.private.players[state.currentPlayer].resources = [
+                ...nextState.private.players[state.currentPlayer].resources,
+                ...resources,
+            ];
+
+            nextState.state = states.EXECUTE_TILE_ACTION;
 
             return nextState;
         },
