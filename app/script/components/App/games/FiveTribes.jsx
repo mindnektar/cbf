@@ -26,7 +26,28 @@ const getDjinnNames = (djinns) => {
         return 'none';
     }
 
-    return djinns.map(djinnIndex => assets.djinns[djinnIndex].name).split(', ');
+    return djinns.map(djinnIndex => assets.djinns[djinnIndex].name).join(', ');
+};
+
+const getResourceNames = (resources) => {
+    if (resources.length === 0) {
+        return 'none';
+    }
+
+    return resources
+        .map(resourceIndex => assets.resources[resourceIndex])
+        .sort((a, b) => {
+            if (a === 'Fakir') {
+                return -1;
+            }
+
+            if (b === 'Fakir') {
+                return 1;
+            }
+
+            return a.localeCompare(b);
+        })
+        .join(', ');
 };
 
 class FiveTribes extends React.Component {
@@ -95,6 +116,7 @@ class FiveTribes extends React.Component {
 
     render() {
         const playerData = this.props.gameState.public.players;
+        const privatePlayerData = this.props.gameState.private.players;
         const currentPlayer = this.props.playerOrder[this.props.gameState.currentPlayer];
 
         return (
@@ -115,10 +137,34 @@ class FiveTribes extends React.Component {
                                 username={this.props.users[userId].username}
                             >
                                 <div className="five-tribes__player-data">
+                                    {userId === this.props.me.id &&
+                                        <div>
+                                            Gold coins: {
+                                                privatePlayerData[playerIndex].goldCoinCount
+                                            }
+                                        </div>
+                                    }
+
                                     <div>Camels: {playerData[playerIndex].camelCount}</div>
+
                                     <div>Viziers: {playerData[playerIndex].vizierCount}</div>
+
                                     <div>Elders: {playerData[playerIndex].elderCount}</div>
-                                    <div>Resources: {playerData[playerIndex].resourceCount}</div>
+
+                                    {userId === this.props.me.id &&
+                                        <div>
+                                            Resources: {getResourceNames(
+                                                privatePlayerData[playerIndex].resources
+                                            )}
+                                        </div>
+                                    }
+
+                                    {userId !== this.props.me.id &&
+                                        <div>
+                                            Resources: {playerData[playerIndex].resourceCount}
+                                        </div>
+                                    }
+
                                     <div>
                                         Djinns: {getDjinnNames(playerData[playerIndex].djinns)}
                                     </div>
