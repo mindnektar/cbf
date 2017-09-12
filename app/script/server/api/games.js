@@ -56,7 +56,7 @@ module.exports = (app) => {
             if (request.body.data.status === gameConstants.GAME_STATUS_ACTIVE) {
                 app.knex('game').where('id', request.body.id).select().then(([game]) => {
                     const { gameStateMapping, setup } = require(`../games/${game.handle}`);
-                    const state = JSON.stringify(serialize(setup(), gameStateMapping));
+                    const state = serialize(setup(), gameStateMapping);
 
                     app.knex('user_in_game').where('game_id', game.id).select().then((players) => {
                         const playerOrder = shuffle(
@@ -107,7 +107,7 @@ module.exports = (app) => {
 
                     response.json({
                         gameStates: gameStates.map(
-                            item => unserialize(JSON.parse(item.state), gameStateMapping)
+                            item => unserialize(item.state, gameStateMapping)
                         ),
                         playerOrder: game.player_order.split(','),
                     });
@@ -131,7 +131,7 @@ module.exports = (app) => {
                             } = require(`../../shared/games/${game.handle}`);
                             const { gameStateMapping } = require(`../games/${game.handle}`);
                             let currentState = unserialize(
-                                JSON.parse(gameStates[gameStates.length - 1].state),
+                                gameStates[gameStates.length - 1].state,
                                 gameStateMapping
                             );
                             const playerOrder = game.player_order.split(',');
@@ -161,9 +161,9 @@ module.exports = (app) => {
                                                 currentPlayer,
                                             ];
 
-                                            nextStates.push(JSON.stringify(
+                                            nextStates.push(
                                                 serialize(currentState, gameStateMapping)
-                                            ));
+                                            );
                                         });
 
                                         return transaction
