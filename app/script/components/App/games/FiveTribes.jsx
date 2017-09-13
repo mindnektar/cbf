@@ -1,10 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
 import { updateGameState } from 'actions/games';
 import {
     actions, assets, messages, states, transformers, validators,
 } from 'shared/games/five-tribes';
+import Action from './helpers/Action';
 import Game from './helpers/Game';
 import Sidebar from './helpers/Sidebar';
 import Player from './helpers/Player';
@@ -79,6 +81,9 @@ class FiveTribes extends React.Component {
             case states.SELECT_MEEPLE_TO_PLACE:
                 return 'Select a meeple to drop.';
 
+            case states.SELECT_MEEPLE_TO_KILL:
+                return 'Select a meeple to kill.';
+
             default:
                 return 'End your turn.';
         }
@@ -145,9 +150,45 @@ class FiveTribes extends React.Component {
 
                                     <div>Camels: {playerData[playerIndex].camelCount}</div>
 
-                                    <div>Viziers: {playerData[playerIndex].vizierCount}</div>
+                                    <div>
+                                        Viziers: {playerData[playerIndex].viziers.map((meeple, meepleIndex) =>
+                                            <Action
+                                                action={actions.KILL_VIZIER_FROM_PLAYER}
+                                                key={meeple}
+                                                params={[playerIndex, meepleIndex]}
+                                                transformers={transformers}
+                                                validators={validators}
+                                            >
+                                                <div
+                                                    className={classNames(
+                                                        'five-tribes__meeple',
+                                                        `five-tribes__meeple--${assets.meeples[meeple]}`
+                                                    )}
+                                                    key={meeple}
+                                                />
+                                            </Action>
+                                        )}
+                                    </div>
 
-                                    <div>Elders: {playerData[playerIndex].elderCount}</div>
+                                    <div>
+                                        Elders: {playerData[playerIndex].elders.map((meeple, meepleIndex) =>
+                                            <Action
+                                                action={actions.KILL_ELDER_FROM_PLAYER}
+                                                key={meeple}
+                                                params={[playerIndex, meepleIndex]}
+                                                transformers={transformers}
+                                                validators={validators}
+                                            >
+                                                <div
+                                                    className={classNames(
+                                                        'five-tribes__meeple',
+                                                        `five-tribes__meeple--${assets.meeples[meeple]}`
+                                                    )}
+                                                    key={meeple}
+                                                />
+                                            </Action>
+                                        )}
+                                    </div>
 
                                     {userId === this.props.me.id &&
                                         <div>

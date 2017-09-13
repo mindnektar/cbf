@@ -61,6 +61,9 @@ const actions = {
     TAKE_CONTROL_OF_TILE: 6,
     COLLECT_MARKET_RESOURCES: 7,
     COLLECT_GOLD_COINS: 8,
+    KILL_MEEPLE_ON_BOARD: 9,
+    KILL_VIZIER_FROM_PLAYER: 10,
+    KILL_ELDER_FROM_PLAYER: 11,
     END_TURN: 100,
 };
 
@@ -210,6 +213,28 @@ module.exports = {
 
             return `${user.username} collects ${goldCoinCount} gold coins.`;
         },
+        [actions.KILL_MEEPLE_ON_BOARD]: (user, state, previousState) => {
+            const [rowIndex, itemIndex, meepleIndex] = state.action[1];
+            const meeple = previousState.public.game.board[rowIndex][itemIndex][1][meepleIndex];
+
+            let article = 'a';
+
+            if (['Assassin', 'Elder'].includes(allMeeples[meeple])) {
+                article = 'an';
+            }
+
+            return `${user.username} kills ${article} ${allMeeples[meeple].toLowerCase()} on the tile at position ${rowIndex}-${itemIndex}.`;
+        },
+        [actions.KILL_VIZIER_FROM_PLAYER]: (user, state, previousState, users) => {
+            const [playerIndex] = state.action[1];
+
+            return `${user.username} kills one of ${users[playerIndex].username}'s viziers.`;
+        },
+        [actions.KILL_ELDER_FROM_PLAYER]: (user, state, previousState, users) => {
+            const [playerIndex] = state.action[1];
+
+            return `${user.username} kills one of ${users[playerIndex].username}'s elders.`;
+        },
         [actions.END_TURN]: user => (
             `${user.username} ends ${user.gender === 0 ? 'his' : 'her'} turn.`
         ),
@@ -326,6 +351,41 @@ module.exports = {
         [actions.COLLECT_GOLD_COINS]: state => (
             state.state === states.COLLECT_GOLD_COINS
         ),
+        [actions.KILL_MEEPLE_ON_BOARD]: (state, [rowIndex, itemIndex, meepleIndex]) => {
+            if (state.state !== states.SELECT_MEEPLE_TO_KILL) {
+                return false;
+            }
+
+            const { board, collectedMeepleCount, dropHistory } = state.public.game;
+            const distance =
+                Math.abs(rowIndex - dropHistory[dropHistory.length - 1][0]) +
+                Math.abs(itemIndex - dropHistory[dropHistory.length - 1][1]);
+
+            return (
+                distance <= collectedMeepleCount &&
+                board[rowIndex][itemIndex][1][meepleIndex] !== undefined
+            );
+        },
+        [actions.KILL_VIZIER_FROM_PLAYER]: (state, [playerIndex, meepleIndex]) => {
+            if (state.state !== states.SELECT_MEEPLE_TO_KILL) {
+                return false;
+            }
+
+            return (
+                playerIndex !== state.currentPlayer &&
+                state.public.players[playerIndex].viziers[meepleIndex] !== undefined
+            );
+        },
+        [actions.KILL_ELDER_FROM_PLAYER]: (state, [playerIndex, meepleIndex]) => {
+            if (state.state !== states.SELECT_MEEPLE_TO_KILL) {
+                return false;
+            }
+
+            return (
+                playerIndex !== state.currentPlayer &&
+                state.public.players[playerIndex].elders[meepleIndex] !== undefined
+            );
+        },
         [actions.END_TURN]: state => (
             state.state === states.END_TURN
         ),
@@ -455,12 +515,18 @@ module.exports = {
 
             switch (meepleType) {
                 case 'Vizier':
-                    nextState.public.players[nextState.currentPlayer].vizierCount += meepleCount;
+                    nextState.public.players[nextState.currentPlayer].viziers = [
+                        ...nextState.public.players[nextState.currentPlayer].viziers,
+                        ...collectedMeeples,
+                    ];
                     nextState.state = states.EXECUTE_TILE_ACTION;
                     break;
 
                 case 'Elder':
-                    nextState.public.players[nextState.currentPlayer].elderCount += meepleCount;
+                    nextState.public.players[nextState.currentPlayer].elders = [
+                        ...nextState.public.players[nextState.currentPlayer].elders,
+                        ...collectedMeeples,
+                    ];
                     nextState.state = states.EXECUTE_TILE_ACTION;
                     break;
 
@@ -468,7 +534,6 @@ module.exports = {
                     nextState.private.game.remainingMeeples = [
                         ...nextState.private.game.remainingMeeples,
                         ...collectedMeeples,
-                        nextState.action[1][0],
                     ];
 
                     nextState.public.game.collectedMeepleCount = meepleCount;
@@ -590,6 +655,54 @@ module.exports = {
             const goldCoins = surroundingBlueTiles * collectedMeepleCount;
 
             nextState.private.players[nextState.currentPlayer].goldCoinCount += goldCoins;
+
+            nextState.state = states.EXECUTE_TILE_ACTION;
+
+            return nextState;
+        },
+        [actions.KILL_MEEPLE_ON_BOARD]: (state, [rowIndex, itemIndex, meepleIndex]) => {
+            const nextState = clone(state);
+
+            const killedMeeple = nextState.public.game.board[rowIndex][itemIndex][1].splice(
+                meepleIndex, 1
+            );
+
+            nextState.private.game.remainingMeeples = [
+                ...nextState.private.game.remainingMeeples,
+                ...killedMeeple,
+            ];
+
+            nextState.state = states.EXECUTE_TILE_ACTION;
+
+            return nextState;
+        },
+        [actions.KILL_VIZIER_FROM_PLAYER]: (state, [playerIndex, meepleIndex]) => {
+            const nextState = clone(state);
+
+            const killedMeeple = nextState.public.players[playerIndex].viziers.splice(
+                meepleIndex, 1
+            );
+
+            nextState.private.game.remainingMeeples = [
+                ...nextState.private.game.remainingMeeples,
+                ...killedMeeple,
+            ];
+
+            nextState.state = states.EXECUTE_TILE_ACTION;
+
+            return nextState;
+        },
+        [actions.KILL_ELDER_FROM_PLAYER]: (state, [playerIndex, meepleIndex]) => {
+            const nextState = clone(state);
+
+            const killedMeeple = nextState.public.players[playerIndex].elders.splice(
+                meepleIndex, 1
+            );
+
+            nextState.private.game.remainingMeeples = [
+                ...nextState.private.game.remainingMeeples,
+                ...killedMeeple,
+            ];
 
             nextState.state = states.EXECUTE_TILE_ACTION;
 

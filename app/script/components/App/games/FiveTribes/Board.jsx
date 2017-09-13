@@ -47,14 +47,22 @@ class Board extends React.Component {
                                     </div>
 
                                     <div className="five-tribes__tile-meeples">
-                                        {item[1].map(meeple =>
-                                            <div
-                                                className={classNames(
-                                                    'five-tribes__meeple',
-                                                    `five-tribes__meeple--${assets.meeples[meeple]}`
-                                                )}
+                                        {item[1].map((meeple, meepleIndex) =>
+                                            <Action
+                                                action={actions.KILL_MEEPLE_ON_BOARD}
                                                 key={meeple}
-                                            />
+                                                params={[rowIndex, itemIndex, meepleIndex]}
+                                                transformers={transformers}
+                                                validators={validators}
+                                            >
+                                                <div
+                                                    className={classNames(
+                                                        'five-tribes__meeple',
+                                                        `five-tribes__meeple--${assets.meeples[meeple]}`
+                                                    )}
+                                                    key={meeple}
+                                                />
+                                            </Action>
                                         )}
                                     </div>
 

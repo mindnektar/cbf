@@ -21,8 +21,8 @@ const gameStateMapping = {
         ],
         players: [
             'camelCount',
-            'vizierCount',
-            'elderCount',
+            'viziers',
+            'elders',
             'resourceCount',
             'djinns',
         ],
@@ -96,8 +96,8 @@ const setup = () => {
             },
             players: Array(2).fill({
                 camelCount: 11,
-                vizierCount: 0,
-                elderCount: 0,
+                viziers: [],
+                elders: [],
                 resourceCount: 0,
                 djinns: [],
             }),

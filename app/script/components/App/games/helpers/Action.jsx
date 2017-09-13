@@ -6,21 +6,26 @@ import { updateGameState } from 'actions/games';
 
 class Action extends React.Component {
     onTouchTap = () => {
-        this.props.updateGameState(
-            this.props.gameId,
-            this.props.action,
-            this.props.transformers,
-            this.props.params
+        if (this.isActive()) {
+            this.props.updateGameState(
+                this.props.gameId,
+                this.props.action,
+                this.props.transformers,
+                this.props.params
+            );
+        }
+    }
+
+    isActive() {
+        return this.props.validators[this.props.action](
+            this.props.gameState, this.props.params
         );
     }
 
     render() {
-        const isActive = this.props.validators[this.props.action](
-            this.props.gameState, this.props.params
-        );
         const helperClassNames = classNames(
             'cbf-helper-action',
-            { 'cbf-helper-action--active': isActive }
+            { 'cbf-helper-action--active': this.isActive() }
         );
 
         return React.cloneElement(
