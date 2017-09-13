@@ -7,6 +7,16 @@ const allMeeples = [
     ...Array(18).fill('Builder'),
     ...Array(18).fill('Assassin'),
 ];
+const allTiles = [
+    ...Array(4).fill({ color: 'red', value: 4, action: 'Big market' }),
+    ...Array(8).fill({ color: 'red', value: 6, action: 'Small market' }),
+    ...Array(6).fill({ color: 'red', value: 8, action: 'Oasis' }),
+    ...Array(5).fill({ color: 'blue', value: 5, action: 'Village' }),
+    ...Array(4).fill({ color: 'blue', value: 6, action: 'Sacred place' }),
+    { color: 'blue', value: 10, action: 'Sacred place' },
+    { color: 'blue', value: 12, action: 'Sacred place' },
+    { color: 'blue', value: 15, action: 'Sacred place' },
+];
 const allResources = [
     ...Array(2).fill('Ivory'),
     ...Array(2).fill('Jewels'),
@@ -97,16 +107,7 @@ const canMakeMovementFromTile = (state, rowIndex, itemIndex, meeples, meepleCoun
 module.exports = {
     assets: {
         meeples: allMeeples,
-        tiles: [
-            ...Array(4).fill({ color: 'red', value: 4, action: 'Big market' }),
-            ...Array(8).fill({ color: 'red', value: 6, action: 'Small market' }),
-            ...Array(6).fill({ color: 'red', value: 8, action: 'Oasis' }),
-            ...Array(5).fill({ color: 'blue', value: 5, action: 'Village' }),
-            ...Array(4).fill({ color: 'blue', value: 6, action: 'Sacred place' }),
-            { color: 'blue', value: 10, action: 'Sacred place' },
-            { color: 'blue', value: 12, action: 'Sacred place' },
-            { color: 'blue', value: 15, action: 'Sacred place' },
-        ],
+        tiles: allTiles,
         resources: allResources,
         djinns: [
             { name: 'Al-Amin', value: 5, hasAction: false },
@@ -201,6 +202,13 @@ module.exports = {
             }
 
             return `${user.username} collects the first ${resourceCount} resources from the market.`;
+        },
+        [actions.COLLECT_GOLD_COINS]: (user, state, previousState) => {
+            const previousPlayerData = previousState.private.players[previousState.currentPlayer];
+            const playerData = state.private.players[previousState.currentPlayer];
+            const goldCoinCount = playerData.goldCoinCount - previousPlayerData.goldCoinCount;
+
+            return `${user.username} collects ${goldCoinCount} gold coins.`;
         },
         [actions.END_TURN]: user => (
             `${user.username} ends ${user.gender === 0 ? 'his' : 'her'} turn.`
@@ -314,6 +322,9 @@ module.exports = {
         ),
         [actions.COLLECT_MARKET_RESOURCES]: state => (
             state.state === states.COLLECT_MARKET_RESOURCES
+        ),
+        [actions.COLLECT_GOLD_COINS]: state => (
+            state.state === states.COLLECT_GOLD_COINS
         ),
         [actions.END_TURN]: state => (
             state.state === states.END_TURN
@@ -553,7 +564,36 @@ module.exports = {
             return nextState;
         },
         [actions.COLLECT_GOLD_COINS]: (state) => {
+            const nextState = clone(state);
 
+            const { board, collectedMeepleCount, dropHistory } = nextState.public.game;
+            const rowIndex = dropHistory[dropHistory.length - 1][0];
+            const itemIndex = dropHistory[dropHistory.length - 1][1];
+
+            let surroundingBlueTiles = 0;
+
+            for (let i = 0; i < board.length; i += 1) {
+                for (let j = 0; j < board[i].length; j += 1) {
+                    const horizontalDistance = Math.abs(rowIndex - i);
+                    const verticalDistance = Math.abs(itemIndex - j);
+
+                    if (
+                        horizontalDistance <= 1 &&
+                        verticalDistance <= 1 &&
+                        allTiles[board[i][j][0]].color === 'blue'
+                    ) {
+                        surroundingBlueTiles += 1;
+                    }
+                }
+            }
+
+            const goldCoins = surroundingBlueTiles * collectedMeepleCount;
+
+            nextState.private.players[nextState.currentPlayer].goldCoinCount += goldCoins;
+
+            nextState.state = states.EXECUTE_TILE_ACTION;
+
+            return nextState;
         },
         [actions.END_TURN]: (state) => {
             const nextState = clone(state);

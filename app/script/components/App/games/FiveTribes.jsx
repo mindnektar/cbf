@@ -85,32 +85,30 @@ class FiveTribes extends React.Component {
     }
 
     checkAutomaticActions() {
-        const { state } = this.props.gameState;
+        let action;
 
-        if (state === states.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK) {
-            this.props.updateGameState(
-                this.props.gameId, actions.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK, transformers
-            );
+        switch (this.props.gameState.state) {
+            case states.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK:
+                action = actions.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK; break;
+
+            case states.EXECUTE_MEEPLE_ACTION:
+                action = actions.PICK_UP_MEEPLE; break;
+
+            case states.TAKE_CONTROL_OF_TILE:
+                action = actions.TAKE_CONTROL_OF_TILE; break;
+
+            case states.COLLECT_MARKET_RESOURCES:
+                action = actions.COLLECT_MARKET_RESOURCES; break;
+
+            case states.COLLECT_GOLD_COINS:
+                action = actions.COLLECT_GOLD_COINS; break;
+
+            default:
+                action = null;
         }
 
-        if (state === states.EXECUTE_MEEPLE_ACTION) {
-            this.props.updateGameState(this.props.gameId, actions.PICK_UP_MEEPLE, transformers);
-        }
-
-        if (state === states.TAKE_CONTROL_OF_TILE) {
-            this.props.updateGameState(
-                this.props.gameId,
-                actions.TAKE_CONTROL_OF_TILE,
-                transformers
-            );
-        }
-
-        if (state === states.COLLECT_MARKET_RESOURCES) {
-            this.props.updateGameState(
-                this.props.gameId,
-                actions.COLLECT_MARKET_RESOURCES,
-                transformers
-            );
+        if (action) {
+            this.props.updateGameState(this.props.gameId, action, transformers);
         }
     }
 
