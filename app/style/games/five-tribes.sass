@@ -1,14 +1,19 @@
 .five-tribes
-    align-items: center
+    align-items: stretch
+    display: flex
+    margin-top: aw(2)
+    width: aw(100)
+
+.five-tribes__game
     display: flex
     flex-direction: column
-    margin-top: aw(2)
+    width: aw(70)
 
 .five-tribes__top
     display: flex
     justify-content: space-between
     margin-bottom: aw(2)
-    width: aw(90)
+    width: 100%
 
 .five-tribes__left
     align-items: center
@@ -18,7 +23,7 @@
 .five-tribes__tracks
     display: flex
     font-size: 1.5em
-    height: aw(4)
+    height: aw(3.5)
     justify-content: center
     margin-bottom: aw(2)
 
@@ -36,11 +41,11 @@
     border-radius: 100%
     display: flex
     flex-shrink: 0
-    height: aw(3.5)
+    height: aw(3)
     justify-content: center
     margin: 0 aw(0.2)
     position: relative
-    width: aw(3.5)
+    width: aw(3)
 
 .five-tribes__track-player
     border-radius: 100%
@@ -61,8 +66,8 @@
 .five-tribes__board
     display: flex
     flex-direction: column
-    height: aw(55)
-    width: aw(66)
+    height: aw(45)
+    width: aw(54)
 
 .five-tribes__board-row
     align-items: stretch
@@ -83,7 +88,7 @@
     border-radius: 100%
     color: $color-white
     display: flex
-    font-size: 1.3em
+    font-size: 1.2em
     height: 25%
     justify-content: center
     position: absolute
@@ -99,6 +104,7 @@
 
 .five-tribes__tile-action
     bottom: 5%
+    font-size: .9em
     left: 10%
     position: absolute
 
@@ -156,30 +162,37 @@
 
 .five-tribes__market
     display: flex
-    height: aw(11)
-    width: aw(90)
+    width: 100%
 
-.five-tribes__market-item
+.five-tribes__resource
     background-color: #c4dc91
     border-radius: aw(1)
     box-shadow: $shadow
-    height: 100%
+    display: inline-block
+    height: aw(9)
     margin: aw(.5)
     position: relative
-    width: 9%
+    width: aw(6)
 
-.five-tribes__market-item--fakir
+    .cbf-helper-player &
+        border-radius: aw(.7)
+        height: aw(6)
+        font-size: .7em
+        margin: aw(.2)
+        width: aw(4)
+
+.five-tribes__resource--fakir
     background-color: #f6e7ac
 
-.five-tribes__market-item--deck
+.five-tribes__resource--deck
     background-color: #824d54
     color: $color-light
 
-.five-tribes__market-item-name
+.five-tribes__resource-name
     align-items: center
     box-sizing: border-box
     display: flex
-    font-size: 1.2em
+    font-size: 1em
     height: 100%
     left: 0
     justify-content: center
@@ -189,9 +202,9 @@
     top: 0
     width: 100%
 
-.five-tribes__market-item-frequency
+.five-tribes__resource-frequency
     bottom: 5%
-    font-size: .9em
+    font-size: .8em
     position: absolute
     text-align: center
     width: 100%
@@ -208,20 +221,20 @@
     box-shadow: $shadow
     box-sizing: border-box
     display: flex
-    height: aw(13)
+    height: aw(10)
     justify-content: center
     margin: aw(.3)
     padding: aw(1)
     position: relative
     text-align: center
-    width: aw(13)
+    width: aw(10)
 
 .five-tribes__djinn-item--deck
     background-color: #925b2d
     color: $color-light
 
 .five-tribes__djinn-item-name
-    font-size: 1.5em
+    font-size: 1.3em
 
 .five-tribes__djinn-item-value
     align-items: center
@@ -229,10 +242,14 @@
     border-radius: 100%
     color: $color-white
     display: flex
-    font-size: 1.3em
+    font-size: 1.2em
     height: 20%
     justify-content: center
     position: absolute
     right: 3%
     top: 3%
     width: 20%
+
+.five-tribes__players
+    margin-left: aw(2)
+    width: aw(30)

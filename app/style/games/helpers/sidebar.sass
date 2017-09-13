@@ -10,7 +10,9 @@
     z-index: 3
 
 .cbf-helper-sidebar__history
-    margin-top: 24px
+    display: flex
+    flex-direction: column
+    height: 100%
 
 .cbf-helper-sidebar__history-header
     border-bottom: 1px solid $color-light
@@ -22,6 +24,9 @@
 .cbf-helper-sidebar__history-content
     display: flex
     flex-direction: column-reverse
+    flex-grow: 1
+    justify-content: flex-end
+    overflow: auto
 
 .cbf-helper-sidebar__history-item
     background-color: $color-primary
@@ -29,6 +34,7 @@
     color: $color-primary-dark
     cursor: pointer
     display: flex
+    flex-shrink: 0
     font-size: .8em
     line-height: 1.5em
     margin-top: 12px

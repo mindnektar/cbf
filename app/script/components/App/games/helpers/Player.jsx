@@ -40,3 +40,6 @@ export default connectWithRouter(
     null,
     Player
 );
+
+export { default as PlayerDetail } from './Player/PlayerDetail';
+export { default as PlayerRow } from './Player/PlayerRow';

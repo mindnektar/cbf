@@ -1,5 +1,6 @@
 .cbf-helper-player
-    background-color: $color-light
+    background: rgba(255, 255, 255, .2)
+    border: 4px solid rgba(0, 0, 0, .1)
     border-radius: 12px
     font-size: .9em
     margin-bottom: 12px
@@ -12,9 +13,23 @@
 
 .cbf-helper-player__color
     border-radius: 100%
+    box-shadow: $shadow
     height: 1.3em
     margin-right: 12px
     width: 1.3em
 
 .cbf-helper-player__name
     font-weight: bold
+
+.cbf-helper-player-row
+    display: flex
+
+.cbf-helper-player-detail
+    flex: 1 1 100%
+    min-height: 32px
+    padding: 4px 0
+
+.cbf-helper-player-detail__header
+    font-size: .8em
+    font-weight: bold
+    margin-bottom: 2px

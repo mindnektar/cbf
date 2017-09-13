@@ -26,10 +26,6 @@ class Sidebar extends React.Component {
                 className="cbf-helper-sidebar"
                 onMouseDown={event => event.stopPropagation()}
             >
-                <div className="cbf-helper-sidebar__players">
-                    {this.props.children}
-                </div>
-
                 <div className="cbf-helper-sidebar__history">
                     <div className="cbf-helper-sidebar__history-header">
                         Turn history
@@ -75,7 +71,6 @@ class Sidebar extends React.Component {
 }
 
 Sidebar.propTypes = {
-    children: PropTypes.node.isRequired,
     gameStates: PropTypes.array.isRequired,
     messages: PropTypes.object.isRequired,
     playerOrder: PropTypes.array.isRequired,
