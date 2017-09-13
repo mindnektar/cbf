@@ -12,6 +12,7 @@ class Arena extends React.Component {
         moving: false,
         x: 0,
         y: 0,
+        zoom: 1,
     };
 
     componentWillMount() {
@@ -25,11 +26,21 @@ class Arena extends React.Component {
             return;
         }
 
+        this.setZoom();
+
         this.props.loadGameStates(this.props.game.id);
+    }
+
+    componentDidMount() {
+        this.arenaRef.addEventListener('mousewheel', this.changeZoom);
+        window.addEventListener('resize', this.setZoom);
     }
 
     componentWillUnmount() {
         this.props.clearGameStates();
+
+        this.arenaRef.removeEventListener('mousewheel', this.changeZoom);
+        window.removeEventListener('resize', this.setZoom);
     }
 
     onMouseDown = () => {
@@ -53,6 +64,30 @@ class Arena extends React.Component {
         this.setState({ moving: false });
     }
 
+    setArenaRef = (ref) => {
+        this.arenaRef = ref;
+    }
+
+    setZoom = () => {
+        this.setState({
+            zoom: (window.innerWidth - 300) / 1620,
+        });
+    }
+
+    changeZoom = (event) => {
+        event.preventDefault();
+
+        const zoom = Math.max(
+            0.3,
+            Math.min(
+                2.5,
+                this.state.zoom -= event.deltaY / 400
+            )
+        );
+
+        this.setState({ zoom });
+    }
+
     render() {
         return (
             <div
@@ -61,6 +96,8 @@ class Arena extends React.Component {
                 onMouseLeave={this.onMouseLeave}
                 onMouseMove={this.onMouseMove}
                 onMouseUp={this.onMouseUp}
+                onScroll={this.onScroll}
+                ref={this.setArenaRef}
             >
                 <div
                     className={classNames(
@@ -69,6 +106,7 @@ class Arena extends React.Component {
                     )}
                     style={{
                         margin: `${-this.state.y}px 0 0 ${-this.state.x}px`,
+                        transform: `scale(${this.state.zoom})`,
                     }}
                 >
                     {this.props.gameStates &&

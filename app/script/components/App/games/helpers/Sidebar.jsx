@@ -1,11 +1,27 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
 
 class Sidebar extends React.Component {
-    render() {
-        return (
+    componentDidMount() {
+        this.layerElement = document.createElement('div');
+        document.querySelector('[data-reactroot]').appendChild(this.layerElement);
+        this.renderLayer();
+    }
+
+    componentDidUpdate() {
+        this.renderLayer();
+    }
+
+    componentWillUnmount() {
+        ReactDOM.unmountComponentAtNode(this.layerElement);
+        document.querySelector('[data-reactroot]').removeChild(this.layerElement);
+    }
+
+    renderLayer() {
+        ReactDOM.unstable_renderSubtreeIntoContainer(this, (
             <div
                 className="cbf-helper-sidebar"
                 onMouseDown={event => event.stopPropagation()}
@@ -50,7 +66,11 @@ class Sidebar extends React.Component {
                     </div>
                 </div>
             </div>
-        );
+        ), this.layerElement);
+    }
+
+    render() {
+        return null;
     }
 }
 

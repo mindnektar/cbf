@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
 import { updateGameState } from 'actions/games';
 import {
-    actions, assets, messages, states, transformers, validators,
+    actions, assets, instructions, messages, states, transformers, validators,
 } from 'shared/games/five-tribes';
 import Action from './helpers/Action';
 import Game from './helpers/Game';
@@ -61,34 +61,6 @@ class FiveTribes extends React.Component {
         this.checkAutomaticActions();
     }
 
-    getStatusMessage() {
-        const currentPlayer = this.props.playerOrder[this.props.gameState.currentPlayer];
-
-        if (currentPlayer !== this.props.me.id) {
-            return `It's ${this.props.users[currentPlayer].username}'s turn.`;
-        }
-
-        switch (this.props.gameState.state) {
-            case states.BID_FOR_TURN_ORDER:
-                return 'Select a spot on the turn order track.';
-
-            case states.SELECT_TILE_FOR_MOVEMENT:
-                return 'Select a tile to start your movement.';
-
-            case states.SELECT_TILE_FOR_PLACEMENT:
-                return 'Select a neighbouring tile to drop a meeple.';
-
-            case states.SELECT_MEEPLE_TO_PLACE:
-                return 'Select a meeple to drop.';
-
-            case states.SELECT_MEEPLE_TO_KILL:
-                return 'Select a meeple to kill.';
-
-            default:
-                return 'End your turn.';
-        }
-    }
-
     checkAutomaticActions() {
         let action;
 
@@ -128,9 +100,8 @@ class FiveTribes extends React.Component {
                     <Status
                         endTurnAction={actions.END_TURN}
                         mayEndTurn={validators[actions.END_TURN](this.props.gameState)}
-                    >
-                        {this.getStatusMessage()}
-                    </Status>
+                        instructions={instructions}
+                    />
 
                     <Sidebar messages={messages}>
                         {this.props.playerOrder.map((userId, playerIndex) =>

@@ -4,20 +4,20 @@
     position: relative
 
     &::before
-        background-color: rgba(black, .3)
-        border: 2px solid rgba(black, .6)
+        background-color: transparent
+        border: 3px double rgba(black, .6)
         border-radius: 4px
-        bottom: -1px
+        bottom: -2px
         content: ""
         display: none
-        left: -1px
+        left: -2px
         position: absolute
-        right: -1px
-        top: -1px
+        right: -2px
+        top: -2px
         transition: $t-duration $t-easing background-color
 
     &:hover::before
-        background-color: rgba(black, .5)
+        background-color: rgba(black, .3)
 
 .cbf-helper-game--awaits-action
     .cbf-helper-action--active

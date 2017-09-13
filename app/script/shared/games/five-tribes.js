@@ -142,6 +142,14 @@ module.exports = {
     },
     states,
     actions,
+    instructions: {
+        [states.BID_FOR_TURN_ORDER]: 'Select a spot on the turn order track.',
+        [states.SELECT_TILE_FOR_MOVEMENT]: 'Select a tile to start your movement.',
+        [states.SELECT_TILE_FOR_PLACEMENT]: 'Select a neighbouring tile to drop a meeple.',
+        [states.SELECT_MEEPLE_TO_PLACE]: 'Select a meeple to drop.',
+        [states.SELECT_MEEPLE_TO_KILL]: 'Select a meeple to kill.',
+        [states.END_TURN]: 'End your turn.',
+    },
     messages: {
         [actions.SELECT_TURN_ORDER_SPOT]: (user, state) => {
             const [spotIndex] = state.action[1];

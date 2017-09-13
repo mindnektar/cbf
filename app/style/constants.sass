@@ -2,7 +2,7 @@
 
 // width relative to arena width
 @function aw($modifier)
-    @return calc((100vw - #{$sidebar-width}) * (#{$modifier} / 100))
+    @return calc(#{$arena-width} * (#{$modifier} / 100))
 
 $color-primary: #74afad
 $color-primary-dark: #558c89
@@ -17,6 +17,7 @@ $t-easing: ease
 
 $shadow: 0 2px 4px 0 rgba(0, 0, 0, .4)
 
+$arena-width: 1520px
 $header-height: 80px
-$sidebar-width: 400px
+$sidebar-width: 300px
 $status-height: 50px
