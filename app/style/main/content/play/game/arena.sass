@@ -1,6 +1,9 @@
 .cbf-arena
+    align-items: center
     bottom: 0
     box-shadow: $shadow inset
+    display: flex
+    justify-content: center
     left: 0
     position: fixed
     right: $sidebar-width
@@ -10,9 +13,5 @@
         -moz-user-select: none
         user-select: none
 
-.cbf-arena__canvas
-    transform-origin: top left
-    width: 100%
-
-.cbf-arena__canvas--moving
+.cbf-arena--moving
     cursor: move

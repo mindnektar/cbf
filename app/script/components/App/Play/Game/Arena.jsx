@@ -26,21 +26,17 @@ class Arena extends React.Component {
             return;
         }
 
-        this.setZoom();
-
-        this.props.loadGameStates(this.props.game.id);
+        this.props.loadGameStates(this.props.game.id).then(this.setZoom);
     }
 
     componentDidMount() {
         this.arenaRef.addEventListener('mousewheel', this.changeZoom);
-        window.addEventListener('resize', this.setZoom);
     }
 
     componentWillUnmount() {
         this.props.clearGameStates();
 
         this.arenaRef.removeEventListener('mousewheel', this.changeZoom);
-        window.removeEventListener('resize', this.setZoom);
     }
 
     onMouseDown = () => {
@@ -54,8 +50,8 @@ class Arena extends React.Component {
     onMouseMove = (event) => {
         if (this.state.moving) {
             this.setState({
-                x: this.state.x - event.nativeEvent.movementX,
-                y: this.state.y - event.nativeEvent.movementY,
+                x: this.state.x - (event.nativeEvent.movementX / this.state.zoom),
+                y: this.state.y - (event.nativeEvent.movementY / this.state.zoom),
             });
         }
     }
@@ -69,8 +65,12 @@ class Arena extends React.Component {
     }
 
     setZoom = () => {
+        const { offsetHeight, offsetWidth } = document.querySelector('.cbf-helper-game');
+        const heightRatio = (window.innerHeight - 226) / offsetHeight;
+        const widthRatio = (window.innerWidth - 396) / offsetWidth;
+
         this.setState({
-            zoom: (window.innerWidth - 300) / 1620,
+            zoom: heightRatio < widthRatio ? heightRatio : widthRatio,
         });
     }
 
@@ -91,7 +91,10 @@ class Arena extends React.Component {
     render() {
         return (
             <div
-                className="cbf-arena"
+                className={classNames(
+                    'cbf-arena',
+                    { 'cbf-arena--moving': this.state.moving }
+                )}
                 onMouseDown={this.onMouseDown}
                 onMouseLeave={this.onMouseLeave}
                 onMouseMove={this.onMouseMove}
@@ -100,13 +103,9 @@ class Arena extends React.Component {
                 ref={this.setArenaRef}
             >
                 <div
-                    className={classNames(
-                        'cbf-arena__canvas',
-                        { 'cbf-arena__canvas--moving': this.state.moving }
-                    )}
+                    className="cbf-arena__canvas"
                     style={{
-                        margin: `${-this.state.y}px 0 0 ${-this.state.x}px`,
-                        transform: `scale(${this.state.zoom})`,
+                        transform: `scale(${this.state.zoom}) translate(${-this.state.x}px, ${-this.state.y}px)`,
                     }}
                 >
                     {this.props.gameStates &&
