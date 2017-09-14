@@ -107,6 +107,22 @@ const canMakeMovementFromTile = (state, rowIndex, itemIndex, meeples, meepleCoun
     return false;
 };
 
+const setEndOfTurnState = (nextState) => {
+    const { turnOrder } = nextState.public.game;
+    const occupiedTurnOrderSpots = turnOrder.filter(spot => spot !== null);
+    const nextPlayer = occupiedTurnOrderSpots[occupiedTurnOrderSpots.length - 1];
+
+    if (nextState.currentPlayer === nextPlayer) {
+        nextState.state = states.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK;
+    } else {
+        nextState.state = states.END_TURN;
+    }
+
+    nextState.public.game.dropHistory = [];
+    nextState.public.game.collectedMeepleCount = null;
+    nextState.public.game.collectedMeepleType = null;
+};
+
 module.exports = {
     assets: {
         meeples: allMeeples,
@@ -149,6 +165,13 @@ module.exports = {
         [states.SELECT_MEEPLE_TO_PLACE]: 'Select a meeple to drop.',
         [states.SELECT_MEEPLE_TO_KILL]: 'Select a meeple to kill.',
         [states.END_TURN]: 'End your turn.',
+    },
+    automaticActions: {
+        [states.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK]: actions.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK,
+        [states.EXECUTE_MEEPLE_ACTION]: actions.PICK_UP_MEEPLE,
+        [states.TAKE_CONTROL_OF_TILE]: actions.TAKE_CONTROL_OF_TILE,
+        [states.COLLECT_MARKET_RESOURCES]: actions.COLLECT_MARKET_RESOURCES,
+        [states.COLLECT_GOLD_COINS]: actions.COLLECT_GOLD_COINS,
     },
     messages: {
         [actions.SELECT_TURN_ORDER_SPOT]: (user, state) => {
@@ -527,7 +550,9 @@ module.exports = {
                         ...nextState.public.players[nextState.currentPlayer].viziers,
                         ...collectedMeeples,
                     ];
-                    nextState.state = states.EXECUTE_TILE_ACTION;
+
+                    setEndOfTurnState(nextState);
+
                     break;
 
                 case 'Elder':
@@ -535,7 +560,9 @@ module.exports = {
                         ...nextState.public.players[nextState.currentPlayer].elders,
                         ...collectedMeeples,
                     ];
-                    nextState.state = states.EXECUTE_TILE_ACTION;
+
+                    setEndOfTurnState(nextState);
+
                     break;
 
                 default:
@@ -611,7 +638,7 @@ module.exports = {
                     nextState.state = states.SELECT_MEEPLE_TO_KILL;
                 }
             } else {
-                nextState.state = states.EXECUTE_TILE_ACTION;
+                setEndOfTurnState(nextState);
             }
 
             return nextState;
@@ -632,7 +659,7 @@ module.exports = {
                 ...resources,
             ];
 
-            nextState.state = states.EXECUTE_TILE_ACTION;
+            setEndOfTurnState(nextState);
 
             return nextState;
         },
@@ -664,7 +691,7 @@ module.exports = {
 
             nextState.private.players[nextState.currentPlayer].goldCoinCount += goldCoins;
 
-            nextState.state = states.EXECUTE_TILE_ACTION;
+            setEndOfTurnState(nextState);
 
             return nextState;
         },
@@ -680,7 +707,7 @@ module.exports = {
                 ...killedMeeple,
             ];
 
-            nextState.state = states.EXECUTE_TILE_ACTION;
+            setEndOfTurnState(nextState);
 
             return nextState;
         },
@@ -696,7 +723,7 @@ module.exports = {
                 ...killedMeeple,
             ];
 
-            nextState.state = states.EXECUTE_TILE_ACTION;
+            setEndOfTurnState(nextState);
 
             return nextState;
         },
@@ -712,7 +739,7 @@ module.exports = {
                 ...killedMeeple,
             ];
 
-            nextState.state = states.EXECUTE_TILE_ACTION;
+            setEndOfTurnState(nextState);
 
             return nextState;
         },
@@ -724,14 +751,41 @@ module.exports = {
             if (bidOrder.length > 0) {
                 nextState.state = states.BID_FOR_TURN_ORDER;
                 nextState.currentPlayer = bidOrder.pop();
-            // Nobody on the bid order track, so continue with regular actions
             } else {
                 const { turnOrder } = nextState.public.game;
                 const occupiedTurnOrderSpots = turnOrder.filter(spot => spot !== null);
                 const player = occupiedTurnOrderSpots.pop();
 
-                nextState.state = states.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK;
-                nextState.currentPlayer = player;
+                // Turn order track is still occupied, so continue with regular actions
+                if (player !== undefined) {
+                    nextState.state = states.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK;
+                    nextState.currentPlayer = player;
+                // Let's start a new turn!
+                } else {
+                    nextState.public.game.bidOrder = [...nextState.public.game.nextTurnsBidOrder];
+                    nextState.public.game.nextTurnsBidOrder = Array(4).fill(null);
+
+                    for (let i = nextState.public.game.availableResources.length; i < 9; i += 1) {
+                        const nextResource = nextState.private.game.remainingResources.pop();
+
+                        nextState.public.game.availableResources.push(nextResource);
+
+                        nextState.public.game.remainingResources -= 1;
+                    }
+
+                    for (let i = nextState.public.game.availableDjinns.length; i < 3; i += 1) {
+                        const nextDjinn = nextState.private.game.remainingDjinns.pop();
+
+                        nextState.public.game.availableDjinns.push(nextDjinn);
+
+                        nextState.public.game.remainingDjinns -= 1;
+                    }
+
+                    nextState.state = states.BID_FOR_TURN_ORDER;
+                    nextState.currentPlayer = nextState.public.game.bidOrder[
+                        nextState.public.game.bidOrder.length - 1
+                    ];
+                }
             }
 
             return nextState;

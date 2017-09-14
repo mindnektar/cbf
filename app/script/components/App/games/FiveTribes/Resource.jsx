@@ -22,11 +22,13 @@ class Resource extends React.Component {
                     {type}
                 </div>
 
-                <div className="five-tribes__resource-frequency">
-                    {assets.resources.filter(
-                        name => name === type
-                    ).length}x
-                </div>
+                {this.props.resource !== null &&
+                    <div className="five-tribes__resource-frequency">
+                        {assets.resources.filter(
+                            name => name === type
+                        ).length}x
+                    </div>
+                }
             </div>
         );
     }

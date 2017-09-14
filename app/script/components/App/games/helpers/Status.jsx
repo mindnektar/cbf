@@ -32,18 +32,22 @@ class Status extends React.Component {
     }
 
     endTurn = () => {
-        const currentPlayer = this.props.actions[this.props.actions.length - 1][2];
-
         this.props.handleGameActions(
             this.props.gameId,
             [
                 ...this.props.actions,
-                [this.props.endTurnAction, [], currentPlayer],
+                [this.props.endTurnAction, [], this.props.gameState.currentPlayer],
             ]
         );
     }
 
+    mayEndTurn() {
+        return this.props.validators[this.props.endTurnAction](this.props.gameState);
+    }
+
     renderLayer() {
+        const currentPlayer = this.props.playerOrder[this.props.gameState.currentPlayer];
+
         ReactDOM.unstable_renderSubtreeIntoContainer(this, (
             <div className="cbf-helper-status">
                 <div className="cbf-helper-status__text">
@@ -68,7 +72,7 @@ class Status extends React.Component {
                     </Button>
 
                     <Button
-                        disabled={!this.props.mayEndTurn}
+                        disabled={!this.mayEndTurn() || this.props.me.id !== currentPlayer}
                         onTouchTap={this.endTurn}
                         secondary
                     >
@@ -91,10 +95,10 @@ Status.propTypes = {
     gameId: PropTypes.string.isRequired,
     gameState: PropTypes.object.isRequired,
     instructions: PropTypes.object.isRequired,
-    mayEndTurn: PropTypes.bool.isRequired,
     me: PropTypes.object.isRequired,
     playerOrder: PropTypes.array.isRequired,
     users: PropTypes.object.isRequired,
+    validators: PropTypes.object.isRequired,
 };
 
 export default connectWithRouter(
