@@ -17,7 +17,11 @@ class Game extends React.Component {
         const action = this.props.automaticActions[this.props.gameState.state];
 
         if (action) {
-            this.props.updateGameState(this.props.gameId, action, this.props.transformers);
+            this.props.updateGameState(
+                this.props.gameId,
+                action,
+                this.props.transformers
+            );
         }
     }
 

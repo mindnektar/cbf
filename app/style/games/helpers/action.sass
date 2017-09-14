@@ -1,5 +1,6 @@
 .cbf-helper-action
     cursor: pointer
+    display: inline-block
     pointer-events: none
     position: relative
 
@@ -15,6 +16,7 @@
         right: -2px
         top: -2px
         transition: $t-duration $t-easing background-color
+        z-index: 1
 
     &:hover::before
         background-color: rgba(black, .3)
@@ -25,3 +27,8 @@
 
         &::before
             display: block
+
+    .cbf-helper-action--selected
+        &::before
+            border-color: $color-primary
+            border-style: solid

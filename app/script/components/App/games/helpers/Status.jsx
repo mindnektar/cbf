@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 import connectWithRouter from 'helpers/connectWithRouter';
-import { handleGameActions } from 'actions/games';
+import { handleGameActions, updateGameState } from 'actions/games';
 import Button from 'Button';
 
 class Status extends React.Component {
@@ -31,6 +31,15 @@ class Status extends React.Component {
         return this.props.instructions[this.props.gameState.state] || '';
     }
 
+    continueTurn = () => {
+        this.props.updateGameState(
+            this.props.gameId,
+            this.props.confirmableActions[this.props.gameState.state],
+            this.props.transformers,
+            this.props.globalGameParams
+        );
+    }
+
     endTurn = () => {
         this.props.handleGameActions(
             this.props.gameId,
@@ -52,6 +61,17 @@ class Status extends React.Component {
             <div className="cbf-helper-status">
                 <div className="cbf-helper-status__text">
                     {this.getInstruction()}
+
+                    {
+                        this.props.confirmableActions &&
+                        this.props.confirmableActions[this.props.gameState.state] &&
+                        <Button
+                            onTouchTap={this.continueTurn}
+                            secondary
+                        >
+                            Continue
+                        </Button>
+                    }
                 </div>
 
                 <div className="cbf-helper-status__options">
@@ -88,15 +108,23 @@ class Status extends React.Component {
     }
 }
 
+Status.defaultProps = {
+    confirmableActions: null,
+};
+
 Status.propTypes = {
     actions: PropTypes.array.isRequired,
+    confirmableActions: PropTypes.object,
     endTurnAction: PropTypes.number.isRequired,
     handleGameActions: PropTypes.func.isRequired,
     gameId: PropTypes.string.isRequired,
     gameState: PropTypes.object.isRequired,
+    globalGameParams: PropTypes.array.isRequired,
     instructions: PropTypes.object.isRequired,
     me: PropTypes.object.isRequired,
     playerOrder: PropTypes.array.isRequired,
+    transformers: PropTypes.object.isRequired,
+    updateGameState: PropTypes.func.isRequired,
     users: PropTypes.object.isRequired,
     validators: PropTypes.object.isRequired,
 };
@@ -106,12 +134,14 @@ export default connectWithRouter(
         actions: state.gameStates.actions,
         gameId: ownProps.match.params.gameId,
         gameState: state.gameStates.states[state.gameStates.states.length - 1],
+        globalGameParams: state.gameStates.globalGameParams,
         me: state.me,
         playerOrder: state.games[ownProps.match.params.gameId].playerOrder,
         users: state.users,
     }),
     {
         handleGameActions,
+        updateGameState,
     },
     Status
 );

@@ -28,6 +28,17 @@ class Action extends React.Component {
             { 'cbf-helper-action--active': this.isActive() }
         );
 
+        if (!this.props.children.props.className) {
+            return (
+                <div
+                    className={helperClassNames}
+                    onTouchTap={this.onTouchTap}
+                >
+                    {this.props.children}
+                </div>
+            );
+        }
+
         return React.cloneElement(
             this.props.children,
             {

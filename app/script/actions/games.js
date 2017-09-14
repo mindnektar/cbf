@@ -8,6 +8,7 @@ export const CREATE_GAME = 'CREATE_GAME';
 export const CHANGE_GAME_STATUS = 'CHANGE_GAME_STATUS';
 export const PUSH_GAME_STATE = 'PUSH_GAME_STATE';
 export const UPDATE_GAME_STATE = 'UPDATE_GAME_STATE';
+export const UPDATE_GLOBAL_GAME_PARAMS = 'UPDATE_GLOBAL_GAME_PARAMS';
 
 export const createGame = game => (dispatch, getState) => (
     api.createGame(game).then((newGame) => {
@@ -72,3 +73,8 @@ export const updateGameState = (
         payload: { nextAction, nextState },
     });
 };
+
+export const updateGlobalGameParams = payload => ({
+    type: UPDATE_GLOBAL_GAME_PARAMS,
+    payload,
+});

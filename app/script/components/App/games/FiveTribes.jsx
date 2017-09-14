@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import connectWithRouter from 'helpers/connectWithRouter';
 import {
-    actions, automaticActions, instructions, messages, transformers, validators,
+    actions, automaticActions, confirmableActions, instructions, messages, transformers, validators,
 } from 'shared/games/five-tribes';
 import Game from './helpers/Game';
 import Sidebar from './helpers/Sidebar';
@@ -24,8 +24,10 @@ class FiveTribes extends React.Component {
             >
                 <div className="five-tribes">
                     <Status
+                        confirmableActions={confirmableActions}
                         endTurnAction={actions.END_TURN}
                         instructions={instructions}
+                        transformers={transformers}
                         validators={validators}
                     />
 
