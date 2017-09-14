@@ -229,8 +229,10 @@ module.exports = {
 
             return `${me.username} selects the tile at position ${rowIndex}-${itemIndex} to drop a meeple.`;
         },
-        [actions.PLACE_MEEPLE]: ({ me, state }) => {
-            const [meeple] = state.action[1][0];
+        [actions.PLACE_MEEPLE]: ({ me, state, previousState }) => {
+            const meeple = previousState.public.game.meeplesInHand.find(
+                meepleInHand => !state.public.game.meeplesInHand.includes(meepleInHand)
+            );
             let article = 'a';
 
             if (['Assassin', 'Elder'].includes(allMeeples[meeple])) {
@@ -305,7 +307,7 @@ module.exports = {
                 return null;
             }
 
-            return `${me.username} spends ${selectedFakirs.length} fakirs to improve ${me.gender === 0 ? 'his' : 'her'} action.`;
+            return `${me.username} spends ${selectedFakirs.length} fakir${selectedFakirs.length !== 1 ? 's' : ''} to improve ${me.gender === 0 ? 'his' : 'her'} action.`;
         },
         [actions.END_TURN]: ({ me }) => (
             `${me.username} ends ${me.gender === 0 ? 'his' : 'her'} turn.`
