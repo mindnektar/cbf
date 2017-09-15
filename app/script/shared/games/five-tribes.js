@@ -626,7 +626,10 @@ module.exports = {
                     nextState.public.game.collectedMeepleCount = meepleCount;
             }
 
-            if (board[rowIndex][itemIndex][1].length === 0) {
+            if (
+                board[rowIndex][itemIndex][1].length === 0 &&
+                board[rowIndex][itemIndex][2] === null
+            ) {
                 nextState.state = states.TAKE_CONTROL_OF_TILE;
             } else {
                 const hasFakir = nextState.private.players[nextState.currentPlayer].resources.find(
