@@ -30,20 +30,25 @@ class Sidebar extends React.Component {
             users: this.props.playerOrder.map(
                 userId => this.props.users[userId]
             ),
-            globalGameParams: this.props.globalGameParams,
         });
 
         if (!message) {
             return null;
         }
 
+        const groupStart = this.actionOwner !== gameState.action[2];
+
         this.messageIndex += 1;
+        this.actionOwner = gameState.action[2];
 
         return (
             <div
                 className={classNames(
                     'cbf-helper-sidebar__history-item',
-                    { 'cbf-helper-sidebar__history-item--active': index === this.props.gameStates.length - 1 }
+                    {
+                        'cbf-helper-sidebar__history-item--active': index === this.props.gameStates.length - 1,
+                        'cbf-helper-sidebar__history-item--group-start': groupStart,
+                    }
                 )}
                 key={this.messageIndex}
             >
@@ -60,6 +65,7 @@ class Sidebar extends React.Component {
 
     renderLayer() {
         this.messageIndex = 0;
+        this.actionOwner = this.props.gameStates[0].action[2];
 
         ReactDOM.unstable_renderSubtreeIntoContainer(this, (
             <div
@@ -88,7 +94,6 @@ class Sidebar extends React.Component {
 
 Sidebar.propTypes = {
     gameStates: PropTypes.array.isRequired,
-    globalGameParams: PropTypes.object.isRequired,
     messages: PropTypes.object.isRequired,
     playerOrder: PropTypes.array.isRequired,
     users: PropTypes.object.isRequired,
@@ -97,7 +102,6 @@ Sidebar.propTypes = {
 export default connectWithRouter(
     (state, ownProps) => ({
         gameStates: state.gameStates.states.slice(1),
-        globalGameParams: state.gameStates.globalGameParams,
         playerOrder: state.games[ownProps.match.params.gameId].playerOrder,
         users: state.users,
     }),

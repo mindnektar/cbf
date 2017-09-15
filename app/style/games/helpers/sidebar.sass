@@ -18,14 +18,13 @@
     border-bottom: 1px solid $color-light
     color: $color-light
     font-size: .9em
+    margin-bottom: 12px
     padding-bottom: 4px
     text-align: center
 
 .cbf-helper-sidebar__history-content
     display: flex
     flex-direction: column-reverse
-    flex-grow: 1
-    justify-content: flex-end
     overflow: auto
 
 .cbf-helper-sidebar__history-item
@@ -37,11 +36,24 @@
     flex-shrink: 0
     font-size: .8em
     line-height: 1.5em
-    margin-top: 12px
+    margin-top: 6px
     padding: 4px 8px
+    position: relative
 
 .cbf-helper-sidebar__history-item--active
     background-color: $color-light
+
+.cbf-helper-sidebar__history-item--group-start
+    margin-bottom: 17px
+
+    &::after
+        background-color: $color-primary
+        bottom: -12px
+        content: ""
+        height: 1px
+        left: 0
+        position: absolute
+        width: 100%
 
 .cbf-helper-sidebar__history-index
     align-items: center
