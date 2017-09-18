@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
-import { actions, assets, states, transformers, validators } from 'shared/games/five-tribes';
+import { actions, assets, serverActions, states, transformers, validators } from 'shared/games/five-tribes';
 import Action from '../helpers/Action';
 
 class Board extends React.Component {
@@ -29,6 +29,7 @@ class Board extends React.Component {
                                 action={action}
                                 key={item[0]}
                                 params={[rowIndex, itemIndex]}
+                                serverActions={serverActions}
                                 transformers={transformers}
                                 validators={validators}
                             >
@@ -52,6 +53,7 @@ class Board extends React.Component {
                                                 action={actions.KILL_MEEPLE_ON_BOARD}
                                                 key={meeple}
                                                 params={[rowIndex, itemIndex, meepleIndex]}
+                                                serverActions={serverActions}
                                                 transformers={transformers}
                                                 validators={validators}
                                             >

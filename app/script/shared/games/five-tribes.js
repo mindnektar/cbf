@@ -178,7 +178,7 @@ module.exports = {
         [states.SELECT_FAKIRS_FOR_MEEPLE_ACTION]: actions.SELECT_FAKIRS_FOR_MEEPLE_ACTION,
     },
     serverActions: [
-        [actions.END_TURN],
+        actions.END_TURN,
     ],
     messages: {
         [actions.SELECT_TURN_ORDER_SPOT]: ({ me, state }) => {

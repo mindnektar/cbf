@@ -49,9 +49,9 @@ const createGame = game => request('games', 'POST', { game });
 
 const fetchGames = () => request('games');
 
-const fetchGameStates = id => request(`game_states/${id}`);
+const fetchGameStates = id => request(`games/${id}`);
 
-const handleGameActions = (id, actions) => request(`game_states/${id}`, 'POST', actions);
+const handleGameActions = (id, actions) => request(`games/${id}`, 'POST', actions);
 
 const joinGame = id => request('user_in_game', 'POST', { id });
 

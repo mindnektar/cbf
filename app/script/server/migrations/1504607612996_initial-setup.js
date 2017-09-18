@@ -15,16 +15,10 @@ module.exports = {
             table.integer('status').unsigned().notNullable().defaultTo(0);
             table.string('handle').notNullable();
             table.string('player_order');
+            table.text('initial_state');
+            table.text('actions');
             table.timestamps();
             table.unique('id');
-        }),
-        knex.schema.createTable('game_state', (table) => {
-            table.string('game_id').notNullable();
-            table.integer('order').unsigned().notNullable();
-            table.text('state').notNullable();
-            table.timestamps();
-            table.unique(['game_id', 'order']);
-            table.foreign('game_id').references('game.id');
         }),
         knex.schema.createTable('user_in_game', (table) => {
             table.string('user_id').notNullable();

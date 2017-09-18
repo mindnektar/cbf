@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
-import { actions, assets, transformers, validators } from 'shared/games/five-tribes';
+import { actions, assets, serverActions, transformers, validators } from 'shared/games/five-tribes';
 import Action from '../helpers/Action';
 
 class Hand extends React.Component {
@@ -14,6 +14,7 @@ class Hand extends React.Component {
                         action={actions.PLACE_MEEPLE}
                         key={meeple}
                         params={[meeple]}
+                        serverActions={serverActions}
                         transformers={transformers}
                         validators={validators}
                     >

@@ -1,7 +1,25 @@
 const uuid = require('uuid/v4');
 const shuffle = require('knuth-shuffle').knuthShuffle;
 const gameConstants = require('../../shared/constants/games');
-const { serialize, unserialize } = require('../helpers/game-state');
+
+const calculateAllStates = (initialState, actions, transformers) => {
+    let currentState = initialState;
+
+    return [
+        currentState,
+        ...actions.map((action) => {
+            const actionOwner = currentState.currentPlayer;
+
+            currentState = transformers[action[0]](currentState, action[1]);
+            currentState.action = [
+                ...action,
+                actionOwner,
+            ];
+
+            return currentState;
+        }),
+    ];
+};
 
 module.exports = (app) => {
     app.get('/api/games', (request, response) => {
@@ -55,8 +73,8 @@ module.exports = (app) => {
         app.knex('game').where('id', request.body.id).update(request.body.data).then(() => {
             if (request.body.data.status === gameConstants.GAME_STATUS_ACTIVE) {
                 app.knex('game').where('id', request.body.id).select().then(([game]) => {
-                    const { gameStateMapping, setup } = require(`../games/${game.handle}`);
-                    const state = serialize(setup(), gameStateMapping);
+                    const { setup } = require(`../games/${game.handle}`);
+                    const state = JSON.stringify(setup());
 
                     app.knex('user_in_game').where('game_id', game.id).select().then((players) => {
                         const playerOrder = shuffle(
@@ -65,14 +83,11 @@ module.exports = (app) => {
 
                         app.knex('game')
                             .where('id', game.id)
-                            .update('player_order', playerOrder)
-                            .then(() => (
-                                app.knex('game_state').insert({
-                                    game_id: game.id,
-                                    order: 0,
-                                    state,
-                                })
-                            ))
+                            .update({
+                                actions: '[]',
+                                initial_state: state,
+                                player_order: playerOrder,
+                            })
                             .then(() => response.status(204).send());
                     });
                 });
@@ -96,92 +111,81 @@ module.exports = (app) => {
             });
     });
 
-    app.get('/api/game_states/:id', (request, response) => {
-        app.knex('game_state')
-            .where('game_id', request.params.id)
-            .orderBy('order')
+    app.get('/api/games/:id', (request, response) => {
+        app.knex('game')
+            .where('id', request.params.id)
             .select()
-            .then((gameStates) => {
-                app.knex('game').where('id', request.params.id).select().then(([game]) => {
-                    const { gameStateMapping } = require(`../games/${game.handle}`);
+            .then(([game]) => {
+                const { transformers } = require(`../../shared/games/${game.handle}`);
 
-                    response.json({
-                        gameStates: gameStates.map(
-                            item => unserialize(item.state, gameStateMapping)
-                        ),
-                        playerOrder: game.player_order.split(','),
-                    });
+                response.json({
+                    gameStates: calculateAllStates(
+                        JSON.parse(game.initial_state),
+                        JSON.parse(game.actions),
+                        transformers
+                    ),
+                    playerOrder: game.player_order.split(','),
                 });
             });
     });
 
-    app.post('/api/game_states/:id', (request, response) => {
+    app.post('/api/games/:id', (request, response) => {
         app.knex('user')
             .where('access_token', request.header('X-Access-token'))
             .select()
             .then(([user]) => {
                 app.knex('game').where('id', request.params.id).select().then(([game]) => {
-                    app.knex('game_state')
-                        .where('game_id', request.params.id)
-                        .orderBy('order')
-                        .select()
-                        .then((gameStates) => {
-                            const {
-                                transformers, validators,
-                            } = require(`../../shared/games/${game.handle}`);
-                            const { gameStateMapping } = require(`../games/${game.handle}`);
-                            let currentState = unserialize(
-                                gameStates[gameStates.length - 1].state,
-                                gameStateMapping
+                    const {
+                        transformers, validators,
+                    } = require(`../../shared/games/${game.handle}`);
+
+                    const states = calculateAllStates(
+                        JSON.parse(game.initial_state),
+                        JSON.parse(game.actions),
+                        transformers
+                    );
+
+                    let currentState = states[states.length - 1];
+                    const playerOrder = game.player_order.split(',');
+                    const currentPlayer = currentState.currentPlayer;
+
+                    if (playerOrder[currentPlayer] !== user.id) {
+                        response.status(403).json({ errors: 'forbidden' });
+                    }
+
+                    try {
+                        request.body.forEach(([action, payload = []]) => {
+                            if (!validators[action](currentState, payload)) {
+                                throw new Error(`invalid action: ${action}`);
+                            }
+
+                            currentState = transformers[action](
+                                currentState, payload
                             );
-                            const playerOrder = game.player_order.split(',');
-                            const currentPlayer = currentState.currentPlayer;
 
-                            if (playerOrder[currentPlayer] !== user.id) {
-                                response.status(403).json({ errors: 'forbidden' });
-                            }
-
-                            const nextStates = [];
-
-                            try {
-                                app.knex
-                                    .transaction((transaction) => {
-                                        request.body.forEach(([action, payload = []]) => {
-                                            if (!validators[action](currentState, payload)) {
-                                                throw new Error(`invalid action: ${action}`);
-                                            }
-
-                                            currentState = transformers[action](
-                                                currentState, payload
-                                            );
-
-                                            currentState.action = [
-                                                action,
-                                                payload,
-                                                currentPlayer,
-                                            ];
-
-                                            nextStates.push(
-                                                serialize(currentState, gameStateMapping)
-                                            );
-                                        });
-
-                                        return transaction
-                                            .insert(nextStates.map((nextState, index) => ({
-                                                game_id: game.id,
-                                                order: gameStates.length + index,
-                                                state: nextState,
-                                            })))
-                                            .into('game_state');
-                                    })
-                                    .then(() => response.status(204).send())
-                                    .catch(error => (
-                                        response.status(400).json({ errors: JSON.stringify(error) })
-                                    ));
-                            } catch (error) {
-                                response.status(400).json({ errors: error });
-                            }
+                            currentState.action = [
+                                action,
+                                payload,
+                                currentPlayer,
+                            ];
                         });
+
+                        app.knex('game')
+                        .where('id', request.params.id)
+                        .update(
+                            'actions',
+                            JSON.stringify([
+                                ...JSON.parse(game.actions),
+                                ...request.body,
+                            ])
+                        )
+                        .then(() => response.status(204).send())
+                        .catch(error => (
+                            response.status(400).json({ errors: error })
+                        ));
+                    } catch (error) {
+                        response.status(400).json({ errors: error });
+                    }
                 });
             });
     });
