@@ -31,12 +31,14 @@ class Arena extends React.Component {
 
     componentDidMount() {
         this.arenaRef.addEventListener('mousewheel', this.changeZoom);
+        this.arenaRef.addEventListener('DOMMouseScroll', this.changeZoom);
     }
 
     componentWillUnmount() {
         this.props.clearGameStates();
 
         this.arenaRef.removeEventListener('mousewheel', this.changeZoom);
+        this.arenaRef.removeEventListener('DOMMouseScroll', this.changeZoom);
     }
 
     onMouseDown = () => {
@@ -77,11 +79,13 @@ class Arena extends React.Component {
     changeZoom = (event) => {
         event.preventDefault();
 
+        const delta = event.deltaY ? event.deltaY / 400 : event.detail / 100;
+
         const zoom = Math.max(
             0.3,
             Math.min(
                 2.5,
-                this.state.zoom -= event.deltaY / 400
+                this.state.zoom -= delta
             )
         );
 
