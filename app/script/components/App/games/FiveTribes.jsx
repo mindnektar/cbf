@@ -1,7 +1,14 @@
 import React from 'react';
 import connectWithRouter from 'helpers/connectWithRouter';
 import {
-    actions, automaticActions, confirmableActions, instructions, messages, transformers, validators,
+    actions,
+    automaticActions,
+    confirmableActions,
+    instructions,
+    messages,
+    serverActions,
+    transformers,
+    validators,
 } from 'shared/games/five-tribes';
 import Game from './helpers/Game';
 import Sidebar from './helpers/Sidebar';
@@ -19,6 +26,7 @@ class FiveTribes extends React.Component {
         return (
             <Game
                 automaticActions={automaticActions}
+                serverActions={serverActions}
                 transformers={transformers}
             >
                 <div className="five-tribes">
@@ -27,6 +35,7 @@ class FiveTribes extends React.Component {
                         confirmableActions={confirmableActions}
                         endTurnAction={actions.END_TURN}
                         instructions={instructions}
+                        serverActions={serverActions}
                         transformers={transformers}
                         validators={validators}
                     />

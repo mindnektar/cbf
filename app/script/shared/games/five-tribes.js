@@ -108,14 +108,12 @@ const canMakeMovementFromTile = (state, rowIndex, itemIndex, meeples, meepleCoun
 };
 
 const setEndOfTurnState = (nextState) => {
-    const { nextTurnsBidOrder, turnOrder } = nextState.public.game;
+    const { turnOrder } = nextState.public.game;
     const occupiedTurnOrderSpots = turnOrder.filter(spot => spot !== null);
     const nextPlayer = occupiedTurnOrderSpots[occupiedTurnOrderSpots.length - 1];
 
     if (nextPlayer !== undefined && nextState.currentPlayer === nextPlayer) {
         nextState.state = states.MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK;
-    } else if (nextTurnsBidOrder[nextTurnsBidOrder.length - 1] === nextState.currentPlayer) {
-        prepareNewRound(nextState);
     } else {
         nextState.state = states.END_TURN;
     }
@@ -123,32 +121,6 @@ const setEndOfTurnState = (nextState) => {
     nextState.public.game.dropHistory = [];
     nextState.public.game.collectedMeepleCount = null;
     nextState.public.game.collectedMeepleType = null;
-};
-
-const prepareNewRound = (nextState) => {
-    nextState.public.game.bidOrder = [...nextState.public.game.nextTurnsBidOrder];
-    nextState.public.game.nextTurnsBidOrder = Array(4).fill(null);
-
-    for (let i = nextState.public.game.availableResources.length; i < 9; i += 1) {
-        const nextResource = nextState.private.game.remainingResources.pop();
-
-        nextState.public.game.availableResources.push(nextResource);
-
-        nextState.public.game.remainingResources -= 1;
-    }
-
-    for (let i = nextState.public.game.availableDjinns.length; i < 3; i += 1) {
-        const nextDjinn = nextState.private.game.remainingDjinns.pop();
-
-        nextState.public.game.availableDjinns.push(nextDjinn);
-
-        nextState.public.game.remainingDjinns -= 1;
-    }
-
-    nextState.state = states.BID_FOR_TURN_ORDER;
-    nextState.currentPlayer = nextState.public.game.bidOrder[
-        nextState.public.game.bidOrder.length - 1
-    ];
 };
 
 module.exports = {
@@ -205,6 +177,9 @@ module.exports = {
     confirmableActions: {
         [states.SELECT_FAKIRS_FOR_MEEPLE_ACTION]: actions.SELECT_FAKIRS_FOR_MEEPLE_ACTION,
     },
+    serverActions: [
+        [actions.END_TURN],
+    ],
     messages: {
         [actions.SELECT_TURN_ORDER_SPOT]: ({ me, state }) => {
             const [spotIndex] = state.action[1];
@@ -838,7 +813,29 @@ module.exports = {
                     nextState.currentPlayer = player;
                 // Let's start a new round!
                 } else {
-                    prepareNewRound(nextState);
+                    nextState.public.game.bidOrder = [...nextState.public.game.nextTurnsBidOrder];
+                    nextState.public.game.nextTurnsBidOrder = Array(4).fill(null);
+
+                    for (let i = nextState.public.game.availableResources.length; i < 9; i += 1) {
+                        const nextResource = nextState.private.game.remainingResources.pop();
+
+                        nextState.public.game.availableResources.push(nextResource);
+
+                        nextState.public.game.remainingResources -= 1;
+                    }
+
+                    for (let i = nextState.public.game.availableDjinns.length; i < 3; i += 1) {
+                        const nextDjinn = nextState.private.game.remainingDjinns.pop();
+
+                        nextState.public.game.availableDjinns.push(nextDjinn);
+
+                        nextState.public.game.remainingDjinns -= 1;
+                    }
+
+                    nextState.state = states.BID_FOR_TURN_ORDER;
+                    nextState.currentPlayer = nextState.public.game.bidOrder[
+                        nextState.public.game.bidOrder.length - 1
+                    ];
                 }
             }
 

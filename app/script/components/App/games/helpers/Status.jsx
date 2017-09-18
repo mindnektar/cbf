@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 import connectWithRouter from 'helpers/connectWithRouter';
-import { handleGameActions, redoGameAction, undoGameAction, updateGameState } from 'actions/games';
+import { redoGameAction, undoGameAction, updateGameState } from 'actions/games';
 import Button from 'Button';
 
 class Status extends React.Component {
@@ -36,21 +36,24 @@ class Status extends React.Component {
     }
 
     continueTurn = () => {
+        const action = this.props.confirmableActions[this.props.gameState.state];
+
         this.props.updateGameState(
             this.props.gameId,
-            this.props.confirmableActions[this.props.gameState.state],
+            action,
             this.props.transformers,
-            this.props.globalGameParams
+            this.props.globalGameParams,
+            this.props.serverActions.includes(action)
         );
     }
 
     endTurn = () => {
-        this.props.handleGameActions(
+        this.props.updateGameState(
             this.props.gameId,
-            [
-                ...this.props.actions,
-                [this.props.endTurnAction, [], this.props.gameState.currentPlayer],
-            ]
+            this.props.endTurnAction,
+            this.props.transformers,
+            this.props.globalGameParams,
+            this.props.serverActions.includes(this.props.endTurnAction)
         );
     }
 
@@ -75,7 +78,6 @@ class Status extends React.Component {
                     {this.getInstruction()}
 
                     {
-                        this.props.confirmableActions &&
                         this.props.confirmableActions[this.props.gameState.state] &&
                         <Button
                             onTouchTap={this.continueTurn}
@@ -121,16 +123,17 @@ class Status extends React.Component {
 }
 
 Status.defaultProps = {
-    confirmableActions: null,
+    automaticActions: {},
+    confirmableActions: {},
+    serverActions: [],
 };
 
 Status.propTypes = {
     actionIndex: PropTypes.number.isRequired,
     actions: PropTypes.array.isRequired,
-    automaticActions: PropTypes.object.isRequired,
+    automaticActions: PropTypes.object,
     confirmableActions: PropTypes.object,
     endTurnAction: PropTypes.number.isRequired,
-    handleGameActions: PropTypes.func.isRequired,
     gameId: PropTypes.string.isRequired,
     gameState: PropTypes.object.isRequired,
     globalGameParams: PropTypes.array.isRequired,
@@ -139,6 +142,7 @@ Status.propTypes = {
     me: PropTypes.object.isRequired,
     playerOrder: PropTypes.array.isRequired,
     redoGameAction: PropTypes.func.isRequired,
+    serverActions: PropTypes.array,
     transformers: PropTypes.object.isRequired,
     undoGameAction: PropTypes.func.isRequired,
     updateGameState: PropTypes.func.isRequired,
@@ -163,7 +167,6 @@ export default connectWithRouter(
         users: state.users,
     }),
     {
-        handleGameActions,
         redoGameAction,
         undoGameAction,
         updateGameState,

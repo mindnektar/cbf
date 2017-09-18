@@ -20,7 +20,9 @@ class Game extends React.Component {
             this.props.updateGameState(
                 this.props.gameId,
                 action,
-                this.props.transformers
+                this.props.transformers,
+                [],
+                this.props.serverActions.includes(action)
             );
         }
     }
@@ -42,14 +44,20 @@ class Game extends React.Component {
     }
 }
 
+Game.defaultProps = {
+    automaticActions: {},
+    serverActions: [],
+};
+
 Game.propTypes = {
-    automaticActions: PropTypes.object.isRequired,
+    automaticActions: PropTypes.object,
     children: PropTypes.node.isRequired,
     gameId: PropTypes.string.isRequired,
     gameState: PropTypes.object.isRequired,
     isLatestState: PropTypes.bool.isRequired,
     me: PropTypes.object.isRequired,
     playerOrder: PropTypes.array.isRequired,
+    serverActions: PropTypes.array,
     transformers: PropTypes.object.isRequired,
     updateGameState: PropTypes.func.isRequired,
 };

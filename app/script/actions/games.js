@@ -31,10 +31,6 @@ export const createGame = game => (dispatch, getState) => (
     })
 );
 
-export const handleGameActions = (id, actions) => dispatch => (
-    api.handleGameActions(id, actions).then(() => dispatch(loadGameStates(id)))
-);
-
 export const openGame = id => (dispatch) => {
     const status = gameConstants.GAME_STATUS_OPEN;
 
@@ -99,13 +95,24 @@ export const undoGameAction = automaticActions => (dispatch, getState) => {
 };
 
 export const updateGameState = (
-    gameId, action, transformers, data = []
+    gameId, action, transformers, data = [], isServerAction = false,
 ) => (dispatch, getState) => {
     const { gameStates } = getState();
     const previousState = gameStates.states[
         (gameStates.stateCountSinceLastLoad - 1) + gameStates.actionIndex
     ];
     const nextAction = [action, data];
+
+    if (isServerAction) {
+        return api.handleGameActions(
+            gameId,
+            [
+                ...gameStates.actions,
+                nextAction,
+            ]
+        ).then(() => dispatch(loadGameStates(gameId)));
+    }
+
     const nextState = transformers[action](previousState, data);
 
     nextState.action = [
@@ -117,6 +124,8 @@ export const updateGameState = (
         type: UPDATE_GAME_STATE,
         payload: { nextAction, nextState },
     });
+
+    return Promise.resolve();
 };
 
 export const updateGlobalGameParams = payload => ({

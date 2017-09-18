@@ -11,7 +11,8 @@ class Action extends React.Component {
                 this.props.gameId,
                 this.props.action,
                 this.props.transformers,
-                this.props.params
+                this.props.params,
+                this.props.serverActions.includes(this.props.action),
             );
         }
     }
@@ -51,6 +52,7 @@ class Action extends React.Component {
 
 Action.defaultProps = {
     params: [],
+    serverActions: [],
 };
 
 Action.propTypes = {
@@ -59,6 +61,7 @@ Action.propTypes = {
     gameId: PropTypes.string.isRequired,
     gameState: PropTypes.object.isRequired,
     params: PropTypes.array,
+    serverActions: PropTypes.array,
     transformers: PropTypes.object.isRequired,
     updateGameState: PropTypes.func.isRequired,
     validators: PropTypes.object.isRequired,
