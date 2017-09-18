@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import connectWithRouter from 'helpers/connectWithRouter';
 import {
     actions, automaticActions, confirmableActions, instructions, messages, transformers, validators,
@@ -24,6 +23,7 @@ class FiveTribes extends React.Component {
             >
                 <div className="five-tribes">
                     <Status
+                        automaticActions={automaticActions}
                         confirmableActions={confirmableActions}
                         endTurnAction={actions.END_TURN}
                         instructions={instructions}
@@ -60,14 +60,8 @@ class FiveTribes extends React.Component {
     }
 }
 
-FiveTribes.propTypes = {
-    gameState: PropTypes.object.isRequired,
-};
-
 export default connectWithRouter(
-    state => ({
-        gameState: state.gameStates.states[state.gameStates.currentState],
-    }),
+    null,
     null,
     FiveTribes
 );

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 import connectWithRouter from 'helpers/connectWithRouter';
-import { handleGameActions, updateGameState } from 'actions/games';
+import { handleGameActions, redoGameAction, undoGameAction, updateGameState } from 'actions/games';
 import Button from 'Button';
 
 class Status extends React.Component {
@@ -22,7 +22,7 @@ class Status extends React.Component {
     }
 
     getInstruction() {
-        if (this.props.historyMode) {
+        if (!this.props.isLatestState) {
             return '- HISTORY MODE -';
         }
 
@@ -58,6 +58,14 @@ class Status extends React.Component {
         return this.props.validators[this.props.endTurnAction](this.props.gameState);
     }
 
+    redo = () => {
+        this.props.redoGameAction(this.props.automaticActions);
+    }
+
+    undo = () => {
+        this.props.undoGameAction(this.props.automaticActions);
+    }
+
     renderLayer() {
         const currentPlayer = this.props.playerOrder[this.props.gameState.currentPlayer];
 
@@ -80,16 +88,16 @@ class Status extends React.Component {
 
                 <div className="cbf-helper-status__options">
                     <Button
-                        disabled
-                        onTouchTap={() => null}
+                        disabled={this.props.actionIndex === 0}
+                        onTouchTap={this.undo}
                         secondary
                     >
                         Undo
                     </Button>
 
                     <Button
-                        disabled
-                        onTouchTap={() => null}
+                        disabled={this.props.actionIndex === this.props.actions.length}
+                        onTouchTap={this.redo}
                         secondary
                     >
                         Redo
@@ -117,18 +125,22 @@ Status.defaultProps = {
 };
 
 Status.propTypes = {
+    actionIndex: PropTypes.number.isRequired,
     actions: PropTypes.array.isRequired,
+    automaticActions: PropTypes.object.isRequired,
     confirmableActions: PropTypes.object,
     endTurnAction: PropTypes.number.isRequired,
     handleGameActions: PropTypes.func.isRequired,
     gameId: PropTypes.string.isRequired,
     gameState: PropTypes.object.isRequired,
     globalGameParams: PropTypes.array.isRequired,
-    historyMode: PropTypes.bool.isRequired,
     instructions: PropTypes.object.isRequired,
+    isLatestState: PropTypes.bool.isRequired,
     me: PropTypes.object.isRequired,
     playerOrder: PropTypes.array.isRequired,
+    redoGameAction: PropTypes.func.isRequired,
     transformers: PropTypes.object.isRequired,
+    undoGameAction: PropTypes.func.isRequired,
     updateGameState: PropTypes.func.isRequired,
     users: PropTypes.object.isRequired,
     validators: PropTypes.object.isRequired,
@@ -136,17 +148,24 @@ Status.propTypes = {
 
 export default connectWithRouter(
     (state, ownProps) => ({
+        actionIndex: state.gameStates.actionIndex,
         actions: state.gameStates.actions,
         gameId: ownProps.match.params.gameId,
-        gameState: state.gameStates.states[state.gameStates.currentState],
+        gameState: state.gameStates.states[
+            (state.gameStates.stateCountSinceLastLoad - 1) + state.gameStates.actionIndex
+        ],
         globalGameParams: state.gameStates.globalGameParams,
-        historyMode: state.gameStates.currentState !== state.gameStates.states.length - 1,
+        isLatestState: state.gameStates.currentState === (
+            (state.gameStates.stateCountSinceLastLoad - 1) + state.gameStates.actionIndex
+        ),
         me: state.me,
         playerOrder: state.games[ownProps.match.params.gameId].playerOrder,
         users: state.users,
     }),
     {
         handleGameActions,
+        redoGameAction,
+        undoGameAction,
         updateGameState,
     },
     Status

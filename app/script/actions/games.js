@@ -4,8 +4,9 @@ import { JOIN_GAME } from 'actions/me';
 import { loadGameStates } from 'actions/populate';
 
 export const ADD_PLAYER_TO_GAME = 'ADD_PLAYER_TO_GAME';
-export const CREATE_GAME = 'CREATE_GAME';
+export const CHANGE_ACTION_INDEX = 'CHANGE_ACTION_INDEX';
 export const CHANGE_GAME_STATUS = 'CHANGE_GAME_STATUS';
+export const CREATE_GAME = 'CREATE_GAME';
 export const PUSH_GAME_STATE = 'PUSH_GAME_STATE';
 export const SWITCH_GAME_STATE = 'SWITCH_GAME_STATE';
 export const UPDATE_GAME_STATE = 'UPDATE_GAME_STATE';
@@ -45,6 +46,24 @@ export const openGame = id => (dispatch) => {
     });
 };
 
+export const redoGameAction = automaticActions => (dispatch, getState) => {
+    const { gameStates } = getState();
+    const lastStateIndex = gameStates.stateCountSinceLastLoad - 1;
+    let actionIndex = gameStates.actionIndex;
+
+    do {
+        actionIndex += 1;
+    } while (
+        actionIndex < gameStates.actions.length &&
+        automaticActions[gameStates.states[lastStateIndex + actionIndex].state]
+    );
+
+    dispatch({
+        type: CHANGE_ACTION_INDEX,
+        payload: { actionIndex },
+    });
+};
+
 export const startGame = id => (dispatch) => {
     const status = gameConstants.GAME_STATUS_ACTIVE;
 
@@ -61,11 +80,31 @@ export const switchGameState = currentState => ({
     payload: { currentState },
 });
 
+export const undoGameAction = automaticActions => (dispatch, getState) => {
+    const { gameStates } = getState();
+    const lastStateIndex = gameStates.stateCountSinceLastLoad - 1;
+    let actionIndex = gameStates.actionIndex;
+
+    do {
+        actionIndex -= 1;
+    } while (
+        actionIndex > 0 &&
+        automaticActions[gameStates.states[lastStateIndex + actionIndex].state]
+    );
+
+    dispatch({
+        type: CHANGE_ACTION_INDEX,
+        payload: { actionIndex },
+    });
+};
+
 export const updateGameState = (
     gameId, action, transformers, data = []
 ) => (dispatch, getState) => {
     const { gameStates } = getState();
-    const previousState = gameStates.states[gameStates.states.length - 1];
+    const previousState = gameStates.states[
+        (gameStates.stateCountSinceLastLoad - 1) + gameStates.actionIndex
+    ];
     const nextAction = [action, data];
     const nextState = transformers[action](previousState, data);
 

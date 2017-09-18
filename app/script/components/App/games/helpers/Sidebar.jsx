@@ -43,6 +43,10 @@ class Sidebar extends React.Component {
             );
         }
 
+        if (index > (this.props.stateCountSinceLastLoad - 1) + this.props.actionIndex) {
+            return null;
+        }
+
         const message = this.props.messages[gameState.action[0]]({
             me: this.props.users[
                 this.props.playerOrder[gameState.action[2]]
@@ -118,19 +122,23 @@ class Sidebar extends React.Component {
 }
 
 Sidebar.propTypes = {
+    actionIndex: PropTypes.number.isRequired,
     currentState: PropTypes.number.isRequired,
     gameStates: PropTypes.array.isRequired,
     messages: PropTypes.object.isRequired,
     playerOrder: PropTypes.array.isRequired,
+    stateCountSinceLastLoad: PropTypes.number.isRequired,
     switchGameState: PropTypes.func.isRequired,
     users: PropTypes.object.isRequired,
 };
 
 export default connectWithRouter(
     (state, ownProps) => ({
+        actionIndex: state.gameStates.actionIndex,
         currentState: state.gameStates.currentState,
         gameStates: state.gameStates.states,
         playerOrder: state.games[ownProps.match.params.gameId].playerOrder,
+        stateCountSinceLastLoad: state.gameStates.stateCountSinceLastLoad,
         users: state.users,
     }),
     {

@@ -57,8 +57,12 @@ Game.propTypes = {
 export default connectWithRouter(
     (state, ownProps) => ({
         gameId: ownProps.match.params.gameId,
-        gameState: state.gameStates.states[state.gameStates.states.length - 1],
-        isLatestState: state.gameStates.currentState === state.gameStates.states.length - 1,
+        gameState: state.gameStates.states[
+            (state.gameStates.stateCountSinceLastLoad - 1) + state.gameStates.actionIndex
+        ],
+        isLatestState: state.gameStates.currentState === (
+            (state.gameStates.stateCountSinceLastLoad - 1) + state.gameStates.actionIndex
+        ),
         me: state.me,
         playerOrder: state.games[ownProps.match.params.gameId].playerOrder,
     }),
