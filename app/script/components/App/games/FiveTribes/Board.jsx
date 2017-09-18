@@ -76,6 +76,24 @@ class Board extends React.Component {
                                             )}
                                         />
                                     }
+
+                                    <div className="five-tribes__tile-buildings">
+                                        {item[3] > 0 &&
+                                            <div className="five-tribes__tile-palm-tree">
+                                                {Array(item[3]).fill(null).map(() =>
+                                                    <span>&#x1f334;</span>
+                                                )}
+                                            </div>
+                                        }
+
+                                        {item[4] > 0 &&
+                                            <div className="five-tribes__tile-palace">
+                                                {Array(item[4]).fill(null).map(() =>
+                                                    <span>&pi;</span>
+                                                )}
+                                            </div>
+                                        }
+                                    </div>
                                 </div>
                             </Action>
                         )}

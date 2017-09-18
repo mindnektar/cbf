@@ -84,7 +84,7 @@ const setup = () => {
                 remainingResourceCount: remainingResources.length,
                 availableDjinns,
                 remainingDjinnCount: remainingDjinns.length,
-                palmTreeCount: game.assets.palm_trees,
+                palmTreeCount: game.assets.palmTrees,
                 palaceCount: game.assets.palaces,
                 bidOrder,
                 turnOrder,

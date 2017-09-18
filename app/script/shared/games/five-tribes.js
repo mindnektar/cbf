@@ -37,7 +37,7 @@ const states = {
     SELECT_TILE_FOR_PLACEMENT: 3,
     SELECT_MEEPLE_TO_PLACE: 4,
     SELECT_MEEPLE_TO_KILL: 6,
-    GO_TO_MARKET: 7,
+    GO_TO_SMALL_MARKET: 7,
     SELECT_RESOURCES_FROM_MARKET: 8,
     COLLECT_DJINN: 9,
     SELECT_DJINN_FROM_DISPLAY: 10,
@@ -49,6 +49,10 @@ const states = {
     COLLECT_GOLD_COINS: 16,
     TAKE_CONTROL_OF_TILE: 17,
     EXECUTE_TILE_ACTION: 18,
+    GO_TO_BIG_MARKET: 19,
+    TAKE_CONTROL_OF_TILE_AFTER_ASSASSINATION: 20,
+    PLACE_PALM_TREE: 21,
+    PLACE_PALACE: 22,
 };
 const actions = {
     SELECT_TURN_ORDER_SPOT: 0,
@@ -64,6 +68,9 @@ const actions = {
     KILL_VIZIER_FROM_PLAYER: 10,
     KILL_ELDER_FROM_PLAYER: 11,
     SELECT_FAKIRS_FOR_MEEPLE_ACTION: 12,
+    TAKE_CONTROL_OF_TILE_AFTER_ASSASSINATION: 13,
+    PLACE_PALM_TREE: 14,
+    PLACE_PALACE: 15,
     END_TURN: 100,
 };
 
@@ -123,6 +130,38 @@ const setEndOfTurnState = (nextState) => {
     nextState.public.game.collectedMeepleType = null;
 };
 
+const setTileActionState = (nextState) => {
+    const { board, dropHistory, palmTreeCount, palaceCount } = nextState.public.game;
+    const rowIndex = dropHistory[dropHistory.length - 1][0];
+    const itemIndex = dropHistory[dropHistory.length - 1][1];
+
+    switch (allTiles[board[rowIndex][itemIndex][0]].action) {
+        case 'Oasis': {
+            if (palmTreeCount > 0) {
+                nextState.state = states.PLACE_PALM_TREE;
+            } else {
+                setEndOfTurnState(nextState);
+            }
+
+            break;
+        }
+
+        case 'Village': {
+            if (palaceCount > 0) {
+                nextState.state = states.PLACE_PALACE;
+            } else {
+                setEndOfTurnState(nextState);
+            }
+
+            break;
+        }
+
+        case 'Small market': nextState.state = states.GO_TO_SMALL_MARKET; break;
+        case 'Big market': nextState.state = states.GO_TO_BIG_MARKET; break;
+        default: nextState.state = states.COLLECT_DJINN;
+    }
+};
+
 module.exports = {
     assets: {
         meeples: allMeeples,
@@ -173,6 +212,9 @@ module.exports = {
         [states.TAKE_CONTROL_OF_TILE]: actions.TAKE_CONTROL_OF_TILE,
         [states.COLLECT_MARKET_RESOURCES]: actions.COLLECT_MARKET_RESOURCES,
         [states.COLLECT_GOLD_COINS]: actions.COLLECT_GOLD_COINS,
+        [states.PLACE_PALM_TREE]: actions.PLACE_PALM_TREE,
+        [states.PLACE_PALACE]: actions.PLACE_PALACE,
+        [states.TAKE_CONTROL_OF_TILE_AFTER_ASSASSINATION]: actions.TAKE_CONTROL_OF_TILE_AFTER_ASSASSINATION,
     },
     confirmableActions: {
         [states.SELECT_FAKIRS_FOR_MEEPLE_ACTION]: actions.SELECT_FAKIRS_FOR_MEEPLE_ACTION,
@@ -283,6 +325,25 @@ module.exports = {
             }
 
             return `${me.username} spends ${selectedFakirs.length} fakir${selectedFakirs.length !== 1 ? 's' : ''} to improve ${me.gender === 0 ? 'his' : 'her'} action.`;
+        },
+        [actions.PLACE_PALM_TREE]: ({ me, previousState }) => {
+            const { dropHistory } = previousState.public.game;
+            const rowIndex = dropHistory[dropHistory.length - 1][0];
+            const itemIndex = dropHistory[dropHistory.length - 1][1];
+
+            return `${me.username} places a palm tree on the tile at position ${rowIndex}-${itemIndex}.`;
+        },
+        [actions.PLACE_PALACE]: ({ me, previousState }) => {
+            const { dropHistory } = previousState.public.game;
+            const rowIndex = dropHistory[dropHistory.length - 1][0];
+            const itemIndex = dropHistory[dropHistory.length - 1][1];
+
+            return `${me.username} places a palace on the tile at position ${rowIndex}-${itemIndex}.`;
+        },
+        [actions.TAKE_CONTROL_OF_TILE_AFTER_ASSASSINATION]: ({ me, previousState }) => {
+            const [rowIndex, itemIndex] = previousState.action[1];
+
+            return `${me.username} takes control of the tile at position ${rowIndex}-${itemIndex} and places one of ${me.gender === 0 ? 'his' : 'her'} camels there.`;
         },
         [actions.END_TURN]: ({ me }) => (
             `${me.username} ends ${me.gender === 0 ? 'his' : 'her'} turn.`
@@ -444,6 +505,15 @@ module.exports = {
                 resource => selectedFakirs.includes(resource)
             );
         },
+        [actions.PLACE_PALM_TREE]: state => (
+            state.state === states.PLACE_PALM_TREE
+        ),
+        [actions.PLACE_PALACE]: state => (
+            state.state === states.PLACE_PALACE
+        ),
+        [actions.TAKE_CONTROL_OF_TILE_AFTER_ASSASSINATION]: state => (
+            state.state === states.TAKE_CONTROL_OF_TILE_AFTER_ASSASSINATION
+        ),
         [actions.END_TURN]: state => (
             state.state === states.END_TURN
         ),
@@ -578,7 +648,7 @@ module.exports = {
                         ...collectedMeeples,
                     ];
 
-                    setEndOfTurnState(nextState);
+                    setTileActionState(nextState);
 
                     break;
 
@@ -588,7 +658,7 @@ module.exports = {
                         ...collectedMeeples,
                     ];
 
-                    setEndOfTurnState(nextState);
+                    setTileActionState(nextState);
 
                     break;
 
@@ -603,7 +673,8 @@ module.exports = {
 
             if (
                 board[rowIndex][itemIndex][1].length === 0 &&
-                board[rowIndex][itemIndex][2] === null
+                board[rowIndex][itemIndex][2] === null &&
+                nextState.public.players[nextState.currentPlayer].camelCount > 0
             ) {
                 nextState.state = states.TAKE_CONTROL_OF_TILE;
             } else {
@@ -668,7 +739,7 @@ module.exports = {
                     nextState.state = states.SELECT_MEEPLE_TO_KILL;
                 }
             } else {
-                setEndOfTurnState(nextState);
+                setTileActionState(nextState);
             }
 
             return nextState;
@@ -689,7 +760,7 @@ module.exports = {
                 ...resources,
             ];
 
-            setEndOfTurnState(nextState);
+            setTileActionState(nextState);
 
             return nextState;
         },
@@ -721,7 +792,7 @@ module.exports = {
 
             nextState.private.players[nextState.currentPlayer].goldCoinCount += goldCoins;
 
-            setEndOfTurnState(nextState);
+            setTileActionState(nextState);
 
             return nextState;
         },
@@ -737,7 +808,15 @@ module.exports = {
                 ...killedMeeple,
             ];
 
-            setEndOfTurnState(nextState);
+            if (
+                nextState.public.game.board[rowIndex][itemIndex][1].length === 0 &&
+                nextState.public.game.board[rowIndex][itemIndex][2] === null &&
+                nextState.public.players[nextState.currentPlayer].camelCount > 0
+            ) {
+                nextState.state = states.TAKE_CONTROL_OF_TILE_AFTER_ASSASSINATION;
+            } else {
+                setTileActionState(nextState);
+            }
 
             return nextState;
         },
@@ -753,7 +832,7 @@ module.exports = {
                 ...killedMeeple,
             ];
 
-            setEndOfTurnState(nextState);
+            setTileActionState(nextState);
 
             return nextState;
         },
@@ -769,7 +848,7 @@ module.exports = {
                 ...killedMeeple,
             ];
 
-            setEndOfTurnState(nextState);
+            setTileActionState(nextState);
 
             return nextState;
         },
@@ -791,6 +870,48 @@ module.exports = {
                 case 'Builder': nextState.state = states.COLLECT_GOLD_COINS; break;
                 default: nextState.state = states.SELECT_MEEPLE_TO_KILL;
             }
+
+            return nextState;
+        },
+        [actions.PLACE_PALM_TREE]: (state) => {
+            const nextState = clone(state);
+            const { dropHistory } = nextState.public.game;
+            const rowIndex = dropHistory[dropHistory.length - 1][0];
+            const itemIndex = dropHistory[dropHistory.length - 1][1];
+
+            nextState.public.game.palmTreeCount -= 1;
+
+            nextState.public.game.board[rowIndex][itemIndex][3] += 1;
+
+            setEndOfTurnState(nextState);
+
+            return nextState;
+        },
+        [actions.PLACE_PALACE]: (state) => {
+            const nextState = clone(state);
+            const { dropHistory } = nextState.public.game;
+            const rowIndex = dropHistory[dropHistory.length - 1][0];
+            const itemIndex = dropHistory[dropHistory.length - 1][1];
+
+            nextState.public.game.palaceCount -= 1;
+
+            nextState.public.game.board[rowIndex][itemIndex][4] += 1;
+
+            setEndOfTurnState(nextState);
+
+            return nextState;
+        },
+        [actions.TAKE_CONTROL_OF_TILE_AFTER_ASSASSINATION]: (state) => {
+            const nextState = clone(state);
+
+            const { board } = nextState.public.game;
+            const [rowIndex, itemIndex] = nextState.action[1];
+
+            board[rowIndex][itemIndex][2] = nextState.currentPlayer;
+
+            nextState.public.players[nextState.currentPlayer].camelCount -= 1;
+
+            setTileActionState(nextState);
 
             return nextState;
         },
