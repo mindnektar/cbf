@@ -40,7 +40,9 @@ Djinns.propTypes = {
 
 export default connectWithRouter(
     state => ({
-        gameState: state.gameStates.states[state.gameStates.currentState],
+        gameState: state.gameStates.states[
+            (state.gameStates.stateCountSinceLastLoad - 1) + state.gameStates.actionIndex
+        ],
     }),
     null,
     Djinns
