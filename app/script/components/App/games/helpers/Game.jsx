@@ -27,7 +27,7 @@ class Game extends React.Component {
 
     render() {
         const currentPlayer = this.props.playerOrder[this.props.gameState.currentPlayer];
-        const awaitsAction = this.props.me.id === currentPlayer;
+        const awaitsAction = this.props.isLatestState && this.props.me.id === currentPlayer;
 
         return (
             <div
@@ -47,6 +47,7 @@ Game.propTypes = {
     children: PropTypes.node.isRequired,
     gameId: PropTypes.string.isRequired,
     gameState: PropTypes.object.isRequired,
+    isLatestState: PropTypes.bool.isRequired,
     me: PropTypes.object.isRequired,
     playerOrder: PropTypes.array.isRequired,
     transformers: PropTypes.object.isRequired,
@@ -57,6 +58,7 @@ export default connectWithRouter(
     (state, ownProps) => ({
         gameId: ownProps.match.params.gameId,
         gameState: state.gameStates.states[state.gameStates.states.length - 1],
+        isLatestState: state.gameStates.currentState === state.gameStates.states.length - 1,
         me: state.me,
         playerOrder: state.games[ownProps.match.params.gameId].playerOrder,
     }),

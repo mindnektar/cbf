@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
+import { switchGameState } from 'actions/games';
 
 class Sidebar extends React.Component {
     componentDidMount() {
@@ -20,7 +21,28 @@ class Sidebar extends React.Component {
         document.querySelector('[data-reactroot]').removeChild(this.layerElement);
     }
 
+    switchGameStateHandler = index => () => {
+        this.props.switchGameState(index);
+    }
+
     renderMessage(gameState, index) {
+        if (index === 0) {
+            return (
+                <div
+                    className={classNames(
+                        'cbf-helper-sidebar__history-item',
+                        {
+                            'cbf-helper-sidebar__history-item--active': index === this.props.currentState,
+                        }
+                    )}
+                    key={this.messageIndex}
+                    onTouchTap={this.switchGameStateHandler(index)}
+                >
+                    Start of match
+                </div>
+            );
+        }
+
         const message = this.props.messages[gameState.action[0]]({
             me: this.props.users[
                 this.props.playerOrder[gameState.action[2]]
@@ -46,11 +68,12 @@ class Sidebar extends React.Component {
                 className={classNames(
                     'cbf-helper-sidebar__history-item',
                     {
-                        'cbf-helper-sidebar__history-item--active': index === this.props.gameStates.length - 1,
+                        'cbf-helper-sidebar__history-item--active': index === this.props.currentState,
                         'cbf-helper-sidebar__history-item--group-start': groupStart,
                     }
                 )}
                 key={this.messageIndex}
+                onTouchTap={this.switchGameStateHandler(index)}
             >
                 <div className="cbf-helper-sidebar__history-index">
                     {this.messageIndex}
@@ -65,7 +88,7 @@ class Sidebar extends React.Component {
 
     renderLayer() {
         this.messageIndex = 0;
-        this.actionOwner = this.props.gameStates[0].action[2];
+        this.actionOwner = null;
 
         ReactDOM.unstable_renderSubtreeIntoContainer(this, (
             <div
@@ -77,10 +100,12 @@ class Sidebar extends React.Component {
                         Turn history
                     </div>
 
-                    <div className="cbf-helper-sidebar__history-content">
-                        {this.props.gameStates.map((gameState, index) =>
-                            this.renderMessage(gameState, index)
-                        )}
+                    <div className="cbf-helper-sidebar__history-scroller">
+                        <div className="cbf-helper-sidebar__history-content">
+                            {this.props.gameStates.map((gameState, index) =>
+                                this.renderMessage(gameState, index)
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -93,18 +118,23 @@ class Sidebar extends React.Component {
 }
 
 Sidebar.propTypes = {
+    currentState: PropTypes.number.isRequired,
     gameStates: PropTypes.array.isRequired,
     messages: PropTypes.object.isRequired,
     playerOrder: PropTypes.array.isRequired,
+    switchGameState: PropTypes.func.isRequired,
     users: PropTypes.object.isRequired,
 };
 
 export default connectWithRouter(
     (state, ownProps) => ({
-        gameStates: state.gameStates.states.slice(1),
+        currentState: state.gameStates.currentState,
+        gameStates: state.gameStates.states,
         playerOrder: state.games[ownProps.match.params.gameId].playerOrder,
         users: state.users,
     }),
-    null,
+    {
+        switchGameState,
+    },
     Sidebar
 );

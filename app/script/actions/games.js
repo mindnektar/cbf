@@ -7,6 +7,7 @@ export const ADD_PLAYER_TO_GAME = 'ADD_PLAYER_TO_GAME';
 export const CREATE_GAME = 'CREATE_GAME';
 export const CHANGE_GAME_STATUS = 'CHANGE_GAME_STATUS';
 export const PUSH_GAME_STATE = 'PUSH_GAME_STATE';
+export const SWITCH_GAME_STATE = 'SWITCH_GAME_STATE';
 export const UPDATE_GAME_STATE = 'UPDATE_GAME_STATE';
 export const UPDATE_GLOBAL_GAME_PARAMS = 'UPDATE_GLOBAL_GAME_PARAMS';
 
@@ -54,6 +55,11 @@ export const startGame = id => (dispatch) => {
         });
     });
 };
+
+export const switchGameState = currentState => ({
+    type: SWITCH_GAME_STATE,
+    payload: { currentState },
+});
 
 export const updateGameState = (
     gameId, action, transformers, data = []

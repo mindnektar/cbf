@@ -22,6 +22,10 @@ class Status extends React.Component {
     }
 
     getInstruction() {
+        if (this.props.historyMode) {
+            return '- HISTORY MODE -';
+        }
+
         const currentPlayer = this.props.playerOrder[this.props.gameState.currentPlayer];
 
         if (currentPlayer !== this.props.me.id) {
@@ -120,6 +124,7 @@ Status.propTypes = {
     gameId: PropTypes.string.isRequired,
     gameState: PropTypes.object.isRequired,
     globalGameParams: PropTypes.array.isRequired,
+    historyMode: PropTypes.bool.isRequired,
     instructions: PropTypes.object.isRequired,
     me: PropTypes.object.isRequired,
     playerOrder: PropTypes.array.isRequired,
@@ -133,8 +138,9 @@ export default connectWithRouter(
     (state, ownProps) => ({
         actions: state.gameStates.actions,
         gameId: ownProps.match.params.gameId,
-        gameState: state.gameStates.states[state.gameStates.states.length - 1],
+        gameState: state.gameStates.states[state.gameStates.currentState],
         globalGameParams: state.gameStates.globalGameParams,
+        historyMode: state.gameStates.currentState !== state.gameStates.states.length - 1,
         me: state.me,
         playerOrder: state.games[ownProps.match.params.gameId].playerOrder,
         users: state.users,

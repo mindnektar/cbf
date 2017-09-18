@@ -51,7 +51,7 @@ BidOrder.propTypes = {
 
 export default connectWithRouter(
     state => ({
-        gameState: state.gameStates.states[state.gameStates.states.length - 1],
+        gameState: state.gameStates.states[state.gameStates.currentState],
     }),
     null,
     BidOrder
