@@ -47,7 +47,7 @@ class Sidebar extends React.Component {
             return null;
         }
 
-        const message = this.props.messages[gameState.action[0]]({
+        const message = this.props.actions.findById(gameState.action[0]).toString({
             me: this.props.users[
                 this.props.playerOrder[gameState.action[2]]
             ],
@@ -123,9 +123,9 @@ class Sidebar extends React.Component {
 
 Sidebar.propTypes = {
     actionIndex: PropTypes.number.isRequired,
+    actions: PropTypes.object.isRequired,
     currentState: PropTypes.number.isRequired,
     gameStates: PropTypes.array.isRequired,
-    messages: PropTypes.object.isRequired,
     playerOrder: PropTypes.array.isRequired,
     stateCountSinceLastLoad: PropTypes.number.isRequired,
     switchGameState: PropTypes.func.isRequired,

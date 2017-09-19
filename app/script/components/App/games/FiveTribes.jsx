@@ -1,15 +1,6 @@
 import React from 'react';
 import connectWithRouter from 'helpers/connectWithRouter';
-import {
-    actions,
-    automaticActions,
-    confirmableActions,
-    instructions,
-    messages,
-    serverActions,
-    transformers,
-    validators,
-} from 'shared/games/five-tribes';
+import { actions, states } from 'shared/games/five-tribes';
 import Game from './helpers/Game';
 import Sidebar from './helpers/Sidebar';
 import Status from './helpers/Status';
@@ -24,23 +15,14 @@ import Players from './FiveTribes/Players';
 class FiveTribes extends React.Component {
     render() {
         return (
-            <Game
-                automaticActions={automaticActions}
-                serverActions={serverActions}
-                transformers={transformers}
-            >
+            <Game states={states}>
                 <div className="five-tribes">
                     <Status
-                        automaticActions={automaticActions}
-                        confirmableActions={confirmableActions}
                         endTurnAction={actions.END_TURN}
-                        instructions={instructions}
-                        serverActions={serverActions}
-                        transformers={transformers}
-                        validators={validators}
+                        states={states}
                     />
 
-                    <Sidebar messages={messages} />
+                    <Sidebar actions={actions} />
 
                     <div className="five-tribes__game">
                         <div className="five-tribes__top">

@@ -1,48 +1,10 @@
 const shuffle = require('knuth-shuffle').knuthShuffle;
-const game = require('../../shared/games/five-tribes');
+const assets = require('./assets');
+const states = require('./states');
 
-const gameStateMapping = {
-    public: {
-        game: [
-            'board',
-            'availableResources',
-            'remainingResourceCount',
-            'availableDjinns',
-            'remainingDjinnCount',
-            'palmTreeCount',
-            'palaceCount',
-            'bidOrder',
-            'turnOrder',
-            'nextTurnsBidOrder',
-            'meeplesInHand',
-            'dropHistory',
-            'collectedMeepleCount',
-            'collectedMeepleType',
-        ],
-        players: [
-            'camelCount',
-            'viziers',
-            'elders',
-            'resourceCount',
-            'djinns',
-        ],
-    },
-    private: {
-        game: [
-            'remainingMeeples',
-            'remainingResources',
-            'remainingDjinns',
-        ],
-        players: [
-            'goldCoinCount',
-            'resources',
-        ],
-    },
-};
-
-const setup = () => {
-    const remainingTiles = shuffle(Object.keys(game.assets.tiles));
-    const remainingMeeples = shuffle(Object.keys(game.assets.meeples));
+module.exports = () => {
+    const remainingTiles = shuffle(Object.keys(assets.tiles));
+    const remainingMeeples = shuffle(Object.keys(assets.meeples));
     const board = [];
 
     while (remainingTiles.length > 0) {
@@ -66,10 +28,10 @@ const setup = () => {
         }
     }
 
-    const remainingResources = shuffle(Object.keys(game.assets.resources));
+    const remainingResources = shuffle(Object.keys(assets.resources));
     const availableResources = remainingResources.splice(remainingResources.length - 9, 9);
 
-    const remainingDjinns = shuffle(Object.keys(game.assets.djinns));
+    const remainingDjinns = shuffle(Object.keys(assets.djinns));
     const availableDjinns = remainingDjinns.splice(remainingDjinns.length - 3, 3);
 
     const bidOrder = shuffle([0, 0, 1, 1]);
@@ -84,8 +46,8 @@ const setup = () => {
                 remainingResourceCount: remainingResources.length,
                 availableDjinns,
                 remainingDjinnCount: remainingDjinns.length,
-                palmTreeCount: game.assets.palmTrees,
-                palaceCount: game.assets.palaces,
+                palmTreeCount: assets.palmTrees,
+                palaceCount: assets.palaces,
                 bidOrder,
                 turnOrder,
                 nextTurnsBidOrder,
@@ -113,13 +75,8 @@ const setup = () => {
                 resources: [],
             }),
         },
-        state: game.states.BID_FOR_TURN_ORDER,
+        state: states.BID_FOR_TURN_ORDER.id,
         action: null,
         currentPlayer: bidOrder[bidOrder.length - 1],
     };
-};
-
-module.exports = {
-    gameStateMapping,
-    setup,
 };

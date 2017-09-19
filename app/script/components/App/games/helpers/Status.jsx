@@ -32,18 +32,16 @@ class Status extends React.Component {
             return `It's ${this.props.users[currentPlayer].username}'s turn.`;
         }
 
-        return this.props.instructions[this.props.gameState.state] || '';
+        return this.props.states.findById(this.props.gameState.state).instruction || '';
     }
 
     continueTurn = () => {
-        const action = this.props.confirmableActions[this.props.gameState.state];
+        const { performOnConfirm } = this.props.states.findById(this.props.gameState.state);
 
         this.props.updateGameState(
             this.props.gameId,
-            action,
-            this.props.transformers,
+            performOnConfirm(),
             this.props.globalGameParams,
-            this.props.serverActions.includes(action)
         );
     }
 
@@ -51,22 +49,20 @@ class Status extends React.Component {
         this.props.updateGameState(
             this.props.gameId,
             this.props.endTurnAction,
-            this.props.transformers,
             this.props.globalGameParams,
-            this.props.serverActions.includes(this.props.endTurnAction)
         );
     }
 
     mayEndTurn() {
-        return this.props.validators[this.props.endTurnAction](this.props.gameState);
+        return this.props.endTurnAction.isValid(this.props.gameState);
     }
 
     redo = () => {
-        this.props.redoGameAction(this.props.automaticActions);
+        this.props.redoGameAction(this.props.states);
     }
 
     undo = () => {
-        this.props.undoGameAction(this.props.automaticActions);
+        this.props.undoGameAction(this.props.states);
     }
 
     renderLayer() {
@@ -78,7 +74,7 @@ class Status extends React.Component {
                     {this.getInstruction()}
 
                     {
-                        this.props.confirmableActions[this.props.gameState.state] &&
+                        this.props.states.findById(this.props.gameState.state).performOnConfirm &&
                         <Button
                             onTouchTap={this.continueTurn}
                             secondary
@@ -131,23 +127,18 @@ Status.defaultProps = {
 Status.propTypes = {
     actionIndex: PropTypes.number.isRequired,
     actions: PropTypes.array.isRequired,
-    automaticActions: PropTypes.object,
-    confirmableActions: PropTypes.object,
-    endTurnAction: PropTypes.number.isRequired,
+    endTurnAction: PropTypes.object.isRequired,
     gameId: PropTypes.string.isRequired,
     gameState: PropTypes.object.isRequired,
     globalGameParams: PropTypes.array.isRequired,
-    instructions: PropTypes.object.isRequired,
     isLatestState: PropTypes.bool.isRequired,
     me: PropTypes.object.isRequired,
     playerOrder: PropTypes.array.isRequired,
     redoGameAction: PropTypes.func.isRequired,
-    serverActions: PropTypes.array,
-    transformers: PropTypes.object.isRequired,
+    states: PropTypes.object.isRequired,
     undoGameAction: PropTypes.func.isRequired,
     updateGameState: PropTypes.func.isRequired,
     users: PropTypes.object.isRequired,
-    validators: PropTypes.object.isRequired,
 };
 
 export default connectWithRouter(

@@ -14,16 +14,10 @@ class Game extends React.Component {
     }
 
     checkAutomaticActions() {
-        const action = this.props.automaticActions[this.props.gameState.state];
+        const { performAutomatically } = this.props.states.findById(this.props.gameState.state);
 
-        if (action) {
-            this.props.updateGameState(
-                this.props.gameId,
-                action,
-                this.props.transformers,
-                [],
-                this.props.serverActions.includes(action)
-            );
+        if (performAutomatically) {
+            this.props.updateGameState(this.props.gameId, performAutomatically());
         }
     }
 
@@ -44,21 +38,14 @@ class Game extends React.Component {
     }
 }
 
-Game.defaultProps = {
-    automaticActions: {},
-    serverActions: [],
-};
-
 Game.propTypes = {
-    automaticActions: PropTypes.object,
     children: PropTypes.node.isRequired,
     gameId: PropTypes.string.isRequired,
     gameState: PropTypes.object.isRequired,
     isLatestState: PropTypes.bool.isRequired,
     me: PropTypes.object.isRequired,
     playerOrder: PropTypes.array.isRequired,
-    serverActions: PropTypes.array,
-    transformers: PropTypes.object.isRequired,
+    states: PropTypes.object.isRequired,
     updateGameState: PropTypes.func.isRequired,
 };
 

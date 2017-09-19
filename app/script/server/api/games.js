@@ -2,7 +2,7 @@ const uuid = require('uuid/v4');
 const shuffle = require('knuth-shuffle').knuthShuffle;
 const gameConstants = require('../../shared/constants/games');
 
-const calculateAllStates = (initialState, actions, transformers) => {
+const calculateAllStates = (initialState, actions, handlers) => {
     let currentState = initialState;
 
     return [
@@ -10,7 +10,7 @@ const calculateAllStates = (initialState, actions, transformers) => {
         ...actions.map((action) => {
             const actionOwner = currentState.currentPlayer;
 
-            currentState = transformers[action[0]](currentState, action[1]);
+            currentState = handlers.findById(action[0]).perform(currentState, action[1]);
             currentState.action = [
                 ...action,
                 actionOwner,
@@ -73,7 +73,7 @@ module.exports = (app) => {
         app.knex('game').where('id', request.body.id).update(request.body.data).then(() => {
             if (request.body.data.status === gameConstants.GAME_STATUS_ACTIVE) {
                 app.knex('game').where('id', request.body.id).select().then(([game]) => {
-                    const { setup } = require(`../games/${game.handle}`);
+                    const setup = require(`../../shared/games/${game.handle}/setup`);
                     const state = JSON.stringify(setup());
 
                     app.knex('user_in_game').where('game_id', game.id).select().then((players) => {
@@ -116,13 +116,13 @@ module.exports = (app) => {
             .where('id', request.params.id)
             .select()
             .then(([game]) => {
-                const { transformers } = require(`../../shared/games/${game.handle}`);
+                const actions = require(`../../shared/games/${game.handle}/actions`);
 
                 response.json({
                     gameStates: calculateAllStates(
                         JSON.parse(game.initial_state),
                         JSON.parse(game.actions),
-                        transformers
+                        actions
                     ),
                     playerOrder: game.player_order.split(','),
                 });
@@ -135,14 +135,12 @@ module.exports = (app) => {
             .select()
             .then(([user]) => {
                 app.knex('game').where('id', request.params.id).select().then(([game]) => {
-                    const {
-                        transformers, validators,
-                    } = require(`../../shared/games/${game.handle}`);
+                    const actions = require(`../../shared/games/${game.handle}/actions`);
 
                     const states = calculateAllStates(
                         JSON.parse(game.initial_state),
                         JSON.parse(game.actions),
-                        transformers
+                        actions
                     );
 
                     let currentState = states[states.length - 1];
@@ -154,14 +152,14 @@ module.exports = (app) => {
                     }
 
                     try {
-                        request.body.forEach(([action, payload = []]) => {
-                            if (!validators[action](currentState, payload)) {
+                        request.body.forEach(([actionId, payload = []]) => {
+                            const action = actions.findById(actionId);
+
+                            if (!action.isValid(currentState, payload)) {
                                 throw new Error(`invalid action: ${action}`);
                             }
 
-                            currentState = transformers[action](
-                                currentState, payload
-                            );
+                            currentState = action.perform(currentState, payload);
 
                             currentState.action = [
                                 action,
@@ -183,7 +181,7 @@ module.exports = (app) => {
                         .catch(error => (
                             response.status(400).json({ errors: error })
                         ));
-                    } catch (error) {
+                    } catch (error) {throw new Error(error);
                         response.status(400).json({ errors: error });
                     }
                 });

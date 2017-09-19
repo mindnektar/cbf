@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
 import { updateGlobalGameParams } from 'actions/games';
-import { actions, assets, states, transformers, validators } from 'shared/games/five-tribes';
+import { actions, assets, states } from 'shared/games/five-tribes';
 import Action from '../helpers/Action';
 import LocalAction from '../helpers/LocalAction';
 import Player, { PlayerDetail, PlayerRow } from '../helpers/Player';
@@ -75,8 +75,6 @@ class Players extends React.Component {
                                         action={actions.KILL_VIZIER_FROM_PLAYER}
                                         key={meeple}
                                         params={[playerIndex, meepleIndex]}
-                                        transformers={transformers}
-                                        validators={validators}
                                     >
                                         <div
                                             className={classNames(
@@ -95,8 +93,6 @@ class Players extends React.Component {
                                         action={actions.KILL_ELDER_FROM_PLAYER}
                                         key={meeple}
                                         params={[playerIndex, meepleIndex]}
-                                        transformers={transformers}
-                                        validators={validators}
                                     >
                                         <div
                                             className={classNames(
@@ -115,7 +111,7 @@ class Players extends React.Component {
                                 sortResources(privatePlayerData[playerIndex].resources).map(resource =>
                                     <LocalAction
                                         active={
-                                            state === states.SELECT_FAKIRS_FOR_MEEPLE_ACTION &&
+                                            state === states.SELECT_FAKIRS_FOR_MEEPLE_ACTION.id &&
                                             assets.resources[resource] === 'Fakir'
                                         }
                                         key={resource}

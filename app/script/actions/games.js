@@ -42,7 +42,7 @@ export const openGame = id => (dispatch) => {
     });
 };
 
-export const redoGameAction = automaticActions => (dispatch, getState) => {
+export const redoGameAction = states => (dispatch, getState) => {
     const { gameStates } = getState();
     const lastStateIndex = gameStates.stateCountSinceLastLoad - 1;
     let actionIndex = gameStates.actionIndex;
@@ -51,7 +51,7 @@ export const redoGameAction = automaticActions => (dispatch, getState) => {
         actionIndex += 1;
     } while (
         actionIndex < gameStates.actions.length &&
-        automaticActions[gameStates.states[lastStateIndex + actionIndex].state]
+        states[gameStates.states[lastStateIndex + actionIndex].state].performAutomatically
     );
 
     dispatch({
@@ -76,7 +76,7 @@ export const switchGameState = currentState => ({
     payload: { currentState },
 });
 
-export const undoGameAction = automaticActions => (dispatch, getState) => {
+export const undoGameAction = states => (dispatch, getState) => {
     const { gameStates } = getState();
     const lastStateIndex = gameStates.stateCountSinceLastLoad - 1;
     let actionIndex = gameStates.actionIndex;
@@ -85,7 +85,7 @@ export const undoGameAction = automaticActions => (dispatch, getState) => {
         actionIndex -= 1;
     } while (
         actionIndex > 0 &&
-        automaticActions[gameStates.states[lastStateIndex + actionIndex].state]
+        states[gameStates.states[lastStateIndex + actionIndex].state].performAutomatically
     );
 
     dispatch({
@@ -94,16 +94,14 @@ export const undoGameAction = automaticActions => (dispatch, getState) => {
     });
 };
 
-export const updateGameState = (
-    gameId, action, transformers, data = [], isServerAction = false,
-) => (dispatch, getState) => {
+export const updateGameState = (gameId, action, data = []) => (dispatch, getState) => {
     const { gameStates } = getState();
     const previousState = gameStates.states[
         (gameStates.stateCountSinceLastLoad - 1) + gameStates.actionIndex
     ];
-    const nextAction = [action, data];
+    const nextAction = [action.id, data];
 
-    if (isServerAction) {
+    if (action.isServerAction) {
         return api.handleGameActions(
             gameId,
             [
@@ -113,7 +111,7 @@ export const updateGameState = (
         ).then(() => dispatch(loadGameStates(gameId)));
     }
 
-    const nextState = transformers[action](previousState, data);
+    const nextState = action.perform(previousState, data);
 
     nextState.action = [
         ...nextAction,

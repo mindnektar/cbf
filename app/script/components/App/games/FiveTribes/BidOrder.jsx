@@ -8,11 +8,11 @@ class BidOrder extends React.Component {
     getBidOrder() {
         let state = this.props.gameState.state;
 
-        if (state === states.END_TURN) {
+        if (state === states.END_TURN.id) {
             state = this.props.gameState.action[0];
         }
 
-        return state === states.BID_FOR_TURN_ORDER ?
+        return state === states.BID_FOR_TURN_ORDER.id ?
             this.props.gameState.public.game.bidOrder :
             this.props.gameState.public.game.nextTurnsBidOrder;
     }

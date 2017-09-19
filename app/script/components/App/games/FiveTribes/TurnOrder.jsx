@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
-import { actions, assets, serverActions, transformers, validators } from 'shared/games/five-tribes';
+import { actions, assets } from 'shared/games/five-tribes';
 import Action from '../helpers/Action';
 
 class TurnOrder extends React.Component {
@@ -17,9 +17,6 @@ class TurnOrder extends React.Component {
                         // eslint-disable-next-line react/no-array-index-key
                         key={spotIndex}
                         params={[spotIndex]}
-                        serverActions={serverActions}
-                        transformers={transformers}
-                        validators={validators}
                     >
                         <div className="five-tribes__track-item">
                             <div className="five-tribes__track-number">

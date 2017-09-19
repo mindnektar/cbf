@@ -2,12 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
-import { actions, assets, serverActions, states, transformers, validators } from 'shared/games/five-tribes';
+import { actions, assets, states } from 'shared/games/five-tribes';
 import Action from '../helpers/Action';
 
 class Board extends React.Component {
     getAction() {
-        if (this.props.gameState.state === states.SELECT_TILE_FOR_MOVEMENT) {
+        if (this.props.gameState.state === states.SELECT_TILE_FOR_MOVEMENT.id) {
             return actions.SELECT_TILE_FOR_MOVEMENT;
         }
 
@@ -29,9 +29,6 @@ class Board extends React.Component {
                                 action={action}
                                 key={item[0]}
                                 params={[rowIndex, itemIndex]}
-                                serverActions={serverActions}
-                                transformers={transformers}
-                                validators={validators}
                             >
                                 <div className="five-tribes__tile">
                                     <div
@@ -53,9 +50,6 @@ class Board extends React.Component {
                                                 action={actions.KILL_MEEPLE_ON_BOARD}
                                                 key={meeple}
                                                 params={[rowIndex, itemIndex, meepleIndex]}
-                                                serverActions={serverActions}
-                                                transformers={transformers}
-                                                validators={validators}
                                             >
                                                 <div
                                                     className={classNames(
@@ -80,16 +74,16 @@ class Board extends React.Component {
                                     <div className="five-tribes__tile-buildings">
                                         {item[3] > 0 &&
                                             <div className="five-tribes__tile-palm-tree">
-                                                {Array(item[3]).fill(null).map(() =>
-                                                    <span>&#x1f334;</span>
+                                                {Array(item[3]).fill(null).map((_, index) =>
+                                                    <span key={index}>&#x1f334;</span>
                                                 )}
                                             </div>
                                         }
 
                                         {item[4] > 0 &&
                                             <div className="five-tribes__tile-palace">
-                                                {Array(item[4]).fill(null).map(() =>
-                                                    <span>&pi;</span>
+                                                {Array(item[4]).fill(null).map((_, index) =>
+                                                    <span key={index}>&pi;</span>
                                                 )}
                                             </div>
                                         }

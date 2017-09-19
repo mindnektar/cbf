@@ -10,15 +10,13 @@ class Action extends React.Component {
             this.props.updateGameState(
                 this.props.gameId,
                 this.props.action,
-                this.props.transformers,
                 this.props.params,
-                this.props.serverActions.includes(this.props.action),
             );
         }
     }
 
     isActive() {
-        return this.props.validators[this.props.action](
+        return this.props.action.isValid(
             this.props.gameState, this.props.params
         );
     }
@@ -56,15 +54,12 @@ Action.defaultProps = {
 };
 
 Action.propTypes = {
-    action: PropTypes.number.isRequired,
+    action: PropTypes.object.isRequired,
     children: PropTypes.node.isRequired,
     gameId: PropTypes.string.isRequired,
     gameState: PropTypes.object.isRequired,
     params: PropTypes.array,
-    serverActions: PropTypes.array,
-    transformers: PropTypes.object.isRequired,
     updateGameState: PropTypes.func.isRequired,
-    validators: PropTypes.object.isRequired,
 };
 
 export default connectWithRouter(
