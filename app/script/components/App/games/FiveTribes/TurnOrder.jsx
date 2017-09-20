@@ -45,9 +45,7 @@ TurnOrder.propTypes = {
 
 export default connectWithRouter(
     state => ({
-        gameState: state.gameStates.states[
-            (state.gameStates.stateCountSinceLastLoad - 1) + state.gameStates.actionIndex
-        ],
+        gameState: state.gameStates.states[state.gameStates.currentState],
     }),
     null,
     TurnOrder

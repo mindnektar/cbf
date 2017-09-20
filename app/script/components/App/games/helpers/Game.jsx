@@ -14,6 +14,10 @@ class Game extends React.Component {
     }
 
     checkAutomaticActions() {
+        if (!this.props.isLatestState) {
+            return;
+        }
+
         const {
             performAutomatically,
             performOnConfirm,
@@ -60,9 +64,7 @@ Game.propTypes = {
 export default connectWithRouter(
     (state, ownProps) => ({
         gameId: ownProps.match.params.gameId,
-        gameState: state.gameStates.states[
-            (state.gameStates.stateCountSinceLastLoad - 1) + state.gameStates.actionIndex
-        ],
+        gameState: state.gameStates.states[state.gameStates.currentState],
         isLatestState: state.gameStates.currentState === (
             (state.gameStates.stateCountSinceLastLoad - 1) + state.gameStates.actionIndex
         ),

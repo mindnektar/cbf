@@ -154,9 +154,7 @@ Players.propTypes = {
 
 export default connectWithRouter(
     (state, ownProps) => ({
-        gameState: state.gameStates.states[
-            (state.gameStates.stateCountSinceLastLoad - 1) + state.gameStates.actionIndex
-        ],
+        gameState: state.gameStates.states[state.gameStates.currentState],
         selectedFakirs: [...(state.gameStates.globalGameParams[0] || [])],
         me: state.me,
         playerOrder: state.games[ownProps.match.params.gameId].playerOrder,

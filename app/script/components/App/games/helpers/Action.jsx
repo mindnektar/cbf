@@ -65,9 +65,7 @@ Action.propTypes = {
 export default connectWithRouter(
     (state, ownProps) => ({
         gameId: ownProps.match.params.gameId,
-        gameState: state.gameStates.states[
-            (state.gameStates.stateCountSinceLastLoad - 1) + state.gameStates.actionIndex
-        ],
+        gameState: state.gameStates.states[state.gameStates.currentState],
     }),
     {
         updateGameState,

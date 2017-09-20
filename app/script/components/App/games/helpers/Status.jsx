@@ -63,7 +63,7 @@ class Status extends React.Component {
     }
 
     mayEndTurn() {
-        return this.props.endTurnAction.isValid(this.props.gameState);
+        return this.props.isLatestState && this.props.endTurnAction.isValid(this.props.gameState);
     }
 
     redo = () => {
@@ -154,6 +154,7 @@ Status.propTypes = {
     playerOrder: PropTypes.array.isRequired,
     redoGameAction: PropTypes.func.isRequired,
     states: PropTypes.object.isRequired,
+    switchToLatestGameState: PropTypes.func.isRequired,
     undoGameAction: PropTypes.func.isRequired,
     updateGameState: PropTypes.func.isRequired,
     users: PropTypes.object.isRequired,
@@ -164,9 +165,7 @@ export default connectWithRouter(
         actionIndex: state.gameStates.actionIndex,
         actions: state.gameStates.actions,
         gameId: ownProps.match.params.gameId,
-        gameState: state.gameStates.states[
-            (state.gameStates.stateCountSinceLastLoad - 1) + state.gameStates.actionIndex
-        ],
+        gameState: state.gameStates.states[state.gameStates.currentState],
         globalGameParams: state.gameStates.globalGameParams,
         isLatestState: state.gameStates.currentState === (
             (state.gameStates.stateCountSinceLastLoad - 1) + state.gameStates.actionIndex
