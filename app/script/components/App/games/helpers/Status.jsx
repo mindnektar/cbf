@@ -2,7 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 import connectWithRouter from 'helpers/connectWithRouter';
-import { redoGameAction, undoGameAction, updateGameState } from 'actions/games';
+import {
+    redoGameAction,
+    switchToLatestGameState,
+    undoGameAction,
+    updateGameState,
+} from 'actions/games';
 import Button from 'Button';
 
 class Status extends React.Component {
@@ -53,6 +58,10 @@ class Status extends React.Component {
         );
     }
 
+    exitHistoryMode = () => {
+        this.props.switchToLatestGameState();
+    }
+
     mayEndTurn() {
         return this.props.endTurnAction.isValid(this.props.gameState);
     }
@@ -80,6 +89,15 @@ class Status extends React.Component {
                             secondary
                         >
                             Continue
+                        </Button>
+                    }
+
+                    {!this.props.isLatestState &&
+                        <Button
+                            onTouchTap={this.exitHistoryMode}
+                            secondary
+                        >
+                            Exit
                         </Button>
                     }
                 </div>
@@ -159,6 +177,7 @@ export default connectWithRouter(
     }),
     {
         redoGameAction,
+        switchToLatestGameState,
         undoGameAction,
         updateGameState,
     },

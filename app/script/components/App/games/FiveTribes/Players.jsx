@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
 import { updateGlobalGameParams } from 'actions/games';
-import { actions, assets, states } from 'shared/games/five-tribes';
+import { actions, assets } from 'shared/games/five-tribes';
 import Action from '../helpers/Action';
 import LocalAction from '../helpers/LocalAction';
 import Player, { PlayerDetail, PlayerRow } from '../helpers/Player';
@@ -31,7 +31,7 @@ const sortResources = resources => (
 
 class Players extends React.Component {
     selectFakirHandler = resource => () => {
-        const selectedFakirs = [...(this.props.globalGameParams[0] || [])];
+        const selectedFakirs = [...this.props.selectedFakirs];
         const fakirIndex = selectedFakirs.indexOf(resource);
 
         if (fakirIndex >= 0) {
@@ -46,7 +46,6 @@ class Players extends React.Component {
     render() {
         const playerData = this.props.gameState.public.players;
         const privatePlayerData = this.props.gameState.private.players;
-        const state = this.props.gameState.state;
 
         return (
             <div className="five-tribes__players">
@@ -110,16 +109,12 @@ class Players extends React.Component {
                             {userId === this.props.me.id ? (
                                 sortResources(privatePlayerData[playerIndex].resources).map(resource =>
                                     <LocalAction
-                                        active={
-                                            state === states.SELECT_FAKIRS_FOR_MEEPLE_ACTION.id &&
-                                            assets.resources[resource] === 'Fakir'
-                                        }
+                                        active={actions.SELECT_FAKIRS_FOR_MEEPLE_ACTION.isSelectable(
+                                            this.props.gameState, resource
+                                        )}
                                         key={resource}
                                         onTouchTap={this.selectFakirHandler(resource)}
-                                        selected={
-                                            this.props.globalGameParams[0] &&
-                                            this.props.globalGameParams[0].includes(resource)
-                                        }
+                                        selected={this.props.selectedFakirs.includes(resource)}
                                     >
                                         <Resource
                                             resource={resource}
@@ -150,7 +145,7 @@ class Players extends React.Component {
 
 Players.propTypes = {
     gameState: PropTypes.object.isRequired,
-    globalGameParams: PropTypes.array.isRequired,
+    selectedFakirs: PropTypes.array.isRequired,
     me: PropTypes.object.isRequired,
     playerOrder: PropTypes.array.isRequired,
     updateGlobalGameParams: PropTypes.func.isRequired,
@@ -162,7 +157,7 @@ export default connectWithRouter(
         gameState: state.gameStates.states[
             (state.gameStates.stateCountSinceLastLoad - 1) + state.gameStates.actionIndex
         ],
-        globalGameParams: state.gameStates.globalGameParams,
+        selectedFakirs: [...(state.gameStates.globalGameParams[0] || [])],
         me: state.me,
         playerOrder: state.games[ownProps.match.params.gameId].playerOrder,
         users: state.users,

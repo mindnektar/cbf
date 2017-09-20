@@ -112,9 +112,40 @@ const setTileActionState = (nextState) => {
             break;
         }
 
-        case 'Small market': nextState.state = states.GO_TO_SMALL_MARKET.id; break;
-        case 'Big market': nextState.state = states.GO_TO_BIG_MARKET.id; break;
-        default: nextState.state = states.COLLECT_DJINN.id;
+        case 'Small market': {
+            if (nextState.private.players[nextState.currentPlayer].goldCoinCount >= 3) {
+                nextState.state = states.GO_TO_SMALL_MARKET.id;
+            } else {
+                setEndOfTurnState(nextState);
+            }
+
+            break;
+        }
+
+        case 'Big market': {
+            if (nextState.private.players[nextState.currentPlayer].goldCoinCount >= 6) {
+                nextState.state = states.GO_TO_BIG_MARKET.id;
+            } else {
+                setEndOfTurnState(nextState);
+            }
+
+            break;
+        }
+
+        default: {
+            const { elderCount } = nextState.players.private[nextState.currentPlayer];
+            const hasFakir = nextState.private.players[nextState.currentPlayer].resources.find(
+                resource => resources[resource] === 'Fakir'
+            );
+
+            if ((elderCount === 1 && hasFakir) || elderCount >= 2) {
+                nextState.state = states.COLLECT_DJINN.id;
+            } else {
+                setEndOfTurnState(nextState);
+            }
+
+            break;
+        }
     }
 };
 

@@ -51,7 +51,7 @@ export const redoGameAction = states => (dispatch, getState) => {
         actionIndex += 1;
     } while (
         actionIndex < gameStates.actions.length &&
-        states[gameStates.states[lastStateIndex + actionIndex].state].performAutomatically
+        states.findById(gameStates.states[lastStateIndex + actionIndex].state).performAutomatically
     );
 
     dispatch({
@@ -76,6 +76,13 @@ export const switchGameState = currentState => ({
     payload: { currentState },
 });
 
+export const switchToLatestGameState = () => (dispatch, getState) => {
+    const { gameStates } = getState();
+    const latestState = (gameStates.stateCountSinceLastLoad - 1) + gameStates.actionIndex;
+
+    dispatch(switchGameState(latestState));
+};
+
 export const undoGameAction = states => (dispatch, getState) => {
     const { gameStates } = getState();
     const lastStateIndex = gameStates.stateCountSinceLastLoad - 1;
@@ -85,7 +92,7 @@ export const undoGameAction = states => (dispatch, getState) => {
         actionIndex -= 1;
     } while (
         actionIndex > 0 &&
-        states[gameStates.states[lastStateIndex + actionIndex].state].performAutomatically
+        states.findById(gameStates.states[lastStateIndex + actionIndex].state).performAutomatically
     );
 
     dispatch({

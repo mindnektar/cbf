@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
-import { updateGameState } from 'actions/games';
+import { updateGameState, updateGlobalGameParams } from 'actions/games';
 
 class Game extends React.Component {
     componentDidMount() {
@@ -14,10 +14,17 @@ class Game extends React.Component {
     }
 
     checkAutomaticActions() {
-        const { performAutomatically } = this.props.states.findById(this.props.gameState.state);
+        const {
+            performAutomatically,
+            performOnConfirm,
+        } = this.props.states.findById(this.props.gameState.state);
 
         if (performAutomatically) {
             this.props.updateGameState(this.props.gameId, performAutomatically());
+        }
+
+        if (performOnConfirm) {
+            this.props.updateGlobalGameParams([]);
         }
     }
 
@@ -47,6 +54,7 @@ Game.propTypes = {
     playerOrder: PropTypes.array.isRequired,
     states: PropTypes.object.isRequired,
     updateGameState: PropTypes.func.isRequired,
+    updateGlobalGameParams: PropTypes.func.isRequired,
 };
 
 export default connectWithRouter(
@@ -63,6 +71,7 @@ export default connectWithRouter(
     }),
     {
         updateGameState,
+        updateGlobalGameParams,
     },
     Game
 );
