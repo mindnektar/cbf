@@ -2,18 +2,26 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import connectWithRouter from 'helpers/connectWithRouter';
 import { updateGlobalGameParams } from 'actions/games';
-import { actions } from 'shared/games/five-tribes';
+import { actions, states } from 'shared/games/five-tribes';
 import LocalAction from '../helpers/LocalAction';
 import Resource from './Resource';
 
 class Market extends React.Component {
+    getAction() {
+        if (this.props.gameState.state === states.GO_TO_BIG_MARKET.id) {
+            return actions.GO_TO_BIG_MARKET;
+        }
+
+        return actions.GO_TO_SMALL_MARKET;
+    }
+
     selectResourceHandler = resource => () => {
         const selectedResources = [...this.props.selectedResources];
         const resourceIndex = selectedResources.indexOf(resource);
 
         if (resourceIndex >= 0) {
             selectedResources.splice(resourceIndex, 1);
-        } else if (selectedResources.length < 1) {
+        } else {
             selectedResources.push(resource);
         }
 
@@ -33,7 +41,7 @@ class Market extends React.Component {
 
                 {this.props.gameState.public.game.availableResources.map((resource, index) =>
                     <LocalAction
-                        active={actions.GO_TO_SMALL_MARKET.isSelectable(
+                        active={this.getAction().isSelectable(
                             this.props.gameState, this.props.selectedResources, index
                         )}
                         key={resource}

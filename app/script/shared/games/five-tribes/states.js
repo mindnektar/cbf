@@ -4,6 +4,7 @@ const states = {
     COLLECT_MARKET_RESOURCES: require('./states/COLLECT_MARKET_RESOURCES'),
     END_TURN: require('./states/END_TURN'),
     EXECUTE_MEEPLE_ACTION: require('./states/EXECUTE_MEEPLE_ACTION'),
+    GO_TO_BIG_MARKET: require('./states/GO_TO_BIG_MARKET'),
     GO_TO_SMALL_MARKET: require('./states/GO_TO_SMALL_MARKET'),
     MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK: require('./states/MOVE_PLAYER_MARKER_TO_BID_ORDER_TRACK'),
     PLACE_PALACE: require('./states/PLACE_PALACE'),

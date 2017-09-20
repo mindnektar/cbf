@@ -2,6 +2,7 @@ const actions = {
     COLLECT_GOLD_COINS: require('./actions/COLLECT_GOLD_COINS'),
     COLLECT_MARKET_RESOURCES: require('./actions/COLLECT_MARKET_RESOURCES'),
     END_TURN: require('./actions/END_TURN'),
+    GO_TO_BIG_MARKET: require('./actions/GO_TO_BIG_MARKET'),
     GO_TO_SMALL_MARKET: require('./actions/GO_TO_SMALL_MARKET'),
     KILL_ELDER_FROM_PLAYER: require('./actions/KILL_ELDER_FROM_PLAYER'),
     KILL_MEEPLE_ON_BOARD: require('./actions/KILL_MEEPLE_ON_BOARD'),
