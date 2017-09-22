@@ -7,6 +7,7 @@ import { actions, assets, states } from 'shared/games/five-tribes';
 import Action from '../helpers/Action';
 import LocalAction from '../helpers/LocalAction';
 import Player, { PlayerDetail, PlayerRow } from '../helpers/Player';
+import Djinn from './Djinn';
 import Resource from './Resource';
 
 const playerColors = [
@@ -169,9 +170,9 @@ class Players extends React.Component {
                         </PlayerDetail>
 
                         <PlayerDetail header="Djinns">
-                            {playerData[playerIndex].djinns.map(
-                                djinnIndex => assets.djinns[djinnIndex].name
-                            ).join(', ')}
+                            {playerData[playerIndex].djinns.map(djinn =>
+                                <Djinn djinn={djinn} />
+                            )}
                         </PlayerDetail>
                     </Player>
                 )}

@@ -2,8 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import connectWithRouter from 'helpers/connectWithRouter';
 import { updateGlobalGameParams } from 'actions/games';
-import { actions, assets } from 'shared/games/five-tribes';
+import { actions } from 'shared/games/five-tribes';
 import LocalAction from '../helpers/LocalAction';
+import Djinn from './Djinn';
 
 class Djinns extends React.Component {
     selectDjinnHandler = djinn => () => {
@@ -17,8 +18,8 @@ class Djinns extends React.Component {
 
         return (
             <div className="five-tribes__djinns">
-                <div className="five-tribes__djinn-item five-tribes__djinn-item--deck">
-                    <div className="five-tribes__djinn-item-name">
+                <div className="five-tribes__djinn five-tribes__djinn--deck">
+                    <div className="five-tribes__djinn-name">
                         {remainingDjinnCount} djinn{remainingDjinnCount !== 1 ? 's' : ''} remaining
                     </div>
                 </div>
@@ -32,15 +33,7 @@ class Djinns extends React.Component {
                         onTouchTap={this.selectDjinnHandler(djinn)}
                         selected={this.props.globalGameParams.selectedDjinn === djinn}
                     >
-                        <div className="five-tribes__djinn-item">
-                            <div className="five-tribes__djinn-item-name">
-                                {assets.djinns[djinn].name}
-                            </div>
-
-                            <div className="five-tribes__djinn-item-value">
-                                {assets.djinns[djinn].value}
-                            </div>
-                        </div>
+                        <Djinn djinn={djinn} />
                     </LocalAction>
                 )}
             </div>
