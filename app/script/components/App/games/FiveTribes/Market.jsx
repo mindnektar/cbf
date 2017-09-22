@@ -16,7 +16,7 @@ class Market extends React.Component {
     }
 
     selectResourceHandler = resource => () => {
-        const selectedResources = [...this.props.selectedResources];
+        const selectedResources = [...this.props.globalGameParams.selectedResources];
         const resourceIndex = selectedResources.indexOf(resource);
 
         if (resourceIndex >= 0) {
@@ -25,11 +25,12 @@ class Market extends React.Component {
             selectedResources.push(resource);
         }
 
-        this.props.updateGlobalGameParams([selectedResources]);
+        this.props.updateGlobalGameParams({ selectedResources });
     }
 
     render() {
         const remainingResourceCount = this.props.gameState.public.game.remainingResourceCount;
+        const { selectedResources } = this.props.globalGameParams;
 
         return (
             <div className="five-tribes__market">
@@ -42,11 +43,11 @@ class Market extends React.Component {
                 {this.props.gameState.public.game.availableResources.map((resource, index) =>
                     <LocalAction
                         active={this.getAction().isSelectable(
-                            this.props.gameState, this.props.selectedResources, index
+                            this.props.gameState, selectedResources, index
                         )}
                         key={resource}
                         onTouchTap={this.selectResourceHandler(index)}
-                        selected={this.props.selectedResources.includes(index)}
+                        selected={selectedResources && selectedResources.includes(index)}
                     >
                         <Resource resource={resource} />
                     </LocalAction>
@@ -58,14 +59,14 @@ class Market extends React.Component {
 
 Market.propTypes = {
     gameState: PropTypes.object.isRequired,
-    selectedResources: PropTypes.array.isRequired,
+    globalGameParams: PropTypes.object.isRequired,
     updateGlobalGameParams: PropTypes.func.isRequired,
 };
 
 export default connectWithRouter(
     state => ({
         gameState: state.gameStates.states[state.gameStates.currentState],
-        selectedResources: [...(state.gameStates.globalGameParams[0] || [])],
+        globalGameParams: state.gameStates.globalGameParams,
     }),
     {
         updateGlobalGameParams,

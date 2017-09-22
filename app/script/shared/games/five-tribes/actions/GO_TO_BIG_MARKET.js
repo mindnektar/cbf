@@ -8,7 +8,7 @@ module.exports = {
     toString: ({ me, state }) => {
         const [selectedResources] = state.action[1];
 
-        if ((selectedResources || []).length === 0) {
+        if (selectedResources.length === 0) {
             return null;
         }
 
@@ -36,8 +36,21 @@ module.exports = {
             return false;
         }
 
+        if (selectedResources.length === 0) {
+            return true;
+        }
+
+        if (selectedResources.length === 1) {
+            return (
+                selectedResources[0] < 6 &&
+                state.private.players[state.currentPlayer].goldCoinCount >= 6
+            );
+        }
+
         return (
+            selectedResources.length === 2 &&
             selectedResources[0] < 6 &&
+            selectedResources[1] < 6 &&
             state.private.players[state.currentPlayer].goldCoinCount >= 6
         );
     },
@@ -45,7 +58,7 @@ module.exports = {
     perform: (state, [selectedResources]) => {
         const nextState = clone(state);
 
-        if (selectedResources && selectedResources.length > 0) {
+        if (selectedResources.length > 0) {
             for (let i = 0; i < selectedResources.length; i += 1) {
                 const resources = nextState.public.game.availableResources.splice(
                     selectedResources[i], 1

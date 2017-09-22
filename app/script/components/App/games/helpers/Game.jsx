@@ -21,6 +21,7 @@ class Game extends React.Component {
         const {
             performAutomatically,
             performOnConfirm,
+            params,
         } = this.props.states.findById(this.props.gameState.state);
 
         if (performAutomatically) {
@@ -28,7 +29,13 @@ class Game extends React.Component {
         }
 
         if (performOnConfirm) {
-            this.props.updateGlobalGameParams([]);
+            const globalParams = {};
+
+            (params || []).forEach((param) => {
+                globalParams[param.name] = param.defaultValue;
+            });
+
+            this.props.updateGlobalGameParams(globalParams, true);
         }
     }
 

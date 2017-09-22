@@ -133,12 +133,12 @@ const setTileActionState = (nextState) => {
         }
 
         default: {
-            const { elderCount } = nextState.players.private[nextState.currentPlayer];
+            const { elders } = nextState.public.players[nextState.currentPlayer];
             const hasFakir = nextState.private.players[nextState.currentPlayer].resources.find(
                 resource => resources[resource] === 'Fakir'
             );
 
-            if ((elderCount === 1 && hasFakir) || elderCount >= 2) {
+            if ((elders.length === 1 && hasFakir) || elders.length >= 2) {
                 nextState.state = states.COLLECT_DJINN.id;
             } else {
                 setEndOfTurnState(nextState);

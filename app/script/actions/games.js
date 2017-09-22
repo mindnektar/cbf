@@ -133,7 +133,7 @@ export const updateGameState = (gameId, action, data = []) => (dispatch, getStat
     return Promise.resolve();
 };
 
-export const updateGlobalGameParams = payload => ({
+export const updateGlobalGameParams = (params, reset = false) => ({
     type: UPDATE_GLOBAL_GAME_PARAMS,
-    payload,
+    payload: { params, reset },
 });

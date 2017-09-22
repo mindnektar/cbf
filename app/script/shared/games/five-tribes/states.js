@@ -1,5 +1,6 @@
 const states = {
     BID_FOR_TURN_ORDER: require('./states/BID_FOR_TURN_ORDER'),
+    COLLECT_DJINN: require('./states/COLLECT_DJINN'),
     COLLECT_GOLD_COINS: require('./states/COLLECT_GOLD_COINS'),
     COLLECT_MARKET_RESOURCES: require('./states/COLLECT_MARKET_RESOURCES'),
     END_TURN: require('./states/END_TURN'),

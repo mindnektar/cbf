@@ -8,7 +8,7 @@ module.exports = {
     toString: ({ me, state }) => {
         const [selectedFakirs] = state.action[1];
 
-        if ((selectedFakirs || []).length === 0) {
+        if (selectedFakirs.length === 0) {
             return null;
         }
 
@@ -46,7 +46,7 @@ module.exports = {
 
         const { resources } = nextState.private.players[nextState.currentPlayer];
         const filteredResources = resources.filter(
-            resource => !(selectedFakirs || []).includes(resource)
+            resource => !selectedFakirs.includes(resource)
         );
         const usedFakirCount = resources.length - filteredResources.length;
 

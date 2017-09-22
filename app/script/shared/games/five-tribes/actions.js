@@ -1,4 +1,5 @@
 const actions = {
+    COLLECT_DJINN: require('./actions/COLLECT_DJINN'),
     COLLECT_GOLD_COINS: require('./actions/COLLECT_GOLD_COINS'),
     COLLECT_MARKET_RESOURCES: require('./actions/COLLECT_MARKET_RESOURCES'),
     END_TURN: require('./actions/END_TURN'),

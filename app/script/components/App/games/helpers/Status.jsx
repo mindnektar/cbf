@@ -41,12 +41,12 @@ class Status extends React.Component {
     }
 
     continueTurn = () => {
-        const { performOnConfirm } = this.props.states.findById(this.props.gameState.state);
+        const { performOnConfirm, params } = this.props.states.findById(this.props.gameState.state);
 
         this.props.updateGameState(
             this.props.gameId,
             performOnConfirm(),
-            this.props.globalGameParams,
+            params.map(param => this.props.globalGameParams[param.name]),
         );
     }
 
@@ -62,8 +62,26 @@ class Status extends React.Component {
         this.props.switchToLatestGameState();
     }
 
+    mayContinueTurn() {
+        const { performOnConfirm, params } = this.props.states.findById(this.props.gameState.state);
+
+        return (
+            this.props.isLatestState &&
+            this.props.me.id === this.props.playerOrder[this.props.gameState.currentPlayer] &&
+            params.every(param => this.props.globalGameParams[param.name] !== undefined) &&
+            performOnConfirm().isValid(
+                this.props.gameState,
+                params.map(param => this.props.globalGameParams[param.name])
+            )
+        );
+    }
+
     mayEndTurn() {
-        return this.props.isLatestState && this.props.endTurnAction.isValid(this.props.gameState);
+        return (
+            this.props.isLatestState &&
+            this.props.me.id === this.props.playerOrder[this.props.gameState.currentPlayer] &&
+            this.props.endTurnAction.isValid(this.props.gameState)
+        );
     }
 
     redo = () => {
@@ -75,8 +93,6 @@ class Status extends React.Component {
     }
 
     renderLayer() {
-        const currentPlayer = this.props.playerOrder[this.props.gameState.currentPlayer];
-
         ReactDOM.unstable_renderSubtreeIntoContainer(this, (
             <div className="cbf-helper-status">
                 <div className="cbf-helper-status__text">
@@ -85,6 +101,7 @@ class Status extends React.Component {
                     {
                         this.props.states.findById(this.props.gameState.state).performOnConfirm &&
                         <Button
+                            disabled={!this.mayContinueTurn()}
                             onTouchTap={this.continueTurn}
                             secondary
                         >
@@ -120,7 +137,7 @@ class Status extends React.Component {
                     </Button>
 
                     <Button
-                        disabled={!this.mayEndTurn() || this.props.me.id !== currentPlayer}
+                        disabled={!this.mayEndTurn()}
                         onTouchTap={this.endTurn}
                         secondary
                     >
@@ -148,7 +165,7 @@ Status.propTypes = {
     endTurnAction: PropTypes.object.isRequired,
     gameId: PropTypes.string.isRequired,
     gameState: PropTypes.object.isRequired,
-    globalGameParams: PropTypes.array.isRequired,
+    globalGameParams: PropTypes.object.isRequired,
     isLatestState: PropTypes.bool.isRequired,
     me: PropTypes.object.isRequired,
     playerOrder: PropTypes.array.isRequired,

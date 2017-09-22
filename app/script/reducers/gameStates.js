@@ -13,7 +13,7 @@ export default createReducer(null, {
         actionIndex: 0,
         actions: [],
         currentState: action.payload.gameStates.length - 1,
-        globalGameParams: [],
+        globalGameParams: {},
         stateCountSinceLastLoad: action.payload.gameStates.length,
         states: action.payload.gameStates,
     }),
@@ -41,6 +41,9 @@ export default createReducer(null, {
     }),
     [UPDATE_GLOBAL_GAME_PARAMS]: (state, action) => ({
         ...state,
-        globalGameParams: action.payload,
+        globalGameParams: action.payload.reset ? action.payload.params : {
+            ...state.globalGameParams,
+            ...action.payload.params,
+        },
     }),
 });
