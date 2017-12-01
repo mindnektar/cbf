@@ -43,7 +43,8 @@ module.exports = {
             rowIndex,
             itemIndex,
             meeplesOnHandAfterPlacement,
-            meeplesOnHandAfterPlacement.length
+            meeplesOnHandAfterPlacement.length,
+            1
         );
     },
 

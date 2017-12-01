@@ -1,7 +1,9 @@
 const states = require('./states');
 const { meeples, resources, tiles } = require('./assets');
 
-const canMakeMovementFromTile = (state, rowIndex, itemIndex, meepleIds, meepleCount) => {
+const canMakeMovementFromTile = (
+    state, rowIndex, itemIndex, meepleIds, meepleCount, additionalMeeplesOnTile = 0
+) => {
     const meepleNames = meepleIds.map(meeple => meeples[meeple]);
     const { board, dropHistory } = state.public.game;
 
@@ -12,7 +14,8 @@ const canMakeMovementFromTile = (state, rowIndex, itemIndex, meepleIds, meepleCo
             if (
                 dropHistory.length >= 1 &&
                 dropHistory[dropHistory.length - 1][0] === i &&
-                dropHistory[dropHistory.length - 1][1] === j
+                dropHistory[dropHistory.length - 1][1] === j &&
+                meepleIds.length < 4
             ) {
                 continue;
             }
@@ -20,7 +23,8 @@ const canMakeMovementFromTile = (state, rowIndex, itemIndex, meepleIds, meepleCo
             if (
                 dropHistory.length >= 2 &&
                 dropHistory[dropHistory.length - 2][0] === i &&
-                dropHistory[dropHistory.length - 2][1] === j
+                dropHistory[dropHistory.length - 2][1] === j &&
+                meepleIds.length < 3
             ) {
                 continue;
             }
@@ -29,8 +33,16 @@ const canMakeMovementFromTile = (state, rowIndex, itemIndex, meepleIds, meepleCo
                 distance !== 0 &&
                 distance <= meepleCount &&
                 distance % 2 === meepleCount % 2 &&
-                board[i][j][1].some(
-                    meeple => meepleNames.includes(meeples[meeple])
+                (
+                    (
+                        meepleIds.length + additionalMeeplesOnTile >= 5 &&
+                        meepleNames.length !== meepleNames.filter((name, index) => (
+                            meepleNames.indexOf(name) === index
+                        )).length
+                    ) ||
+                    board[i][j][1].some(
+                        meeple => meepleNames.includes(meeples[meeple])
+                    )
                 )
             ) {
                 return true;

@@ -28,10 +28,8 @@ module.exports = {
             ) &&
             (
                 !dropHistory[dropHistory.length - 2] ||
-                (
-                    dropHistory[dropHistory.length - 2][0] !== rowIndex ||
-                    dropHistory[dropHistory.length - 2][1] !== itemIndex
-                )
+                dropHistory[dropHistory.length - 2][0] !== rowIndex ||
+                dropHistory[dropHistory.length - 2][1] !== itemIndex
             )
         ) {
             if (meeplesInHand.length === 1) {

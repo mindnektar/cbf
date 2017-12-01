@@ -171,7 +171,7 @@ class Players extends React.Component {
 
                         <PlayerDetail header="Djinns">
                             {playerData[playerIndex].djinns.map(djinn =>
-                                <Djinn djinn={djinn} />
+                                <Djinn key={djinn} djinn={djinn} />
                             )}
                         </PlayerDetail>
                     </Player>
