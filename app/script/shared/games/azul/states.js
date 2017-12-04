@@ -1,6 +1,7 @@
 const states = {
     END_TURN: require('./states/END_TURN'),
     PICK_UP_TILES: require('./states/PICK_UP_TILES'),
+    SELECT_PATTERN_LINE: require('./states/SELECT_PATTERN_LINE'),
 };
 
 module.exports = {

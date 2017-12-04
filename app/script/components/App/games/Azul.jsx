@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import connectWithRouter from 'helpers/connectWithRouter';
-import { actions, states, assets } from 'shared/games/azul';
+import { actions, states } from 'shared/games/azul';
 import Game from './helpers/Game';
 import Sidebar from './helpers/Sidebar';
 import Status from './helpers/Status';
@@ -13,7 +13,7 @@ class Azul extends React.Component {
         const myPlayerData = this.props.gameState.public.players[
             this.props.playerOrder.indexOf(this.props.me.id)
         ];
-        console.log(assets.tiles);
+
         return (
             <Game states={states}>
                 <div className="azul">
@@ -27,7 +27,10 @@ class Azul extends React.Component {
                     <div className="azul__game">
                         <Board player={myPlayerData} />
 
-                        <Factory factoryTiles={this.props.gameState.public.game.factoryTiles} />
+                        <Factory
+                            centerTiles={this.props.gameState.public.game.centerTiles}
+                            factoryTiles={this.props.gameState.public.game.factoryTiles}
+                        />
                     </div>
                 </div>
             </Game>

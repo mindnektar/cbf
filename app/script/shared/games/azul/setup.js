@@ -16,6 +16,7 @@ module.exports = () => {
                 factoryTiles,
                 centerTiles: [5],
                 discardedTiles: [],
+                hand: [],
             },
             players: Array(2).fill({
                 score: 0,

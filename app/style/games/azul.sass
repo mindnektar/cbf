@@ -85,6 +85,9 @@
     margin-top: aw(1)
 
 .azul__factory
+    position: relative
+
+.azul__factory-circle
     @include on-circle($item-count: 5, $circle-size: aw(18), $item-size: aw(6))
 
 .azul__factory-display
@@ -98,12 +101,24 @@
     justify-content: center
     padding: aw(.8)
 
+.azul__factory-center
+    box-sizing: border-box
+    display: flex
+    height: 100%
+    left: 0
+    margin: 15% 0 0 15%
+    padding: 30%
+    position: absolute
+    top: 0
+    width: 100%
+
 .azul__tile
     border: aw(.1) solid black
     border-radius: aw(.5)
     box-sizing: border-box
     height: aw(1.6)
     margin: aw(.2)
+    position: relative
     width: aw(1.6)
 
 .azul__tile-0
@@ -120,3 +135,13 @@
 
 .azul__tile-4
     background: black
+
+.azul__tile-5
+    background: white
+
+    &::after
+        align-items: center
+        content: "1"
+        display: flex
+        font-weight: bold
+        justify-content: center
