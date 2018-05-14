@@ -1,5 +1,5 @@
-import Azul from './Azul.jsx';
-import FiveTribes from './FiveTribes.jsx';
+import Azul from './Azul';
+import FiveTribes from './FiveTribes';
 
 export default {
     azul: Azul,

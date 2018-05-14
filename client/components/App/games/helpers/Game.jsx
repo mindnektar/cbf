@@ -40,7 +40,7 @@ class Game extends React.Component {
     }
 
     render() {
-        const currentPlayer = this.props.playerOrder[this.props.gameState.currentPlayer];
+        const { currentPlayer } = this.props.gameState;
         const awaitsAction = this.props.isLatestState && this.props.me.id === currentPlayer;
 
         return (
@@ -62,7 +62,6 @@ Game.propTypes = {
     gameState: PropTypes.object.isRequired,
     isLatestState: PropTypes.bool.isRequired,
     me: PropTypes.object.isRequired,
-    playerOrder: PropTypes.array.isRequired,
     states: PropTypes.object.isRequired,
     updateGameState: PropTypes.func.isRequired,
     updateGlobalGameParams: PropTypes.func.isRequired,
@@ -76,7 +75,6 @@ export default connectWithRouter(
             (state.gameStates.stateCountSinceLastLoad - 1) + state.gameStates.actionIndex
         ),
         me: state.me,
-        playerOrder: state.games[ownProps.match.params.gameId].playerOrder,
     }),
     {
         updateGameState,

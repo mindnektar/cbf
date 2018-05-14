@@ -19,7 +19,7 @@ class AllGames extends React.Component {
             <div className="cbf-all-games">
                 <Headline>All games</Headline>
 
-                {Object.values(games).map(game =>
+                {Object.values(games).map(game => (
                     <div
                         className="cbf-all-games__item"
                         key={game.handle}
@@ -47,7 +47,7 @@ class AllGames extends React.Component {
                             </div>
                         </div>
                     </div>
-                )}
+                ))}
             </div>
         );
     }

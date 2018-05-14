@@ -1,6 +1,5 @@
 import api from 'api';
 import gameConstants from 'shared/constants/games';
-import { JOIN_GAME } from 'actions/me';
 import { loadGameStates } from 'actions/populate';
 
 export const ADD_PLAYER_TO_GAME = 'ADD_PLAYER_TO_GAME';
@@ -12,22 +11,23 @@ export const SWITCH_GAME_STATE = 'SWITCH_GAME_STATE';
 export const UPDATE_GAME_STATE = 'UPDATE_GAME_STATE';
 export const UPDATE_GLOBAL_GAME_PARAMS = 'UPDATE_GLOBAL_GAME_PARAMS';
 
-export const createGame = game => (dispatch, getState) => (
+export const createGame = game => dispatch => (
     api.createGame(game).then((newGame) => {
         dispatch({
             type: CREATE_GAME,
-            payload: {
-                ...newGame,
-                players: [getState().me.id],
-            },
-        });
-
-        dispatch({
-            type: JOIN_GAME,
-            payload: { id: newGame.id, admin: 1 },
+            payload: newGame,
         });
 
         return newGame;
+    })
+);
+
+export const joinGame = id => (dispatch, getState) => (
+    api.joinGame(id).then(() => {
+        dispatch({
+            type: ADD_PLAYER_TO_GAME,
+            payload: { id, userId: getState().me.id },
+        });
     })
 );
 
@@ -45,7 +45,7 @@ export const openGame = id => (dispatch) => {
 export const redoGameAction = states => (dispatch, getState) => {
     const { gameStates } = getState();
     const lastStateIndex = gameStates.stateCountSinceLastLoad - 1;
-    let actionIndex = gameStates.actionIndex;
+    let { actionIndex } = gameStates;
 
     do {
         actionIndex += 1;
@@ -86,7 +86,7 @@ export const switchToLatestGameState = () => (dispatch, getState) => {
 export const undoGameAction = states => (dispatch, getState) => {
     const { gameStates } = getState();
     const lastStateIndex = gameStates.stateCountSinceLastLoad - 1;
-    let actionIndex = gameStates.actionIndex;
+    let { actionIndex } = gameStates;
 
     do {
         actionIndex -= 1;
@@ -101,12 +101,12 @@ export const undoGameAction = states => (dispatch, getState) => {
     });
 };
 
-export const updateGameState = (gameId, action, data = []) => (dispatch, getState) => {
+export const updateGameState = (gameId, action, payload = []) => (dispatch, getState) => {
     const { gameStates } = getState();
     const previousState = gameStates.states[
         (gameStates.stateCountSinceLastLoad - 1) + gameStates.actionIndex
     ];
-    const nextAction = [action.id, data];
+    const nextAction = [action.id, payload];
 
     if (action.isServerAction) {
         return api.handleGameActions(
@@ -118,12 +118,10 @@ export const updateGameState = (gameId, action, data = []) => (dispatch, getStat
         ).then(() => dispatch(loadGameStates(gameId)));
     }
 
-    const nextState = action.perform(previousState, data);
-
-    nextState.action = [
-        ...nextAction,
-        previousState.currentPlayer,
-    ];
+    const nextState = {
+        ...action.perform(previousState, payload),
+        action: [...nextAction, previousState.currentPlayer],
+    };
 
     dispatch({
         type: UPDATE_GAME_STATE,

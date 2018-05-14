@@ -2,7 +2,8 @@ const shuffle = require('knuth-shuffle').knuthShuffle;
 const assets = require('./assets');
 const states = require('./states');
 
-module.exports = () => {
+module.exports = (players) => {
+    const playerOrder = shuffle([0, 1]);
     const remainingTiles = shuffle(assets.tiles);
     const factoryTiles = [];
 
@@ -17,6 +18,7 @@ module.exports = () => {
                 centerTiles: [5],
                 discardedTiles: [],
                 hand: [],
+                playerOrder,
             },
             players: Array(2).fill({
                 score: 0,
@@ -38,6 +40,6 @@ module.exports = () => {
         },
         state: states.PICK_UP_TILES.id,
         action: null,
-        currentPlayer: Math.floor(Math.random() * 2),
+        currentPlayer: players[playerOrder[0]],
     };
 };

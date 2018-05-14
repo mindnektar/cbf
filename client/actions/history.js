@@ -13,7 +13,7 @@ const buildLocation = (params) => {
     };
 };
 
-export const goBack = history.goBack;
+export const { goBack } = history;
 
 export const push = (...path) => dispatch => (
     dispatch(history.push(buildLocation(path)))

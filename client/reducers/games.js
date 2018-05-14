@@ -1,16 +1,9 @@
 import * as actions from 'actions/games';
-import { LOAD, LOAD_GAME_STATES } from 'actions/populate';
+import { LOAD } from 'actions/populate';
 import { createReducer } from './_helpers';
 
 export default createReducer({}, {
-    [LOAD]: (state, action) => action.payload.games,
-    [LOAD_GAME_STATES]: (state, action) => ({
-        ...state,
-        [action.payload.id]: {
-            ...state[action.payload.id],
-            playerOrder: action.payload.playerOrder,
-        },
-    }),
+    [LOAD]: (state, action) => action.payload.games || state,
     [actions.CREATE_GAME]: (state, action) => ({
         ...state,
         [action.payload.id]: action.payload,

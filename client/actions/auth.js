@@ -3,21 +3,11 @@ import api from 'api';
 import { push } from 'actions/history';
 
 export const login = (username, password) => dispatch => (
-    api.login(username, password).then(
-        (response) => {
-            if (response.error) {
-                console.log(response.error);
-                return;
-            }
+    api.login(username, password).then(() => {
+        dispatch(push('play'));
 
-            Cookies.set('auth-token', response.token);
-
-            dispatch(push('play'));
-
-            window.location.reload();
-        },
-        console.log
-    )
+        window.location.reload();
+    })
 );
 
 export const logout = () => () => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import connectWithRouter from 'helpers/connectWithRouter';
-import { joinGame } from 'actions/me';
+import { joinGame } from 'actions/games';
 import { push } from 'actions/history';
 import Button from 'Button';
 import Headline from 'Headline';
@@ -10,10 +10,8 @@ import gameConstants from 'shared/constants/games';
 
 class OpenGames extends React.Component {
     getFilteredGames() {
-        const myGames = Object.values(this.props.myGames);
-
         return Object.values(this.props.games).filter(game => (
-            !myGames.find(myGame => myGame.id === game.id) &&
+            !game.players.includes(this.props.me.id) &&
             game.status === gameConstants.GAME_STATUS_OPEN
         ));
     }
@@ -29,7 +27,7 @@ class OpenGames extends React.Component {
             <div className="cbf-open-games">
                 <Headline>Open invitations</Headline>
 
-                {this.getFilteredGames().map(game =>
+                {this.getFilteredGames().map(game => (
                     <div
                         className="cbf-all-games__item"
                         key={game.id}
@@ -47,9 +45,11 @@ class OpenGames extends React.Component {
                                     {games[this.props.games[game.id].handle].title}
                                 </div>
 
-                                {this.props.games[game.id].players.map(userId =>
-                                    <div key={userId}>{this.props.users[userId].username}</div>
-                                )}
+                                {this.props.games[game.id].players.map(userId => (
+                                    <div key={userId}>
+                                        {this.props.users[userId].username}
+                                    </div>
+                                ))}
                             </div>
 
                             <div className="cbf-all-games__item-options">
@@ -61,7 +61,7 @@ class OpenGames extends React.Component {
                             </div>
                         </div>
                     </div>
-                )}
+                ))}
             </div>
         );
     }
@@ -69,7 +69,7 @@ class OpenGames extends React.Component {
 
 OpenGames.propTypes = {
     games: PropTypes.object.isRequired,
-    myGames: PropTypes.object.isRequired,
+    me: PropTypes.object.isRequired,
     joinGame: PropTypes.func.isRequired,
     push: PropTypes.func.isRequired,
     users: PropTypes.object.isRequired,
@@ -78,7 +78,7 @@ OpenGames.propTypes = {
 export default connectWithRouter(
     state => ({
         games: state.games,
-        myGames: state.me.games,
+        me: state.me,
         users: state.users,
     }),
     {

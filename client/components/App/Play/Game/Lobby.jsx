@@ -29,24 +29,20 @@ class Lobby extends React.Component {
             <div>
                 <Headline>Lobby</Headline>
 
-                {this.props.game.players.map(userId =>
+                {this.props.game.players.map((userId, index) => (
                     <div
                         className="cbf-game-lobby__player"
                         key={userId}
                     >
                         {this.props.users[userId].username}
 
-                        {
-                            userId === this.props.me.id &&
-                            !!this.props.me.games[this.props.game.id].admin &&
-                            ' (Admin)'
-                        }
+                        {userId === this.props.me.id && index === 0 && ' (Admin)'}
                     </div>
-                )}
+                ))}
 
                 {
                     this.props.game.players.length === 2 &&
-                    !!this.props.me.games[this.props.game.id].admin &&
+                    this.props.game.players[0] === this.props.me.id &&
                     <Button
                         onTouchTap={this.startGame}
                     >

@@ -11,7 +11,7 @@ import Factory from './Azul/Factory';
 class Azul extends React.Component {
     render() {
         const myPlayerData = this.props.gameState.public.players[
-            this.props.playerOrder.indexOf(this.props.me.id)
+            this.props.players.indexOf(this.props.me.id)
         ];
 
         return (
@@ -41,14 +41,14 @@ class Azul extends React.Component {
 Azul.propTypes = {
     gameState: PropTypes.object.isRequired,
     me: PropTypes.object.isRequired,
-    playerOrder: PropTypes.array.isRequired,
+    players: PropTypes.array.isRequired,
 };
 
 export default connectWithRouter(
     (state, ownProps) => ({
         gameState: state.gameStates.states[state.gameStates.currentState],
         me: state.me,
-        playerOrder: state.games[ownProps.match.params.gameId].playerOrder,
+        players: state.games[ownProps.match.params.gameId].players,
     }),
     null,
     Azul

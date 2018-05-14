@@ -6,21 +6,6 @@ import connectWithRouter from 'helpers/connectWithRouter';
 import { switchGameState } from 'actions/games';
 
 class Sidebar extends React.Component {
-    componentDidMount() {
-        this.layerElement = document.createElement('div');
-        document.querySelector('[data-reactroot]').appendChild(this.layerElement);
-        this.renderLayer();
-    }
-
-    componentDidUpdate() {
-        this.renderLayer();
-    }
-
-    componentWillUnmount() {
-        ReactDOM.unmountComponentAtNode(this.layerElement);
-        document.querySelector('[data-reactroot]').removeChild(this.layerElement);
-    }
-
     switchGameStateHandler = index => () => {
         this.props.switchGameState(index);
     }
@@ -47,25 +32,22 @@ class Sidebar extends React.Component {
             return null;
         }
 
-        const message = this.props.actions.findById(gameState.action[0]).toString({
-            me: this.props.users[
-                this.props.playerOrder[gameState.action[2]]
-            ],
+        const [actionId, , currentPlayer] = gameState.action;
+        const message = this.props.actions.findById(actionId).toString({
+            me: this.props.users[currentPlayer],
             state: gameState,
             previousState: this.props.gameStates[index - 1],
-            users: this.props.playerOrder.map(
-                userId => this.props.users[userId]
-            ),
+            users: this.props.players.map(userId => this.props.users[userId]),
         });
 
         if (!message) {
             return null;
         }
 
-        const groupStart = this.actionOwner !== gameState.action[2];
+        const groupStart = this.actionOwner !== currentPlayer;
 
         this.messageIndex += 1;
-        this.actionOwner = gameState.action[2];
+        this.actionOwner = currentPlayer;
 
         return (
             <div
@@ -90,11 +72,11 @@ class Sidebar extends React.Component {
         );
     }
 
-    renderLayer() {
+    render() {
         this.messageIndex = 0;
         this.actionOwner = null;
 
-        ReactDOM.unstable_renderSubtreeIntoContainer(this, (
+        return ReactDOM.createPortal(
             <div
                 className="cbf-helper-sidebar"
                 onMouseDown={event => event.stopPropagation()}
@@ -106,18 +88,15 @@ class Sidebar extends React.Component {
 
                     <div className="cbf-helper-sidebar__history-scroller">
                         <div className="cbf-helper-sidebar__history-content">
-                            {this.props.gameStates.map((gameState, index) =>
+                            {this.props.gameStates.map((gameState, index) => (
                                 this.renderMessage(gameState, index)
-                            )}
+                            ))}
                         </div>
                     </div>
                 </div>
-            </div>
-        ), this.layerElement);
-    }
-
-    render() {
-        return null;
+            </div>,
+            document.body
+        );
     }
 }
 
@@ -126,7 +105,7 @@ Sidebar.propTypes = {
     actions: PropTypes.object.isRequired,
     currentState: PropTypes.number.isRequired,
     gameStates: PropTypes.array.isRequired,
-    playerOrder: PropTypes.array.isRequired,
+    players: PropTypes.array.isRequired,
     stateCountSinceLastLoad: PropTypes.number.isRequired,
     switchGameState: PropTypes.func.isRequired,
     users: PropTypes.object.isRequired,
@@ -137,7 +116,7 @@ export default connectWithRouter(
         actionIndex: state.gameStates.actionIndex,
         currentState: state.gameStates.currentState,
         gameStates: state.gameStates.states,
-        playerOrder: state.games[ownProps.match.params.gameId].playerOrder,
+        players: state.games[ownProps.match.params.gameId].players,
         stateCountSinceLastLoad: state.gameStates.stateCountSinceLastLoad,
         users: state.users,
     }),

@@ -7,6 +7,12 @@ import Headline from 'Headline';
 import games from 'data/games';
 
 class MyGames extends React.Component {
+    getFilteredGames() {
+        return Object.values(this.props.games).filter(game => (
+            game.players.includes(this.props.me.id)
+        ));
+    }
+
     openGameHandler = id => () => {
         this.props.push('play', id);
     }
@@ -16,7 +22,7 @@ class MyGames extends React.Component {
             <div className="cbf-my-games">
                 <Headline>My active games</Headline>
 
-                {Object.values(this.props.myGames).map(game =>
+                {this.getFilteredGames().map(game => (
                     <div
                         className="cbf-all-games__item"
                         key={game.id}
@@ -34,9 +40,11 @@ class MyGames extends React.Component {
                                     {games[this.props.games[game.id].handle].title}
                                 </div>
 
-                                {this.props.games[game.id].players.map(userId =>
-                                    <div key={userId}>{this.props.users[userId].username}</div>
-                                )}
+                                {this.props.games[game.id].players.map(userId => (
+                                    <div key={userId}>
+                                        {this.props.users[userId].username}
+                                    </div>
+                                ))}
                             </div>
 
                             <div className="cbf-all-games__item-options">
@@ -48,7 +56,7 @@ class MyGames extends React.Component {
                             </div>
                         </div>
                     </div>
-                )}
+                ))}
             </div>
         );
     }
@@ -56,7 +64,7 @@ class MyGames extends React.Component {
 
 MyGames.propTypes = {
     games: PropTypes.object.isRequired,
-    myGames: PropTypes.object.isRequired,
+    me: PropTypes.object.isRequired,
     push: PropTypes.func.isRequired,
     users: PropTypes.object.isRequired,
 };
@@ -64,7 +72,7 @@ MyGames.propTypes = {
 export default connectWithRouter(
     state => ({
         games: state.games,
-        myGames: state.me.games,
+        me: state.me,
         users: state.users,
     }),
     {

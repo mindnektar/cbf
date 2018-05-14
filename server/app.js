@@ -1,45 +1,35 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const knex = require('knex');
-const path = require('path');
-const apiAuth = require('./api/auth');
-const apiGames = require('./api/games');
-const apiUsers = require('./api/users');
+import express from 'express';
+import bodyParser from 'body-parser';
+import path from 'path';
+import './config';
+import matchesApi from './api/matches';
+import usersApi from './api/users';
 
 const app = express();
 
-app.knex = knex({
-    client: 'mysql',
-    connection: {
-        host: 'localhost',
-        user: 'root',
-        password: 'password',
-        database: 'cbf',
-    },
-});
-
 app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, '../public')));
 
-app.get('/script/*', (request, response) => {
-    response.sendFile(path.join(__dirname, '../../public', request.url));
-});
+if (process.env.NODE_ENV === 'development') {
+    app.use((request, response, next) => {
+        response.set({
+            'Access-Control-Allow-Origin': `http://localhost:${process.env.PORTS.WEBPACK_DEV_SERVER}`,
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, PUT, PATCH, DELETE',
+            'Access-Control-Allow-Headers': 'content-type, x-auth',
+            'Access-Control-Expose-Headers': 'x-auth',
+        });
 
-app.get('/style/*', (request, response) => {
-    response.sendFile(path.join(__dirname, '../../public', request.url));
-});
+        next();
+    });
+}
 
-app.get('/img/*', (request, response) => {
-    response.sendFile(path.join(__dirname, '../../public', request.url));
-});
-
-apiAuth(app);
-apiGames(app);
-apiUsers(app);
+app.use('/api', matchesApi);
+app.use('/api', usersApi);
 
 app.get('/*', (request, response) => {
-    response.sendFile(path.join(__dirname, '../..', 'public', 'index.html'));
+    response.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
-app.listen(3030, () => {
-    console.log('Server running at http://localhost:3030');
+app.listen(process.env.PORTS.EXPRESS, () => {
+    console.log(`Server running at http://localhost:${process.env.PORTS.EXPRESS}`);
 });

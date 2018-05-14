@@ -6,29 +6,40 @@ const request = (path, method = 'GET', body) => (
         method,
         body: body ? JSON.stringify(body) : null,
         headers: {
-            'X-Access-token': Cookies.get('auth-token') || '',
+            'x-auth': Cookies.get('auth-token'),
             'Content-type': 'application/json',
         },
     })
 ).then(response => (
     new Promise((resolve, reject) => {
-        console.log(response);
-
         switch (response.status) {
-            case 200:
-                resolve(response.json());
+            case 200: {
+                if (response.headers.get('x-auth')) {
+                    Cookies.set('auth-token', response.headers.get('x-auth'));
+                }
+
+                resolve(response.json(), response.headers);
                 break;
+            }
 
             case 204:
                 resolve(null);
                 break;
 
+            case 400:
+                reject(response.json());
+                break;
+
+            case 401:
+                reject(response.json());
+                break;
+
             case 404:
-                reject({ errors: 'not found' });
+                reject(response.json());
                 break;
 
             case 500:
-                reject({ errors: 'server error' });
+                reject(new Error('server error'));
                 break;
 
             default:
@@ -37,38 +48,15 @@ const request = (path, method = 'GET', body) => (
     })
 ));
 
-// auth
-
-const login = (username, password) => request('auth', 'POST', { username, password });
-
-// games
-
-const changeGame = (id, data) => request('games', 'PATCH', { id, data });
-
-const createGame = game => request('games', 'POST', { game });
-
-const fetchGames = () => request('games');
-
-const fetchGameStates = id => request(`games/${id}`);
-
-const handleGameActions = (id, actions) => request(`games/${id}`, 'POST', actions);
-
-const joinGame = id => request('user_in_game', 'POST', { id });
-
-// users
-
-const fetchMe = () => request('me');
-
-const fetchUsers = () => request('users');
-
 export default {
-    login,
-    changeGame,
-    createGame,
-    fetchGames,
-    fetchGameStates,
-    handleGameActions,
-    joinGame,
-    fetchMe,
-    fetchUsers,
+    changeGame: (id, data) => request(`matches/${id}`, 'PATCH', data),
+    createGame: handle => request('matches', 'POST', { handle }),
+    fetchGames: () => request('matches'),
+    fetchGameStates: id => request(`matches/${id}`),
+    handleGameActions: (id, actions) => request(`matches/${id}/actions`, 'POST', actions),
+    joinGame: id => request(`matches/${id}/players`, 'POST'),
+
+    fetchMe: () => request('users/me'),
+    fetchUsers: () => request('users'),
+    login: (username, password) => request('users/login', 'POST', { username, password }),
 };

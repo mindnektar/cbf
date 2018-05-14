@@ -11,30 +11,13 @@ import {
 import Button from 'Button';
 
 class Status extends React.Component {
-    componentDidMount() {
-        this.layerElement = document.createElement('div');
-        document.querySelector('[data-reactroot]').appendChild(this.layerElement);
-        this.renderLayer();
-    }
-
-    componentDidUpdate() {
-        this.renderLayer();
-    }
-
-    componentWillUnmount() {
-        ReactDOM.unmountComponentAtNode(this.layerElement);
-        document.querySelector('[data-reactroot]').removeChild(this.layerElement);
-    }
-
     getInstruction() {
         if (!this.props.isLatestState) {
             return '- HISTORY MODE -';
         }
 
-        const currentPlayer = this.props.playerOrder[this.props.gameState.currentPlayer];
-
-        if (currentPlayer !== this.props.me.id) {
-            return `It's ${this.props.users[currentPlayer].username}'s turn.`;
+        if (this.props.gameState.currentPlayer !== this.props.me.id) {
+            return `It's ${this.props.users[this.props.gameState.currentPlayer].username}'s turn.`;
         }
 
         return this.props.states.findById(this.props.gameState.state).instruction || '';
@@ -67,7 +50,7 @@ class Status extends React.Component {
 
         return (
             this.props.isLatestState &&
-            this.props.me.id === this.props.playerOrder[this.props.gameState.currentPlayer] &&
+            this.props.me.id === this.props.gameState.currentPlayer &&
             params.every(param => this.props.globalGameParams[param.name] !== undefined) &&
             performOnConfirm().isValid(
                 this.props.gameState,
@@ -79,7 +62,7 @@ class Status extends React.Component {
     mayEndTurn() {
         return (
             this.props.isLatestState &&
-            this.props.me.id === this.props.playerOrder[this.props.gameState.currentPlayer] &&
+            this.props.me.id === this.props.gameState.currentPlayer &&
             this.props.endTurnAction.isValid(this.props.gameState)
         );
     }
@@ -92,8 +75,8 @@ class Status extends React.Component {
         this.props.undoGameAction(this.props.states);
     }
 
-    renderLayer() {
-        ReactDOM.unstable_renderSubtreeIntoContainer(this, (
+    render() {
+        return ReactDOM.createPortal(
             <div className="cbf-helper-status">
                 <div className="cbf-helper-status__text">
                     {this.getInstruction()}
@@ -144,20 +127,11 @@ class Status extends React.Component {
                         End turn
                     </Button>
                 </div>
-            </div>
-        ), this.layerElement);
-    }
-
-    render() {
-        return null;
+            </div>,
+            document.body
+        );
     }
 }
-
-Status.defaultProps = {
-    automaticActions: {},
-    confirmableActions: {},
-    serverActions: [],
-};
 
 Status.propTypes = {
     actionIndex: PropTypes.number.isRequired,
@@ -168,7 +142,6 @@ Status.propTypes = {
     globalGameParams: PropTypes.object.isRequired,
     isLatestState: PropTypes.bool.isRequired,
     me: PropTypes.object.isRequired,
-    playerOrder: PropTypes.array.isRequired,
     redoGameAction: PropTypes.func.isRequired,
     states: PropTypes.object.isRequired,
     switchToLatestGameState: PropTypes.func.isRequired,
@@ -188,7 +161,6 @@ export default connectWithRouter(
             (state.gameStates.stateCountSinceLastLoad - 1) + state.gameStates.actionIndex
         ),
         me: state.me,
-        playerOrder: state.games[ownProps.match.params.gameId].playerOrder,
         users: state.users,
     }),
     {

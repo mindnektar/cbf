@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const webpackMerge = require('webpack-merge');
 const path = require('path');
+const config = require('./config');
 
 module.exports = webpackMerge(require('./webpack.config.common.js'), {
     mode: 'development',
@@ -9,10 +10,10 @@ module.exports = webpackMerge(require('./webpack.config.common.js'), {
         contentBase: path.join(__dirname, 'public'),
         hot: true,
         inline: true,
-        port: 5050,
+        port: config.development.PORTS.WEBPACK_DEV_SERVER,
         host: '0.0.0.0',
         disableHostCheck: true,
-        proxy: { '**': 'http://localhost:5051' },
+        proxy: { '**': `http://localhost:${config.development.PORTS.EXPRESS}` },
     },
 
     plugins: [

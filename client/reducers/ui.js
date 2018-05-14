@@ -6,7 +6,7 @@ export default createReducer({
 }, {
     [LOAD]: (state, action) => ({
         ...state,
-        ...action.payload.ui,
+        ...action.payload.ui || {},
     }),
     [UNLOAD]: state => ({
         ...state,

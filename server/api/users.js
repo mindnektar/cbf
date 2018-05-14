@@ -1,57 +1,46 @@
-module.exports = (app) => {
-    app.get('/api/users', (request, response) => {
-        app.knex('user')
-            .select()
-            .then((result) => {
-                const users = {};
+import { Router } from 'express';
+import _ from 'lodash';
+import authenticate from '../middleware/authenticate';
+import { User } from '../models/user';
 
-                result.forEach((row) => {
-                    users[row.id] = {
-                        gender: row.gender,
-                        id: row.id,
-                        username: row.username,
-                    };
-                });
+const router = new Router();
 
-                response.json(users);
-            });
-    });
+router.get('/users', (request, response) => {
+    User.find()
+        .then(users => response.send(users))
+        .catch(error => response.status(400).send(error));
+});
 
-    app.get('/api/me', (request, response) => {
-        const authToken = request.header('X-Access-token');
+router.post('/users', (request, response) => {
+    const body = _.pick(request.body, ['username', 'email', 'password']);
+    const user = new User(body);
 
-        if (!authToken) {
-            response.status(204).send();
-            return;
-        }
+    user.save()
+        .then(() => user.generateAuthToken())
+        .then(token => response.header('x-auth', token).send(user))
+        .catch(error => response.status(400).send(error));
+});
 
-        app.knex('user')
-            .where('access_token', authToken)
-            .select()
-            .then(([user]) => {
-                if (!user) {
-                    response.status(204).send();
-                    return;
-                }
+router.get('/users/me', authenticate, (request, response) => {
+    response.send(request.user);
+});
 
-                app.knex('user_in_game').where('user_id', user.id).select().then((games) => {
-                    const myGames = {};
+router.post('/users/login', (request, response) => {
+    const body = _.pick(request.body, ['username', 'password']);
 
-                    games.forEach((game) => {
-                        myGames[game.game_id] = {
-                            admin: game.admin,
-                            id: game.game_id,
-                        };
-                    });
+    User.findByCredentials(body.username, body.password)
+        .then(user => (
+            user.generateAuthToken().then(token => (
+                response.header('x-auth', token).send(user)
+            ))
+        ))
+        .catch(error => response.status(400).send(error));
+});
 
-                    response.json({
-                        gender: user.gender,
-                        email: user.email,
-                        games: myGames,
-                        id: user.id,
-                        username: user.username,
-                    });
-                });
-            });
-    });
-};
+router.delete('/users/me/token', authenticate, (request, response) => {
+    request.user.removeToken(request.token)
+        .then(() => response.sendStatus(204))
+        .catch(error => response.status(400).send(error));
+});
+
+export default router;

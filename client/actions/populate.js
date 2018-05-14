@@ -11,22 +11,36 @@ export const clearGameStates = () => ({
 
 export const load = () => dispatch => (
     Promise.all([
-        api.fetchGames(),
-        api.fetchUsers(),
-        api.fetchMe(),
-    ]).then(([games, users, me]) => {
-        dispatch({
+        api.fetchGames().then(games => dispatch({
             type: LOAD,
             payload: {
-                games,
-                me,
-                ui: {
-                    isSystemLoaded: true,
-                },
-                users,
+                games: games.reduce((result, current) => ({
+                    ...result,
+                    [current.id]: current,
+                }), {}),
             },
-        });
-    })
+        })),
+        api.fetchUsers().then(users => dispatch({
+            type: LOAD,
+            payload: {
+                users: users.reduce((result, current) => ({
+                    ...result,
+                    [current.id]: current,
+                }), {}),
+            },
+        })),
+        api.fetchMe().then(me => dispatch({
+            type: LOAD,
+            payload: { me },
+        })),
+    ]).finally(() => dispatch({
+        type: LOAD,
+        payload: {
+            ui: {
+                isSystemLoaded: true,
+            },
+        },
+    }))
 );
 
 export const unload = () => ({
@@ -34,10 +48,10 @@ export const unload = () => ({
 });
 
 export const loadGameStates = id => dispatch => (
-    api.fetchGameStates(id).then(({ playerOrder, gameStates }) => {
+    api.fetchGameStates(id).then(({ gameStates }) => {
         dispatch({
             type: LOAD_GAME_STATES,
-            payload: { id, playerOrder, gameStates },
+            payload: { id, gameStates },
         });
 
         return gameStates;
