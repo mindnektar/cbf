@@ -2,9 +2,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const knex = require('knex');
 const path = require('path');
-const apiAuth = require('./server/api/auth');
-const apiGames = require('./server/api/games');
-const apiUsers = require('./server/api/users');
+const apiAuth = require('./api/auth');
+const apiGames = require('./api/games');
+const apiUsers = require('./api/users');
 
 const app = express();
 

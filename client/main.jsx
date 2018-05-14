@@ -5,8 +5,8 @@ import { Router } from 'react-router-dom';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import 'polyfills';
 import store, { browserHistory } from 'store';
-import App from './components/App';
-import '../style/main.sass';
+import App from 'components/App';
+import 'style/main.sass';
 
 injectTapEventPlugin();
 
