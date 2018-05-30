@@ -114,7 +114,7 @@ module.exports = {
                 ];
                 currentPlayer = nextStartPlayer;
 
-                for (let i = 0; i < 5; i += 1) {
+                for (let i = 0; i < factoryTiles.length; i += 1) {
                     let currentTiles = remainingTiles.splice(0, 4);
 
                     if (currentTiles.length < 4) {
