@@ -5,6 +5,7 @@ import connectWithRouter from 'helpers/connectWithRouter';
 import AllGames from './Play/AllGames';
 import MyGames from './Play/MyGames';
 import OpenGames from './Play/OpenGames';
+import FinishedGames from './Play/FinishedGames';
 import Game from './Play/Game';
 
 class Play extends React.Component {
@@ -15,14 +16,13 @@ class Play extends React.Component {
                 <Route path={this.props.url}>
                     <div>
                         {this.props.me &&
-                            <MyGames />
+                            <React.Fragment>
+                                <MyGames />
+                                <OpenGames />
+                                <AllGames />
+                                <FinishedGames />
+                            </React.Fragment>
                         }
-
-                        {this.props.me &&
-                            <OpenGames />
-                        }
-
-                        <AllGames />
                     </div>
                 </Route>
             </Switch>

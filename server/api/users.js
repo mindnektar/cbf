@@ -5,27 +5,27 @@ import { User } from '../models/user';
 
 const router = new Router();
 
-router.get('/users', (request, response) => {
+router.get('/users', (request, response, next) => {
     User.find()
         .then(users => response.send(users))
-        .catch(error => response.status(400).send(error));
+        .catch(next);
 });
 
-router.post('/users', (request, response) => {
+router.post('/users', (request, response, next) => {
     const body = _.pick(request.body, ['username', 'email', 'password']);
     const user = new User(body);
 
     user.save()
         .then(() => user.generateAuthToken())
         .then(token => response.header('x-auth', token).send(user))
-        .catch(error => response.status(400).send(error));
+        .catch(next);
 });
 
 router.get('/users/me', authenticate, (request, response) => {
     response.send(request.user);
 });
 
-router.post('/users/login', (request, response) => {
+router.post('/users/login', (request, response, next) => {
     const body = _.pick(request.body, ['username', 'password']);
 
     User.findByCredentials(body.username, body.password)
@@ -34,13 +34,13 @@ router.post('/users/login', (request, response) => {
                 response.header('x-auth', token).send(user)
             ))
         ))
-        .catch(error => response.status(400).send(error));
+        .catch(next);
 });
 
-router.delete('/users/me/token', authenticate, (request, response) => {
+router.delete('/users/me/token', authenticate, (request, response, next) => {
     request.user.removeToken(request.token)
         .then(() => response.sendStatus(204))
-        .catch(error => response.status(400).send(error));
+        .catch(next);
 });
 
 export default router;

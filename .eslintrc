@@ -38,6 +38,7 @@
     "no-restricted-syntax": [0],
     "no-underscore-dangle": [0],
     "no-use-before-define": [0],
+    "prefer-const": ["error", { "destructuring": "all" }],
     "react/forbid-prop-types": [0],
     "react/jsx-indent": ["error", 4],
     "react/jsx-indent-props": ["error", 4],

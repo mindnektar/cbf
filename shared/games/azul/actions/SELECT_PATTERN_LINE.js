@@ -3,48 +3,74 @@ const states = require('../states');
 
 module.exports = {
     id: 2,
-    isServerAction: true,
 
-    toString: ({ me, state, previousState }) => {
-        const [display, type] = state.action[1];
-        const pickUpCount = previousState.public.game.factoryTiles[display].filter(
-            tile => tile === type
-        ).length;
-        const tileMap = ['white', 'yellow', 'blue', 'red', 'black'];
+    toString: ({ me, state }) => {
+        const [lineIndex] = state.action[1];
+        const numberMap = ['first', 'second', 'third', 'fourth', 'fifth'];
+        const lineText = lineIndex === null ? 'floor line' : `${numberMap[lineIndex]} pattern line`;
 
-        return `${me.username} place his tiles on the .`;
+        return `${me.username} places their tiles on their ${lineText}.`;
     },
 
     isValid: (state, [lineIndex]) => {
-        if (state.state === states.PICK_UP_TILES.id) {
+        const { hand } = state.public.game;
+        const { patternLines, wall } = state.public.players[state.currentPlayer];
+
+        if (state.state !== states.SELECT_PATTERN_LINE.id) {
             return false;
         }
 
-        if (line === null) {
+        if (lineIndex === null) {
             return true;
         }
 
-        const handTile = state.public.game.hand[0];
-        const line = state.public.players[state.currentPlayer].patternLines[lineIndex];
+        const line = patternLines[lineIndex];
 
-        if (
-            line[0] !== null ||
-            line[0] !== handTile ||
-            line.filter(item => item === null).length === 0
-        ) {
-            return false;
-        }
-
-        return true;
+        return (
+            line.length < lineIndex + 1 &&
+            (!line[0] || line[0] === hand[0]) &&
+            !wall[lineIndex].includes(hand[0])
+        );
     },
 
     perform: (state, [lineIndex]) => {
-        const nextState = clone(state);
+        const clonedState = clone(state);
+        const { hand, discardedTiles } = clonedState.public.game;
+        const { patternLines, floorLine } = clonedState.public.players[clonedState.currentPlayer];
 
-        nextState.public.players[nextState.currentPlayer].patternLines[lineIndex] = [];//////
+        if (lineIndex !== null) {
+            while (hand.length > 0 && patternLines[lineIndex].length < lineIndex + 1) {
+                patternLines[lineIndex].push(hand.pop());
+            }
+        }
 
-        nextState.state = states.SELECT_PATTERN_LINE.id;
+        while (hand.length > 0 && floorLine.length < 7) {
+            floorLine.push(hand.pop());
+        }
 
-        return nextState;
+        while (hand.length > 0) {
+            discardedTiles.push(hand.pop());
+        }
+
+        return {
+            ...clonedState,
+            public: {
+                ...clonedState.public,
+                game: {
+                    ...clonedState.public.game,
+                    discardedTiles,
+                    hand,
+                },
+                players: {
+                    ...clonedState.public.players,
+                    [clonedState.currentPlayer]: {
+                        ...clonedState.public.players[clonedState.currentPlayer],
+                        floorLine,
+                        patternLines,
+                    },
+                },
+            },
+            state: states.END_TURN.id,
+        };
     },
 };

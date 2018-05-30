@@ -16,6 +16,10 @@ class Status extends React.Component {
             return '- HISTORY MODE -';
         }
 
+        if (this.props.game.scores.length > 0) {
+            return `${this.props.users[this.props.game.scores[0].player].username} won the game!`;
+        }
+
         if (this.props.gameState.currentPlayer !== this.props.me.id) {
             return `It's ${this.props.users[this.props.gameState.currentPlayer].username}'s turn.`;
         }
@@ -27,7 +31,7 @@ class Status extends React.Component {
         const { performOnConfirm, params } = this.props.states.findById(this.props.gameState.state);
 
         this.props.updateGameState(
-            this.props.gameId,
+            this.props.game.id,
             performOnConfirm(),
             params.map(param => this.props.globalGameParams[param.name]),
         );
@@ -35,7 +39,7 @@ class Status extends React.Component {
 
     endTurn = () => {
         this.props.updateGameState(
-            this.props.gameId,
+            this.props.game.id,
             this.props.endTurnAction,
             this.props.globalGameParams,
         );
@@ -137,7 +141,7 @@ Status.propTypes = {
     actionIndex: PropTypes.number.isRequired,
     actions: PropTypes.array.isRequired,
     endTurnAction: PropTypes.object.isRequired,
-    gameId: PropTypes.string.isRequired,
+    game: PropTypes.object.isRequired,
     gameState: PropTypes.object.isRequired,
     globalGameParams: PropTypes.object.isRequired,
     isLatestState: PropTypes.bool.isRequired,
@@ -154,7 +158,7 @@ export default connectWithRouter(
     (state, ownProps) => ({
         actionIndex: state.gameStates.actionIndex,
         actions: state.gameStates.actions,
-        gameId: ownProps.match.params.gameId,
+        game: state.games[ownProps.match.params.gameId],
         gameState: state.gameStates.states[state.gameStates.currentState],
         globalGameParams: state.gameStates.globalGameParams,
         isLatestState: state.gameStates.currentState === (

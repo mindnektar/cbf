@@ -16,9 +16,7 @@ class Action extends React.Component {
     }
 
     isActive() {
-        return this.props.action.isValid(
-            this.props.gameState, this.props.params
-        );
+        return this.props.action.isValid(this.props.gameState, this.props.params);
     }
 
     render() {
@@ -50,7 +48,6 @@ class Action extends React.Component {
 
 Action.defaultProps = {
     params: [],
-    serverActions: [],
 };
 
 Action.propTypes = {

@@ -10,12 +10,12 @@ class Factory extends React.Component {
         return (
             <div className="azul__factory">
                 <div className="azul__factory-circle">
-                    {this.props.factoryTiles.map((display, index) =>
+                    {this.props.factoryTiles.map((display, index) => (
                         <div
                             className="azul__factory-display"
                             key={index}
                         >
-                            {display.map((tile, tileIndex) =>
+                            {display.map((tile, tileIndex) => (
                                 <Action
                                     action={actions.PICK_UP_TILES}
                                     key={tileIndex}
@@ -23,13 +23,13 @@ class Factory extends React.Component {
                                 >
                                     <Tile type={tile} />
                                 </Action>
-                            )}
+                            ))}
                         </div>
-                    )}
+                    ))}
                 </div>
 
                 <div className="azul__factory-center">
-                    {this.props.centerTiles.map((tile, index) =>
+                    {this.props.centerTiles.map((tile, index) => (
                         <Action
                             action={actions.PICK_UP_TILES}
                             key={index}
@@ -37,7 +37,7 @@ class Factory extends React.Component {
                         >
                             <Tile type={tile} />
                         </Action>
-                    )}
+                    ))}
                 </div>
             </div>
         );

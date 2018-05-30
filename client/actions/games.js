@@ -102,7 +102,7 @@ export const undoGameAction = states => (dispatch, getState) => {
 };
 
 export const updateGameState = (gameId, action, payload = []) => (dispatch, getState) => {
-    const { gameStates } = getState();
+    const { gameStates, games } = getState();
     const previousState = gameStates.states[
         (gameStates.stateCountSinceLastLoad - 1) + gameStates.actionIndex
     ];
@@ -119,7 +119,7 @@ export const updateGameState = (gameId, action, payload = []) => (dispatch, getS
     }
 
     const nextState = {
-        ...action.perform(previousState, payload),
+        ...action.perform(previousState, payload, games[gameId].players),
         action: [...nextAction, previousState.currentPlayer],
     };
 

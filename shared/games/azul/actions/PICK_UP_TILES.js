@@ -3,37 +3,68 @@ const states = require('../states');
 
 module.exports = {
     id: 1,
-    isServerAction: true,
 
-    toString: ({ me, state, previousState }) => {
-        const [display, type] = state.action[1];
-        const pickUpCount = previousState.public.game.factoryTiles[display].filter(
-            tile => tile === type
-        ).length;
+    toString: ({ me, state }) => {
+        const [, type] = state.action[1];
+        const pickUpCount = state.public.game.hand.length;
         const tileMap = ['white', 'yellow', 'blue', 'red', 'black'];
 
-        return `${me.username} picks up ${pickUpCount} ${tileMap[type]} tiles.`;
+        return `${me.username} picks up ${pickUpCount} ${tileMap[type]} tile${pickUpCount > 1 ? 's' : ''}.`;
     },
 
-    isValid: state => (
-        state.state === states.PICK_UP_TILES.id
-    ),
+    isValid: (state, [display, type]) => {
+        if (state.state !== states.PICK_UP_TILES.id) {
+            return false;
+        }
+
+        if (display === null) {
+            return type !== 5 && state.public.game.centerTiles.includes(type);
+        }
+
+        return state.public.game.factoryTiles[display].includes(type);
+    },
 
     perform: (state, [display, type]) => {
-        const nextState = clone(state);
+        const clonedState = clone(state);
+        let { centerTiles, factoryTiles } = clonedState.public.game;
+        let pickUpCount;
+        const { floorLine } = clonedState.public.players[clonedState.currentPlayer];
 
-        const factoryTiles = nextState.public.game.factoryTiles[display];
-        const pickUpCount = factoryTiles.filter(tile => tile === type).length;
+        if (display === null) {
+            pickUpCount = centerTiles.filter(tile => tile === type).length;
+            centerTiles = centerTiles.filter(tile => tile !== type);
 
-        nextState.public.game.factoryTiles[display] = [];
-        nextState.public.game.hand = Array(pickUpCount).fill(type);
-        nextState.public.game.centerTiles = [
-            ...nextState.public.game.centerTiles,
-            ...factoryTiles.filter(tile => tile !== type),
-        ];
+            if (centerTiles[0] === 5) {
+                floorLine.push(centerTiles.shift());
+            }
+        } else {
+            pickUpCount = factoryTiles[display].filter(tile => tile === type).length;
+            centerTiles = [
+                ...centerTiles,
+                ...factoryTiles[display].filter(tile => tile !== type),
+            ];
+            factoryTiles[display] = [];
+        }
 
-        nextState.state = states.SELECT_PATTERN_LINE.id;
-
-        return nextState;
+        return {
+            ...clonedState,
+            public: {
+                ...clonedState.public,
+                game: {
+                    ...clonedState.public.game,
+                    centerTiles,
+                    factoryTiles,
+                    hand: Array(pickUpCount).fill(type),
+                },
+                players: {
+                    ...clonedState.public.players,
+                    [clonedState.currentPlayer]: {
+                        ...clonedState.public.players[clonedState.currentPlayer],
+                        floorLine,
+                    },
+                },
+            },
+            state: states.SELECT_PATTERN_LINE.id,
+        };
     },
 };

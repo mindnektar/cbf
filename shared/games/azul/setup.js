@@ -1,14 +1,13 @@
-const shuffle = require('knuth-shuffle').knuthShuffle;
 const assets = require('./assets');
 const states = require('./states');
 
-module.exports = (players) => {
-    const playerOrder = shuffle([0, 1]);
-    const remainingTiles = shuffle(assets.tiles);
+module.exports = (players, randomizer) => {
+    const playerOrder = randomizer.shuffle([0, 1]);
+    const remainingTiles = randomizer.shuffle(assets.tiles);
     const factoryTiles = [];
 
     for (let i = 0; i < 5; i += 1) {
-        factoryTiles.push(remainingTiles.splice(remainingTiles.length - 4, 4));
+        factoryTiles.push(remainingTiles.splice(0, 4));
     }
 
     return {
@@ -18,20 +17,18 @@ module.exports = (players) => {
                 centerTiles: [5],
                 discardedTiles: [],
                 hand: [],
+                nextStartPlayer: null,
                 playerOrder,
             },
-            players: Array(2).fill({
-                score: 0,
-                patternLines: [
-                    Array(1).fill(null),
-                    Array(2).fill(null),
-                    Array(3).fill(null),
-                    Array(4).fill(null),
-                    Array(5).fill(null),
-                ],
-                wall: Array(5).fill(Array(5).fill(null)),
-                floorLine: Array(7).fill(null),
-            }),
+            players: playerOrder.reduce((result, current) => ({
+                ...result,
+                [players[current]]: {
+                    score: 0,
+                    patternLines: Array(5).fill([]),
+                    wall: Array(5).fill(Array(5).fill(null)),
+                    floorLine: [],
+                },
+            }), {}),
         },
         private: {
             game: {

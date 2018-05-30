@@ -3,7 +3,7 @@
   "scripts": {
     "dev": "concurrently 'npm run webpack-dev-server' 'npm run express-server'",
     "prod": "webpack --env=prod; git add .; git commit -m \"bundle assets\"",
-    "express-server": "nodemon server/app.js -w server --exec babel-node --presets env --plugins transform-object-rest-spread",
+    "express-server": "nodemon server/app.js -w server -w shared --exec babel-node --presets env --plugins transform-object-rest-spread",
     "webpack-dev-server": "webpack-dev-server --env=dev --config webpack.config.dev.js"
   },
   "dependencies": {
@@ -13,6 +13,7 @@
     "js-cookie": "^2.2.0",
     "keymaster": "^1.6.2",
     "knuth-shuffle": "^1.0.8",
+    "knuth-shuffle-seeded": "^1.0.6",
     "moment": "^2.22.1",
     "object.entries": "^1.0.4",
     "object.values": "^1.0.4",

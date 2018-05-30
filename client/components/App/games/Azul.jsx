@@ -10,10 +10,6 @@ import Factory from './Azul/Factory';
 
 class Azul extends React.Component {
     render() {
-        const myPlayerData = this.props.gameState.public.players[
-            this.props.players.indexOf(this.props.me.id)
-        ];
-
         return (
             <Game states={states}>
                 <div className="azul">
@@ -25,7 +21,7 @@ class Azul extends React.Component {
                     <Sidebar actions={actions} />
 
                     <div className="azul__game">
-                        <Board player={myPlayerData} />
+                        <Board player={this.props.gameState.public.players[this.props.me.id]} />
 
                         <Factory
                             centerTiles={this.props.gameState.public.game.centerTiles}

@@ -1,5 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import serializeError from 'serialize-error';
 import path from 'path';
 import './config';
 import matchesApi from './api/matches';
@@ -28,6 +29,12 @@ app.use('/api', usersApi);
 
 app.get('/*', (request, response) => {
     response.sendFile(path.join(__dirname, '../public/index.html'));
+});
+
+app.use((error, request, response, next) => {
+    console.error(serializeError(error));
+    response.sendStatus(400);
+    next();
 });
 
 app.listen(process.env.PORTS.EXPRESS, () => {

@@ -1,31 +1,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import connectWithRouter from 'helpers/connectWithRouter';
-import { joinGame } from 'actions/games';
 import { push } from 'actions/history';
 import Button from 'Button';
 import Headline from 'Headline';
 import games from 'data/games';
 import gameConstants from 'shared/constants/games';
 
-class OpenGames extends React.Component {
+class MyGames extends React.Component {
     getFilteredGames() {
         return Object.values(this.props.games).filter(game => (
-            !game.players.includes(this.props.me.id) &&
-            game.status === gameConstants.GAME_STATUS_OPEN
+            game.status === gameConstants.GAME_STATUS_FINISHED &&
+            game.players.includes(this.props.me.id)
         ));
     }
 
-    joinGameHandler = id => () => {
-        this.props.joinGame(id).then(() => {
-            this.props.push('play', id);
-        });
+    openGameHandler = id => () => {
+        this.props.push('play', id);
     }
 
     render() {
         return (
-            <div className="cbf-open-games">
-                <Headline>Open invitations</Headline>
+            <div className="cbf-my-games">
+                <Headline>Finished games</Headline>
 
                 {this.getFilteredGames().map(game => (
                     <div
@@ -45,16 +42,18 @@ class OpenGames extends React.Component {
                                     {games[game.handle].title}
                                 </div>
 
-                                {game.players.map(userId => (
-                                    <div key={userId}>
-                                        {this.props.users[userId].username}
+                                {game.scores.map((item, index) => (
+                                    <div key={item.player}>
+                                        {index + 1}.&nbsp;
+                                        {this.props.users[item.player].username}&nbsp;
+                                        ({item.score} points)
                                     </div>
                                 ))}
                             </div>
 
                             <div className="cbf-all-games__item-options">
-                                <Button onTouchTap={this.joinGameHandler(game.id)}>
-                                    Join game
+                                <Button onTouchTap={this.openGameHandler(game.id)}>
+                                    Open game
                                 </Button>
                             </div>
                         </div>
@@ -65,10 +64,9 @@ class OpenGames extends React.Component {
     }
 }
 
-OpenGames.propTypes = {
+MyGames.propTypes = {
     games: PropTypes.object.isRequired,
     me: PropTypes.object.isRequired,
-    joinGame: PropTypes.func.isRequired,
     push: PropTypes.func.isRequired,
     users: PropTypes.object.isRequired,
 };
@@ -80,8 +78,7 @@ export default connectWithRouter(
         users: state.users,
     }),
     {
-        joinGame,
         push,
     },
-    OpenGames,
+    MyGames,
 );

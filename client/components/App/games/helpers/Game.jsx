@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
+import gameConstants from 'shared/constants/games';
 import { updateGameState, updateGlobalGameParams } from 'actions/games';
 
 class Game extends React.Component {
@@ -14,7 +15,7 @@ class Game extends React.Component {
     }
 
     checkAutomaticActions() {
-        if (!this.props.isLatestState) {
+        if (!this.props.isLatestState || !this.props.isGameActive) {
             return;
         }
 
@@ -60,6 +61,7 @@ Game.propTypes = {
     children: PropTypes.node.isRequired,
     gameId: PropTypes.string.isRequired,
     gameState: PropTypes.object.isRequired,
+    isGameActive: PropTypes.bool.isRequired,
     isLatestState: PropTypes.bool.isRequired,
     me: PropTypes.object.isRequired,
     states: PropTypes.object.isRequired,
@@ -71,6 +73,9 @@ export default connectWithRouter(
     (state, ownProps) => ({
         gameId: ownProps.match.params.gameId,
         gameState: state.gameStates.states[state.gameStates.currentState],
+        isGameActive: (
+            state.games[ownProps.match.params.gameId].status === gameConstants.GAME_STATUS_ACTIVE
+        ),
         isLatestState: state.gameStates.currentState === (
             (state.gameStates.stateCountSinceLastLoad - 1) + state.gameStates.actionIndex
         ),

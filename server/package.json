@@ -13,6 +13,7 @@
     "moment": "^2.21.0",
     "mongoose": "^5.0.15",
     "mongoose-id-validator": "^0.4.3",
+    "serialize-error": "^2.1.0",
     "validator": "^9.4.1"
   }
 }
