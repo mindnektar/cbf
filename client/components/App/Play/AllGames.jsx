@@ -32,7 +32,12 @@ class AllGames extends React.Component {
                             <div className="cbf-all-games__item-details">
                                 <div className="cbf-all-games__item-title">{game.title}</div>
                                 <div>{game.author}</div>
-                                <div>{game.playerCount} players</div>
+                                <div>
+                                    {game.playerCount[0]}
+                                    -
+                                    {game.playerCount[game.playerCount.length - 1]}&nbsp;
+                                    players
+                                </div>
                                 <div>{game.playTime} minutes</div>
                             </div>
 

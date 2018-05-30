@@ -2,11 +2,12 @@ const assets = require('./assets');
 const states = require('./states');
 
 module.exports = (players, randomizer) => {
-    const playerOrder = randomizer.shuffle([0, 1]);
+    const playerOrder = randomizer.shuffle(Object.keys(players));
     const remainingTiles = randomizer.shuffle(assets.tiles);
     const factoryTiles = [];
+    const factoryTileCounts = { 2: 5, 3: 7, 4: 9 };
 
-    for (let i = 0; i < 5; i += 1) {
+    for (let i = 0; i < factoryTileCounts[players.length]; i += 1) {
         factoryTiles.push(remainingTiles.splice(0, 4));
     }
 

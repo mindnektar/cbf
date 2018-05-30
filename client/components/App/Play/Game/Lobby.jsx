@@ -4,6 +4,7 @@ import connectWithRouter from 'helpers/connectWithRouter';
 import { startGame } from 'actions/games';
 import { replace } from 'actions/history';
 import gameConstants from 'shared/constants/games';
+import games from 'data/games';
 import Button from 'Button';
 import Headline from 'Headline';
 
@@ -41,7 +42,8 @@ class Lobby extends React.Component {
                 ))}
 
                 {
-                    this.props.game.players.length === 2 &&
+                    games[this.props.game.handle].playerCount
+                        .includes(this.props.game.players.length) &&
                     this.props.game.players[0] === this.props.me.id &&
                     <Button
                         onTouchTap={this.startGame}

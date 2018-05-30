@@ -10,10 +10,15 @@ import gameConstants from 'shared/constants/games';
 
 class OpenGames extends React.Component {
     getFilteredGames() {
-        return Object.values(this.props.games).filter(game => (
-            !game.players.includes(this.props.me.id) &&
-            game.status === gameConstants.GAME_STATUS_OPEN
-        ));
+        return Object.values(this.props.games).filter((game) => {
+            const { playerCount } = games[game.handle];
+
+            return (
+                !game.players.includes(this.props.me.id) &&
+                game.players.length < playerCount[playerCount.length - 1] &&
+                game.status === gameConstants.GAME_STATUS_OPEN
+            );
+        });
     }
 
     joinGameHandler = id => () => {

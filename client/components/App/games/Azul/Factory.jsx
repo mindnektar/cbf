@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
 import { actions } from 'shared/games/azul';
 import Action from '../helpers/Action';
@@ -8,7 +9,12 @@ import Tile from './Tile';
 class Factory extends React.Component {
     render() {
         return (
-            <div className="azul__factory">
+            <div
+                className={classNames(
+                    'azul__factory',
+                    `azul__factory--display-count-${this.props.factoryTiles.length}`
+                )}
+            >
                 <div className="azul__factory-circle">
                     {this.props.factoryTiles.map((display, index) => (
                         <div

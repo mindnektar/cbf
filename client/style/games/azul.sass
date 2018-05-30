@@ -2,6 +2,7 @@
     position: relative
     width:  $circle-size
     height: $circle-size
+    margin: $item-size / 2
     padding: 0
     border-radius: 50%
     list-style: none
@@ -29,19 +30,19 @@
 .azul__score-track
     display: flex
     flex-wrap: wrap
-    width: aw(20)
+    width: 20vw
 
 .azul__score-field
     background: white
-    border: aw(.1) solid black
+    border: .1vw solid black
     box-sizing: border-box
-    font-size: aw(.5)
-    height: aw(1)
+    font-size: .5vw
+    height: 1vw
     position: relative
-    width: aw(1)
+    width: 1vw
 
     &:first-child
-        margin-right: aw(19)
+        margin-right: 19vw
 
     &:nth-child(5n+1)
         background: orange
@@ -54,72 +55,95 @@
 
 .azul__score-marker
     align-items: center
-    bottom: aw(.05)
+    bottom: .05vw
     display: flex
     justify-content: center
-    left: aw(.05)
+    left: .05vw
     position: absolute
-    right: aw(.05)
-    top: aw(.05)
+    right: .05vw
+    top: .05vw
 
 .azul__board-middle
     display: flex
     justify-content: space-between
-    margin-top: aw(1)
+    margin-top: 1vw
 
 .azul__pattern-line
     display: flex
     flex-direction: row-reverse
     justify-content: flex-start
-    width: aw(9.5)
+    width: 9.5vw
 
 .azul__pattern-line-item
     background: white
-    border: aw(.1) solid black
+    border: .1vw solid black
     box-sizing: border-box
-    height: aw(1.9)
-    width: aw(1.9)
+    height: 1.9vw
+    width: 1.9vw
 
 .azul__floor-line
     display: flex
-    margin-top: aw(1)
+    margin-top: 1vw
 
 .azul__factory
+    margin-left: 3vw
     position: relative
 
-.azul__factory-circle
-    @include on-circle($item-count: 5, $circle-size: aw(18), $item-size: aw(6))
+.azul__factory--display-count-5
+    .azul__factory-circle
+        @include on-circle($item-count: 5, $circle-size: 18vw, $item-size: 6vw)
+
+    .azul__factory-center
+        height: 10vw
+        margin: 7vw
+        width: 10vw
+
+.azul__factory--display-count-7
+    .azul__factory-circle
+        @include on-circle($item-count: 7, $circle-size: 20vw, $item-size: 6vw)
+
+    .azul__factory-center
+        height: 12vw
+        margin: 7vw
+        width: 12vw
+
+.azul__factory--display-count-9
+    .azul__factory-circle
+        @include on-circle($item-count: 9, $circle-size: 22vw, $item-size: 6vw)
+
+    .azul__factory-center
+        height: 14vw
+        margin: 7vw
+        width: 14vw
 
 .azul__factory-display
     align-items: center
     background: white
-    border: aw(.1) solid black
+    border: .1vw solid black
     border-radius: 100%
     box-sizing: border-box
     display: flex
     flex-wrap: wrap
     justify-content: center
-    padding: aw(.8)
+    padding: .8vw
 
 .azul__factory-center
-    align-items: flex-start
+    align-items: center
     display: flex
     flex-wrap: wrap
-    height: 53%
+    justify-content: center
     left: 0
-    margin: 38% 0 0 45%
     position: absolute
     top: 0
-    width: 53%
 
 .azul__tile
-    border: aw(.1) solid black
-    border-radius: aw(.5)
+    border: .1vw solid black
+    border-radius: .5vw
     box-sizing: border-box
-    height: aw(1.6)
-    margin: aw(.2)
+    height: 1.6vw
+    margin: .2vw
     position: relative
-    width: aw(1.6)
+    width: 1.6vw
 
 .azul__tile-0
     background: white
