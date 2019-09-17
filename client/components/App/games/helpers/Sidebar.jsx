@@ -21,7 +21,7 @@ class Sidebar extends React.Component {
                         }
                     )}
                     key={this.messageIndex}
-                    onTouchTap={this.switchGameStateHandler(index)}
+                    onClick={this.switchGameStateHandler(index)}
                 >
                     Start of match
                 </div>
@@ -59,7 +59,7 @@ class Sidebar extends React.Component {
                     }
                 )}
                 key={this.messageIndex}
-                onTouchTap={this.switchGameStateHandler(index)}
+                onClick={this.switchGameStateHandler(index)}
             >
                 <div className="cbf-helper-sidebar__history-index">
                     {this.messageIndex}

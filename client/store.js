@@ -2,10 +2,10 @@ import { applyMiddleware, createStore } from 'redux';
 import { routerMiddleware } from 'react-router-redux';
 import thunk from 'redux-thunk';
 import { createLogger } from 'redux-logger';
-import createHistory from 'history/createBrowserHistory';
+import createMemoryHistory from 'history/createMemoryHistory';
 import reducers from 'reducers';
 
-const history = createHistory();
+const history = createMemoryHistory();
 
 const middleware = [thunk];
 

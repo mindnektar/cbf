@@ -5,7 +5,7 @@ import connectWithRouter from 'helpers/connectWithRouter';
 import { updateGameState } from 'actions/games';
 
 class Action extends React.Component {
-    onTouchTap = () => {
+    onClick = () => {
         if (this.isActive()) {
             this.props.updateGameState(
                 this.props.gameId,
@@ -29,7 +29,7 @@ class Action extends React.Component {
             return (
                 <div
                     className={helperClassNames}
-                    onTouchTap={this.onTouchTap}
+                    onClick={this.onClick}
                 >
                     {this.props.children}
                 </div>
@@ -40,7 +40,7 @@ class Action extends React.Component {
             this.props.children,
             {
                 className: `${this.props.children.props.className} ${helperClassNames}`,
-                onTouchTap: this.onTouchTap,
+                onClick: this.onClick,
             }
         );
     }

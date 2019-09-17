@@ -46,7 +46,7 @@ class Lobby extends React.Component {
                         .includes(this.props.game.players.length) &&
                     this.props.game.players[0] === this.props.me.id &&
                     <Button
-                        onTouchTap={this.startGame}
+                        onClick={this.startGame}
                     >
                         Start game
                     </Button>

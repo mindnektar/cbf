@@ -52,7 +52,7 @@ class MyGames extends React.Component {
                             </div>
 
                             <div className="cbf-all-games__item-options">
-                                <Button onTouchTap={this.openGameHandler(game.id)}>
+                                <Button onClick={this.openGameHandler(game.id)}>
                                     Open game
                                 </Button>
                             </div>

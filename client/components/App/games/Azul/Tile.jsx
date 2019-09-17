@@ -11,12 +11,18 @@ class Tile extends React.Component {
                     'azul__tile',
                     `azul__tile-${this.props.type}`
                 )}
+                style={this.props.style}
             />
         );
     }
 }
 
+Tile.defaultProps = {
+    style: {},
+};
+
 Tile.propTypes = {
+    style: PropTypes.object,
     type: PropTypes.number.isRequired,
 };
 

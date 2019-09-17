@@ -30,7 +30,7 @@ class Djinns extends React.Component {
                             this.props.gameState, this.props.globalGameParams.selectedDjinn, djinn
                         )}
                         key={djinn}
-                        onTouchTap={this.selectDjinnHandler(djinn)}
+                        onClick={this.selectDjinnHandler(djinn)}
                         selected={this.props.globalGameParams.selectedDjinn === djinn}
                     >
                         <Djinn djinn={djinn} />

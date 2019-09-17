@@ -58,7 +58,7 @@ class OpenGames extends React.Component {
                             </div>
 
                             <div className="cbf-all-games__item-options">
-                                <Button onTouchTap={this.joinGameHandler(game.id)}>
+                                <Button onClick={this.joinGameHandler(game.id)}>
                                     Join game
                                 </Button>
                             </div>

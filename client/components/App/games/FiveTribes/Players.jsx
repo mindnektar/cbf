@@ -72,7 +72,7 @@ class Players extends React.Component {
                 <LocalAction
                     active={actions.COLLECT_DJINN.isElderSelectable(this.props.gameState, meeple)}
                     key={meeple}
-                    onTouchTap={this.selectElderHandler(meeple)}
+                    onClick={this.selectElderHandler(meeple)}
                     selected={(this.props.globalGameParams.selectedElders || []).includes(meeple)}
                 >
                     {elderJsx}
@@ -153,7 +153,7 @@ class Players extends React.Component {
                                             )
                                         }
                                         key={resource}
-                                        onTouchTap={this.selectFakirHandler(resource)}
+                                        onClick={this.selectFakirHandler(resource)}
                                         selected={(this.props.globalGameParams.selectedFakirs || []).includes(resource)}
                                     >
                                         <Resource resource={resource} />

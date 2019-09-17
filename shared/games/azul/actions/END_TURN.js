@@ -20,7 +20,7 @@ module.exports = {
         let { currentPlayer } = clonedState;
 
         if (factoryTiles.some(display => display.length > 0) || centerTiles.length > 0) {
-            let playerIndex = playerOrder.indexOf(players.indexOf(currentPlayer)) + 1;
+            let playerIndex = playerOrder.indexOf(`${players.indexOf(currentPlayer)}`) + 1;
 
             if (playerIndex === playerOrder.length) {
                 playerIndex = 0;

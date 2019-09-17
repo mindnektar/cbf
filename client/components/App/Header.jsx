@@ -28,7 +28,7 @@ class Header extends React.Component {
                                 { 'cbf-header__menu-item--active': item.is(this.props.path) }
                             )}
                             key={item.label}
-                            onTouchTap={this.changePageHandler(item.route)}
+                            onClick={this.changePageHandler(item.route)}
                         >
                             {item.label}
                         </div>
@@ -43,7 +43,7 @@ class Header extends React.Component {
                                     'cbf-header__menu-item',
                                     { 'cbf-header__menu-item--active': this.props.path.includes('login') }
                                 )}
-                                onTouchTap={this.props.logout}
+                                onClick={this.props.logout}
                             >
                                 {this.props.me.username}
                             </div>
@@ -55,7 +55,7 @@ class Header extends React.Component {
                                     'cbf-header__menu-item',
                                     { 'cbf-header__menu-item--active': this.props.path.includes('login') }
                                 )}
-                                onTouchTap={this.changePageHandler('login')}
+                                onClick={this.changePageHandler('login')}
                             >
                                 Login
                             </div>

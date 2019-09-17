@@ -44,7 +44,7 @@ class AllGames extends React.Component {
                             <div className="cbf-all-games__item-options">
                                 {this.props.me &&
                                     <Button
-                                        onTouchTap={this.createGameHandler(game.handle)}
+                                        onClick={this.createGameHandler(game.handle)}
                                     >
                                         Start new game
                                     </Button>

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import connectWithRouter from 'helpers/connectWithRouter';
-import ScoreTrack from './Board/ScoreTrack';
+import ScoreMarker from './Board/ScoreMarker';
 import PatternLines from './Board/PatternLines';
 import Wall from './Board/Wall';
 import FloorLine from './Board/FloorLine';
@@ -10,7 +10,7 @@ class Board extends React.Component {
     render() {
         return (
             <div className="azul__board">
-                <ScoreTrack
+                <ScoreMarker
                     score={this.props.player.score}
                 />
 

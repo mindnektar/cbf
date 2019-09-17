@@ -19,15 +19,11 @@ class PatternLines extends React.Component {
                             className="azul__pattern-line"
                             key={index}
                         >
-                            {Array(index + 1).fill(null).map((_, itemIndex) => (
-                                <div
-                                    className="azul__pattern-line-item"
-                                    key={itemIndex}
-                                >
-                                    {line[itemIndex] !== undefined &&
-                                        <Tile type={line[itemIndex]} />
-                                    }
-                                </div>
+                            {line.map((tile, tileIndex) => (
+                                <Tile
+                                    key={tileIndex}
+                                    type={tile}
+                                />
                             ))}
                         </div>
                     </Action>

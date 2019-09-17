@@ -29,7 +29,7 @@ class Setup extends React.Component {
             <div>
                 <Headline>Configure your game</Headline>
 
-                <Button onTouchTap={this.openGame}>
+                <Button onClick={this.openGame}>
                     Open game for joining
                 </Button>
             </div>

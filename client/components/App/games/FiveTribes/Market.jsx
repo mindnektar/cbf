@@ -46,7 +46,7 @@ class Market extends React.Component {
                             this.props.gameState, selectedResources, index
                         )}
                         key={resource}
-                        onTouchTap={this.selectResourceHandler(index)}
+                        onClick={this.selectResourceHandler(index)}
                         selected={selectedResources && selectedResources.includes(index)}
                     >
                         <Resource resource={resource} />

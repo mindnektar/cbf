@@ -13,7 +13,7 @@ class Button extends React.Component {
                         'cbf-ui-button--secondary': this.props.secondary,
                     }
                 )}
-                onTouchTap={this.props.onTouchTap}
+                onClick={this.props.onClick}
             >
                 {this.props.children}
             </div>
@@ -29,7 +29,7 @@ Button.defaultProps = {
 Button.propTypes = {
     children: PropTypes.string.isRequired,
     disabled: PropTypes.bool,
-    onTouchTap: PropTypes.func.isRequired,
+    onClick: PropTypes.func.isRequired,
     secondary: PropTypes.bool,
 };
 

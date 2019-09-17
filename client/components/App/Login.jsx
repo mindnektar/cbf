@@ -49,7 +49,7 @@ class Login extends React.Component {
 
                     <FormItem>
                         <Button
-                            onTouchTap={this.login}
+                            onClick={this.login}
                         >
                             Login
                         </Button>

@@ -27,63 +27,53 @@
 .azul__game
     display: flex
 
-.azul__score-track
-    display: flex
-    flex-wrap: wrap
+.azul__board
+    background-image: url('/img/games/azul/board.jpg')
+    background-repeat: no-repeat
+    background-size: contain
+    height: 20vw
+    position: relative
     width: 20vw
 
-.azul__score-field
-    background: white
-    border: .1vw solid black
-    box-sizing: border-box
-    font-size: .5vw
-    height: 1vw
-    position: relative
-    width: 1vw
-
-    &:first-child
-        margin-right: 19vw
-
-    &:nth-child(5n+1)
-        background: orange
-
-.azul__score-field--active
-    color: white
-
-    .azul__score-marker
-        background: black
-
 .azul__score-marker
-    align-items: center
-    bottom: .05vw
-    display: flex
-    justify-content: center
-    left: .05vw
+    background: black
+    height: 0
+    left: 0
+    padding-bottom: 4.5%
     position: absolute
-    right: .05vw
-    top: .05vw
+    top: 0
+    width: 4.5%
 
-.azul__board-middle
-    display: flex
-    justify-content: space-between
-    margin-top: 1vw
+.azul__pattern-lines
+    height: 45%
+    left: 3%
+    position: absolute
+    top: 34%
+    width: 43.5%
+
+    .azul__pattern-line
+        flex-direction: row-reverse
 
 .azul__pattern-line
     display: flex
-    flex-direction: row-reverse
+    height: 20%
     justify-content: flex-start
-    width: 9.5vw
 
-.azul__pattern-line-item
-    background: white
-    border: .1vw solid black
-    box-sizing: border-box
-    height: 1.9vw
-    width: 1.9vw
+.azul__wall
+    left: 51%
+    position: absolute
+    top: 34%
+
+    .azul__tile
+        left: 0
+        position: absolute
+        top: 0
 
 .azul__floor-line
     display: flex
-    margin-top: 1vw
+    left: 3%
+    position: absolute
+    top: 86%
 
 .azul__factory
     margin-left: 3vw
@@ -137,13 +127,10 @@
     top: 0
 
 .azul__tile
-    border: .1vw solid black
     border-radius: .5vw
-    box-sizing: border-box
-    height: 1.6vw
-    margin: .2vw
+    height: 1.7vw
     position: relative
-    width: 1.6vw
+    width: 1.7vw
 
 .azul__tile-0
     background: white

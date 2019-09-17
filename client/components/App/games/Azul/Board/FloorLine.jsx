@@ -13,15 +13,11 @@ class FloorLine extends React.Component {
                 params={[null]}
             >
                 <div className="azul__floor-line">
-                    {Array(7).fill(null).map((_, itemIndex) => (
-                        <div
-                            className="azul__pattern-line-item"
-                            key={itemIndex}
-                        >
-                            {this.props.floorLine[itemIndex] !== undefined &&
-                                <Tile type={this.props.floorLine[itemIndex]} />
-                            }
-                        </div>
+                    {this.props.floorLine.map((tile, tileIndex) => (
+                        <Tile
+                            key={tileIndex}
+                            type={tile}
+                        />
                     ))}
                 </div>
             </Action>

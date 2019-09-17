@@ -7,22 +7,16 @@ class Wall extends React.Component {
     render() {
         return (
             <div className="azul__wall">
-                {this.props.wall.map((line, index) => (
-                    <div
-                        className="azul__pattern-line"
-                        key={index}
-                    >
-                        {line.map((lineItem, itemIndex) => (
-                            <div
-                                className="azul__pattern-line-item"
-                                key={itemIndex}
-                            >
-                                {lineItem !== null &&
-                                    <Tile type={lineItem} />
-                                }
-                            </div>
-                        ))}
-                    </div>
+                {this.props.wall.map((line, lineIndex) => (
+                    line.map((item, itemIndex) => (
+                        item !== null && (
+                            <Tile
+                                key={`${lineIndex}${itemIndex}`}
+                                style={{ transform: `translate(${itemIndex * 101}%, ${lineIndex * 105}%)` }}
+                                type={item}
+                            />
+                        )
+                    ))
                 ))}
             </div>
         );

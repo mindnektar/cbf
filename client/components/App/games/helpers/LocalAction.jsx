@@ -4,9 +4,9 @@ import classNames from 'classnames';
 import connectWithRouter from 'helpers/connectWithRouter';
 
 class LocalAction extends React.Component {
-    onTouchTap = (event) => {
+    onClick = (event) => {
         if (this.props.active) {
-            this.props.onTouchTap(event);
+            this.props.onClick(event);
         }
     }
 
@@ -23,7 +23,7 @@ class LocalAction extends React.Component {
             return (
                 <div
                     className={helperClassNames}
-                    onTouchTap={this.onTouchTap}
+                    onClick={this.onClick}
                 >
                     {this.props.children}
                 </div>
@@ -34,7 +34,7 @@ class LocalAction extends React.Component {
             this.props.children,
             {
                 className: `${this.props.children.props.className} ${helperClassNames}`,
-                onTouchTap: this.onTouchTap,
+                onClick: this.onClick,
             }
         );
     }
@@ -47,7 +47,7 @@ LocalAction.defaultProps = {
 LocalAction.propTypes = {
     active: PropTypes.bool.isRequired,
     children: PropTypes.node.isRequired,
-    onTouchTap: PropTypes.func.isRequired,
+    onClick: PropTypes.func.isRequired,
     selected: PropTypes.bool,
 };
 

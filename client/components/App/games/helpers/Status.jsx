@@ -89,7 +89,7 @@ class Status extends React.Component {
                         this.props.states.findById(this.props.gameState.state).performOnConfirm &&
                         <Button
                             disabled={!this.mayContinueTurn()}
-                            onTouchTap={this.continueTurn}
+                            onClick={this.continueTurn}
                             secondary
                         >
                             Continue
@@ -98,7 +98,7 @@ class Status extends React.Component {
 
                     {!this.props.isLatestState &&
                         <Button
-                            onTouchTap={this.exitHistoryMode}
+                            onClick={this.exitHistoryMode}
                             secondary
                         >
                             Exit
@@ -109,7 +109,7 @@ class Status extends React.Component {
                 <div className="cbf-helper-status__options">
                     <Button
                         disabled={this.props.actionIndex === 0}
-                        onTouchTap={this.undo}
+                        onClick={this.undo}
                         secondary
                     >
                         Undo
@@ -117,7 +117,7 @@ class Status extends React.Component {
 
                     <Button
                         disabled={this.props.actionIndex === this.props.actions.length}
-                        onTouchTap={this.redo}
+                        onClick={this.redo}
                         secondary
                     >
                         Redo
@@ -125,7 +125,7 @@ class Status extends React.Component {
 
                     <Button
                         disabled={!this.mayEndTurn()}
-                        onTouchTap={this.endTurn}
+                        onClick={this.endTurn}
                         secondary
                     >
                         End turn

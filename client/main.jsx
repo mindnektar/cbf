@@ -2,13 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
-import injectTapEventPlugin from 'react-tap-event-plugin';
 import 'polyfills';
 import store, { browserHistory } from 'store';
 import App from 'components/App';
 import 'style/main.sass';
-
-injectTapEventPlugin();
 
 const render = (AppComponent) => {
     ReactDOM.render(
