@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import classNames from 'classnames';
+import { deleteToken, AUTH_TYPE_USER } from 'auth';
+import HeaderModel from 'models/header';
 
 const menuItems = [
     { label: 'Home', route: '/', is: (path) => path === '/' },
@@ -11,6 +13,12 @@ const menuItems = [
 class Header extends React.Component {
     changePageHandler = (route) => () => {
         this.props.history.push(route);
+    }
+
+    logout = () => {
+        deleteToken(AUTH_TYPE_USER);
+        this.props.history.push('/');
+        window.location.reload();
     }
 
     render() {
@@ -33,17 +41,14 @@ class Header extends React.Component {
                     ))}
                 </div>
 
-                {this.props.isSystemLoaded && (
+                {!this.props.data.loading && (
                     <div className="cbf-header__login">
-                        {this.props.me ? (
+                        {this.props.data.me ? (
                             <div
-                                className={classNames(
-                                    'cbf-header__menu-item',
-                                    { 'cbf-header__menu-item--active': this.props.history.location.pathname.includes('login') }
-                                )}
-                                onClick={this.props.logout}
+                                className="cbf-header__menu-item"
+                                onClick={this.logout}
                             >
-                                {this.props.me.username}
+                                {this.props.data.me.name}
                             </div>
                         ) : (
                             <div
@@ -63,15 +68,9 @@ class Header extends React.Component {
     }
 }
 
-Header.defaultProps = {
-    me: null,
-};
-
 Header.propTypes = {
-    isSystemLoaded: PropTypes.bool.isRequired,
-    logout: PropTypes.func.isRequired,
-    me: PropTypes.object,
+    data: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
 };
 
-export default withRouter(Header);
+export default HeaderModel.graphql(withRouter(Header));

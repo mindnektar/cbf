@@ -4,7 +4,7 @@ module.exports = {
     context: __dirname,
 
     entry: {
-        app: ['whatwg-fetch', './client/main.jsx'],
+        app: ['@babel/polyfill', './client/main.jsx'],
     },
 
     output: {

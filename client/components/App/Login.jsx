@@ -1,5 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
+import { setToken, AUTH_TYPE_USER } from 'auth';
+import LoginModel from 'models/login';
 import Form, { FormItem } from 'Form';
 import Button from 'Button';
 import TextField from 'TextField';
@@ -7,19 +10,27 @@ import TextField from 'TextField';
 class Login extends React.Component {
     state = {
         password: '',
-        username: '',
+        name: '',
     };
 
     changeUsername = (event) => {
-        this.setState({ username: event.target.value });
+        this.setState({ name: event.target.value });
     }
 
     changePassword = (event) => {
         this.setState({ password: event.target.value });
     }
 
-    login = () => {
-        this.props.login(this.state.username, this.state.password);
+    login = async () => {
+        const { data } = await this.props.login({
+            name: this.state.name,
+            password: this.state.password,
+        });
+
+        setToken(AUTH_TYPE_USER, data.login.authToken);
+
+        this.props.history.push('/');
+        window.location.reload();
     }
 
     render() {
@@ -31,7 +42,7 @@ class Login extends React.Component {
                             onChange={this.changeUsername}
                             onSubmit={this.login}
                         >
-                            {this.state.username}
+                            {this.state.name}
                         </TextField>
                     </FormItem>
 
@@ -60,6 +71,7 @@ class Login extends React.Component {
 
 Login.propTypes = {
     login: PropTypes.func.isRequired,
+    history: PropTypes.object.isRequired,
 };
 
-export default Login;
+export default LoginModel.graphql(withRouter(Login));
