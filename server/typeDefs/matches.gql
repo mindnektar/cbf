@@ -1,6 +1,6 @@
 type Query {
     match(id: ID!): Match!
-    matches: [Match!]!
+    matches(filter: MatchFilter): [Match!]!
 }
 
 type Mutation {
@@ -29,6 +29,10 @@ enum MatchStatus {
     OPEN
     ACTIVE
     FINISHED
+}
+
+input MatchFilter {
+    status: MatchStatus
 }
 
 input CreateMatchInput {

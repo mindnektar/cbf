@@ -56,6 +56,14 @@ class Match extends BaseModel {
             },
         };
     }
+
+    static get filters() {
+        return {
+            status: (builder, value) => (
+                builder.where('status', value)
+            ),
+        };
+    }
 }
 
 export default Match;

@@ -1,27 +1,27 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
+import PlayModel from 'models/play';
 import Button from 'Button';
 import Headline from 'Headline';
 import games from 'data/games';
-import gameConstants from 'shared/constants/games';
 
 class OpenGames extends React.Component {
-    getFilteredGames() {
-        return Object.values(this.props.games).filter((game) => {
+    getMatches() {
+        return this.props.data.matches.filter((game) => {
             const { playerCount } = games[game.handle];
 
             return (
-                !game.players.includes(this.props.me.id)
+                !game.players.some(({ id }) => id === this.props.data.me.id)
                 && game.players.length < playerCount[playerCount.length - 1]
-                && game.status === gameConstants.GAME_STATUS_OPEN
             );
         });
     }
 
-    joinGameHandler = (id) => () => {
-        this.props.joinGame(id).then(() => {
-            this.props.push('play', id);
-        });
+    joinMatchHandler = (id) => async () => {
+        await this.props.joinMatch(id);
+
+        this.props.history.push(`/play/${id}`);
     }
 
     render() {
@@ -29,33 +29,33 @@ class OpenGames extends React.Component {
             <div className="cbf-open-games">
                 <Headline>Open invitations</Headline>
 
-                {this.getFilteredGames().map((game) => (
+                {this.getMatches().map((match) => (
                     <div
                         className="cbf-all-games__item"
-                        key={game.id}
+                        key={match.id}
                     >
                         <div className="cbf-all-games__item-image">
                             <img
-                                src={`/img/games/${game.handle}/box.jpg`}
-                                alt={games[game.handle].title}
+                                src={`/img/games/${match.handle}/box.jpg`}
+                                alt={games[match.handle].title}
                             />
                         </div>
 
                         <div className="cbf-all-games__item-content">
                             <div className="cbf-all-games__item-details">
                                 <div className="cbf-all-games__item-title">
-                                    {games[game.handle].title}
+                                    {games[match.handle].title}
                                 </div>
 
-                                {game.players.map((userId) => (
-                                    <div key={userId}>
-                                        {this.props.users[userId].username}
+                                {match.players.map((player) => (
+                                    <div key={player.id}>
+                                        {player.name}
                                     </div>
                                 ))}
                             </div>
 
                             <div className="cbf-all-games__item-options">
-                                <Button onClick={this.joinGameHandler(game.id)}>
+                                <Button onClick={this.joinMatchHandler(match.id)}>
                                     Join game
                                 </Button>
                             </div>
@@ -68,11 +68,9 @@ class OpenGames extends React.Component {
 }
 
 OpenGames.propTypes = {
-    games: PropTypes.object.isRequired,
-    me: PropTypes.object.isRequired,
-    joinGame: PropTypes.func.isRequired,
-    push: PropTypes.func.isRequired,
-    users: PropTypes.object.isRequired,
+    data: PropTypes.object.isRequired,
+    joinMatch: PropTypes.func.isRequired,
+    history: PropTypes.object.isRequired,
 };
 
-export default OpenGames;
+export default PlayModel.graphql(withRouter(OpenGames));

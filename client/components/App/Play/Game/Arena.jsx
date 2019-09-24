@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
 import classNames from 'classnames';
-import gameConstants from 'shared/constants/games';
+import GameModel from 'models/play/game';
 import gameComponents from 'components/App/games';
 
 class Arena extends React.Component {
@@ -13,17 +14,17 @@ class Arena extends React.Component {
     };
 
     componentWillMount() {
-        if (this.props.game.status === gameConstants.GAME_STATUS_SETTING_UP) {
-            this.props.replace('play', this.props.game.id, 'setup');
+        if (this.props.data.match.status === 'SETTING_UP') {
+            this.props.history.replace(`/play/${this.props.data.match.id}/setup`);
             return;
         }
 
-        if (this.props.game.status === gameConstants.GAME_STATUS_OPEN) {
-            this.props.replace('play', this.props.game.id, 'lobby');
+        if (this.props.data.match.status === 'OPEN') {
+            this.props.history.replace(`/play/${this.props.data.match.id}/lobby`);
             return;
         }
 
-        this.props.loadGameStates(this.props.game.id).then(this.setZoom);
+        this.props.loadGameStates(this.props.data.match.id).then(this.setZoom);
     }
 
     componentDidMount() {
@@ -32,7 +33,7 @@ class Arena extends React.Component {
     }
 
     componentWillUnmount() {
-        this.props.clearGameStates();
+        // this.props.clearGameStates();
 
         this.arenaRef.removeEventListener('mousewheel', this.changeZoom);
         this.arenaRef.removeEventListener('DOMMouseScroll', this.changeZoom);
@@ -110,7 +111,7 @@ class Arena extends React.Component {
                     }}
                 >
                     {this.props.gameStates && (
-                        React.createElement(gameComponents[this.props.game.handle])
+                        React.createElement(gameComponents[this.props.data.match.handle])
                     )}
                 </div>
             </div>
@@ -124,10 +125,10 @@ Arena.defaultProps = {
 
 Arena.propTypes = {
     clearGameStates: PropTypes.func.isRequired,
-    game: PropTypes.object.isRequired,
+    data: PropTypes.object.isRequired,
     gameStates: PropTypes.object,
     loadGameStates: PropTypes.func.isRequired,
-    replace: PropTypes.func.isRequired,
+    history: PropTypes.object.isRequired,
 };
 
-export default Arena;
+export default GameModel.graphql(withRouter(Arena));

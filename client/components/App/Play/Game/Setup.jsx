@@ -1,24 +1,26 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
+import GameModel from 'models/play/game';
 import gameConstants from 'shared/constants/games';
 import Button from 'Button';
 import Headline from 'Headline';
 
 class Setup extends React.Component {
     componentWillMount() {
-        if (this.props.game.status === gameConstants.GAME_STATUS_OPEN) {
-            this.props.replace('play', this.props.game.id, 'lobby');
+        if (this.props.data.match.status === gameConstants.GAME_STATUS_OPEN) {
+            this.props.history.replace(`/play/${this.props.data.match.id}/lobby`);
         }
 
-        if (this.props.game.status === gameConstants.GAME_STATUS_ACTIVE) {
-            this.props.replace('play', this.props.game.id);
+        if (this.props.data.match.status === gameConstants.GAME_STATUS_ACTIVE) {
+            this.props.history.replace(`/play/${this.props.data.match.id}`);
         }
     }
 
-    openGame = () => {
-        this.props.openGame(this.props.game.id).then(() => {
-            this.props.replace('play', this.props.game.id, 'lobby');
-        });
+    openMatch = async () => {
+        await this.props.openMatch(this.props.data.match.id);
+
+        this.props.history.replace(`/play/${this.props.data.match.id}/lobby`);
     }
 
     render() {
@@ -26,7 +28,7 @@ class Setup extends React.Component {
             <div>
                 <Headline>Configure your game</Headline>
 
-                <Button onClick={this.openGame}>
+                <Button onClick={this.openMatch}>
                     Open game for joining
                 </Button>
             </div>
@@ -35,9 +37,9 @@ class Setup extends React.Component {
 }
 
 Setup.propTypes = {
-    game: PropTypes.object.isRequired,
-    openGame: PropTypes.func.isRequired,
-    replace: PropTypes.func.isRequired,
+    data: PropTypes.object.isRequired,
+    openMatch: PropTypes.func.isRequired,
+    history: PropTypes.object.isRequired,
 };
 
-export default Setup;
+export default withRouter(GameModel.graphql(Setup));

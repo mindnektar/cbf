@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, withRouter } from 'react-router-dom';
+import PlayModel from 'models/play';
 import AllGames from './Play/AllGames';
 import MyGames from './Play/MyGames';
 import OpenGames from './Play/OpenGames';
@@ -9,29 +10,25 @@ import Game from './Play/Game';
 
 const Play = (props) => (
     <Switch>
-        <Route path={`${props.url}/:gameId`} component={Game} />
-        <Route path={props.url}>
+        <Route path="/play/:gameId" component={Game} />
+        <Route path="/play">
             <div>
-                {props.me && (
+                {props.data.me && (
                     <>
                         <MyGames />
                         <OpenGames />
-                        <AllGames />
-                        <FinishedGames />
                     </>
                 )}
+
+                <AllGames />
             </div>
         </Route>
     </Switch>
 );
 
-Play.defaultProps = {
-    me: null,
-};
-
 Play.propTypes = {
-    me: PropTypes.object,
-    url: PropTypes.string.isRequired,
+    data: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
 };
 
-export default Play;
+export default PlayModel.graphql(withRouter(Play));

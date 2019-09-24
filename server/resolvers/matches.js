@@ -6,8 +6,8 @@ export default {
         match: (parent, { id }, context, info) => (
             Match.query().findById(id).graphqlEager(info)
         ),
-        matches: (parent, params, context, info) => (
-            Match.query().graphqlEager(info)
+        matches: (parent, { filter }, context, info) => (
+            Match.query().filter(filter).graphqlEager(info)
         ),
     },
     Mutation: {

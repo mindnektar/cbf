@@ -1,14 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
+import PlayModel from 'models/play';
 import Button from 'Button';
 import Headline from 'Headline';
 import games from 'data/games';
 
 class AllGames extends React.Component {
-    createGameHandler = (handle) => () => {
-        this.props.createGame(handle).then((newGame) => {
-            this.props.push('play', newGame.id);
-        });
+    createMatchHandler = (handle) => async () => {
+        const { data } = await this.props.createMatch({ handle });
+
+        this.props.history.push(`/play/${data.createMatch.id}`);
     }
 
     render() {
@@ -43,9 +45,9 @@ class AllGames extends React.Component {
                             </div>
 
                             <div className="cbf-all-games__item-options">
-                                {this.props.me && (
+                                {this.props.data.me && (
                                     <Button
-                                        onClick={this.createGameHandler(game.handle)}
+                                        onClick={this.createMatchHandler(game.handle)}
                                     >
                                         Start new game
                                     </Button>
@@ -59,14 +61,10 @@ class AllGames extends React.Component {
     }
 }
 
-AllGames.defaultProps = {
-    me: null,
-};
-
 AllGames.propTypes = {
-    createGame: PropTypes.func.isRequired,
-    me: PropTypes.object,
-    push: PropTypes.func.isRequired,
+    createMatch: PropTypes.func.isRequired,
+    data: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
 };
 
-export default AllGames;
+export default PlayModel.graphql(withRouter(AllGames));

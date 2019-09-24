@@ -30,7 +30,7 @@ module.exports = (info, modelClass, additionalExpression) => {
 
             if (current.kind === 'InlineFragment') {
                 if (previousModelClass.name === current.typeCondition.name.value) {
-                    const nextModelClass = require(`../${current.typeCondition.name.value}`);
+                    const nextModelClass = require(`../${current.typeCondition.name.value}`).default;
                     return {
                         ...result,
                         ...findSubSelections(
@@ -52,7 +52,7 @@ module.exports = (info, modelClass, additionalExpression) => {
                     return result;
                 }
 
-                const nextModelClass = require(`../${relation.modelClass}`);
+                const nextModelClass = require(`../${relation.modelClass}`).default;
                 const subSelections = findSubSelections(
                     current.selectionSet.selections,
                     nextModelClass,
