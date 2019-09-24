@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import connectWithRouter from 'helpers/connectWithRouter';
 import { actions } from 'shared/games/azul';
 import Action from '../helpers/Action';
 import Tile from './Tile';
@@ -55,8 +54,4 @@ Factory.propTypes = {
     factoryTiles: PropTypes.array.isRequired,
 };
 
-export default connectWithRouter(
-    null,
-    null,
-    Factory
-);
+export default Factory;

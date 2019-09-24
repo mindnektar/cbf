@@ -1,120 +1,54 @@
-import validator from 'validator';
+import util from 'util';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
-import _ from 'lodash';
-import mongoose from '../mongoose';
+import BaseModel from './_base';
+import config from '../../config';
 
-const UserSchema = new mongoose.Schema({
-    username: {
-        type: String,
-        required: true,
-        trim: true,
-        unique: true,
-        minlength: 1,
-        validate: {
-            validator: validator.isAscii,
-            message: '{VALUE} is not a valid username',
-        },
-    },
-    email: {
-        type: String,
-        required: true,
-        trim: true,
-        unique: true,
-        validate: {
-            validator: validator.isEmail,
-            message: '{VALUE} is not a valid email',
-        },
-    },
-    password: {
-        type: String,
-        required: true,
-        minlength: 6,
-    },
-    tokens: [{
-        access: {
-            type: String,
-            required: true,
-        },
-        token: {
-            type: String,
-            required: true,
-        },
-    }],
-}, {
-    timestamps: true,
-});
+class User extends BaseModel {
+    static get tableName() {
+        return 'user';
+    }
 
-UserSchema.methods.toJSON = function () {
-    return {
-        ..._.omit(this.toObject(), ['_id', '__v', 'password', 'tokens']),
-        id: this.id,
-    };
-};
-
-UserSchema.methods.generateAuthToken = function () {
-    const access = 'auth';
-    const token = jwt.sign({
-        _id: this.id,
-        access,
-    }, process.env.JWT_SECRET).toString();
-
-    this.tokens.push({ access, token });
-
-    return this.save().then(() => token);
-};
-
-UserSchema.methods.removeToken = function (token) {
-    return this.update({
-        $pull: {
-            tokens: {
-                token,
+    static get jsonSchema() {
+        return {
+            type: 'object',
+            properties: {
+                id: { type: 'string' },
+                email: { type: 'string' },
+                name: { type: 'string' },
+                passwordHash: { type: 'string' },
+                createdAt: { type: 'string' },
+                updatedAt: { type: 'string' },
             },
-        },
-    });
-};
-
-UserSchema.statics.findByToken = function (token) {
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-        return this.findOne({
-            _id: decoded._id,
-            'tokens.token': token,
-            'tokens.access': 'auth',
-        });
-    } catch (e) {
-        return Promise.resolve();
+        };
     }
-};
 
-UserSchema.statics.findByCredentials = function (username, password) {
-    return this.findOne({ username }).then((user) => {
-        if (!user) {
-            return Promise.reject();
-        }
-
-        return new Promise((resolve, reject) => {
-            bcrypt.compare(password, user.password, (error, response) => {
-                if (response) {
-                    resolve(user);
-                } else {
-                    reject(error);
-                }
-            });
-        });
-    });
-};
-
-UserSchema.pre('save', function (next) {
-    if (this.isModified('password')) {
-        bcrypt.hash(this.password, 10, (error, hash) => {
-            this.password = hash;
-            next();
-        });
-    } else {
-        next();
+    static get relationMappings() {
+        return {
+            matches: {
+                relation: BaseModel.ManyToManyRelation,
+                modelClass: 'Match',
+                join: {
+                    from: 'user.id',
+                    through: {
+                        from: 'match_participant.user_id',
+                        to: 'match_participant.match_id',
+                    },
+                    to: 'match.id',
+                },
+            },
+        };
     }
-});
 
-export const User = mongoose.model('User', UserSchema);
+    generateAuthToken() {
+        return util.promisify(jwt.sign)(
+            {
+                id: this.id,
+                role: this.role,
+            },
+            config.jwt.secret,
+            config.tokens.identity,
+        );
+    }
+}
+
+export default User;

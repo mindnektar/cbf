@@ -51,6 +51,14 @@ module.exports = {
                     { loader: 'import-glob-loader' },
                 ],
             },
+
+            {
+                // needed for apollo-link-state
+                // see: https://github.com/apollographql/apollo-link-state/issues/302
+                test: /\.mjs$/,
+                include: /node_modules/,
+                type: 'javascript/auto',
+            },
         ],
     },
 };

@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import connectWithRouter from 'helpers/connectWithRouter';
 import Tile from '../Tile';
 
 class Wall extends React.Component {
@@ -27,8 +26,4 @@ Wall.propTypes = {
     wall: PropTypes.array.isRequired,
 };
 
-export default connectWithRouter(
-    null,
-    null,
-    Wall
-);
+export default Wall;

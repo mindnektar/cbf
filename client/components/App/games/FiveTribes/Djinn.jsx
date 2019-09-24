@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import connectWithRouter from 'helpers/connectWithRouter';
 import { assets } from 'shared/games/five-tribes';
 
 class Djinn extends React.Component {
@@ -37,8 +36,4 @@ Djinn.propTypes = {
     djinn: PropTypes.string,
 };
 
-export default connectWithRouter(
-    null,
-    null,
-    Djinn
-);
+export default Djinn;

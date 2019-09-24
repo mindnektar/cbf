@@ -1,7 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import connectWithRouter from 'helpers/connectWithRouter';
-import { login } from 'actions/auth';
 import Form, { FormItem } from 'Form';
 import Button from 'Button';
 import TextField from 'TextField';
@@ -64,10 +62,4 @@ Login.propTypes = {
     login: PropTypes.func.isRequired,
 };
 
-export default connectWithRouter(
-    null,
-    {
-        login,
-    },
-    Login
-);
+export default Login;

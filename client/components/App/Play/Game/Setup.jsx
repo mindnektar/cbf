@@ -1,8 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import connectWithRouter from 'helpers/connectWithRouter';
-import { replace } from 'actions/history';
-import { openGame } from 'actions/games';
 import gameConstants from 'shared/constants/games';
 import Button from 'Button';
 import Headline from 'Headline';
@@ -43,13 +40,4 @@ Setup.propTypes = {
     replace: PropTypes.func.isRequired,
 };
 
-export default connectWithRouter(
-    (state, ownProps) => ({
-        game: state.games[ownProps.match.params.gameId],
-    }),
-    {
-        openGame,
-        replace,
-    },
-    Setup
-);
+export default Setup;

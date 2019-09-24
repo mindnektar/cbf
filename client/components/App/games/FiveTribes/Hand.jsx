@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import connectWithRouter from 'helpers/connectWithRouter';
 import { actions, assets } from 'shared/games/five-tribes';
 import Action from '../helpers/Action';
 
@@ -9,7 +8,7 @@ class Hand extends React.Component {
     render() {
         return (
             <div className="five-tribes__hand">
-                {this.props.gameState.public.game.meeplesInHand.map(meeple =>
+                {this.props.gameState.public.game.meeplesInHand.map((meeple) => (
                     <Action
                         action={actions.PLACE_MEEPLE}
                         key={meeple}
@@ -22,7 +21,7 @@ class Hand extends React.Component {
                             )}
                         />
                     </Action>
-                )}
+                ))}
             </div>
         );
     }
@@ -32,10 +31,4 @@ Hand.propTypes = {
     gameState: PropTypes.object.isRequired,
 };
 
-export default connectWithRouter(
-    state => ({
-        gameState: state.gameStates.states[state.gameStates.currentState],
-    }),
-    null,
-    Hand
-);
+export default Hand;

@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import connectWithRouter from 'helpers/connectWithRouter';
 
 class PlayerRow extends React.Component {
     render() {
@@ -16,8 +15,4 @@ PlayerRow.propTypes = {
     children: PropTypes.node.isRequired,
 };
 
-export default connectWithRouter(
-    null,
-    null,
-    PlayerRow
-);
+export default PlayerRow;

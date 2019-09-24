@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import connectWithRouter from 'helpers/connectWithRouter';
 import ScoreMarker from './Board/ScoreMarker';
 import PatternLines from './Board/PatternLines';
 import Wall from './Board/Wall';
@@ -36,8 +35,4 @@ Board.propTypes = {
     player: PropTypes.object.isRequired,
 };
 
-export default connectWithRouter(
-    null,
-    null,
-    Board
-);
+export default Board;

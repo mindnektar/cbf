@@ -1,0 +1,30 @@
+type Query {
+    users: [User!]!
+    me: User!
+}
+
+type Mutation {
+    signup(input: SignupInput!): LoginResult!
+    login(input: LoginInput!): LoginResult!
+}
+
+type User {
+    id: ID!
+    name: String!
+    matches: [Match!]!
+}
+
+type LoginResult {
+    authToken: String!
+}
+
+input SignupInput {
+    email: String!
+    name: String!
+    password: String!
+}
+
+input LoginInput {
+    name: String!
+    password: String!
+}

@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import connectWithRouter from 'helpers/connectWithRouter';
 import { actions, states } from 'shared/games/azul';
 import Game from './helpers/Game';
 import Sidebar from './helpers/Sidebar';
@@ -40,12 +39,4 @@ Azul.propTypes = {
     players: PropTypes.array.isRequired,
 };
 
-export default connectWithRouter(
-    (state, ownProps) => ({
-        gameState: state.gameStates.states[state.gameStates.currentState],
-        me: state.me,
-        players: state.games[ownProps.match.params.gameId].players,
-    }),
-    null,
-    Azul
-);
+export default Azul;

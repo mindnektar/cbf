@@ -2,11 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
-import connectWithRouter from 'helpers/connectWithRouter';
-import { switchGameState } from 'actions/games';
 
 class Sidebar extends React.Component {
-    switchGameStateHandler = index => () => {
+    switchGameStateHandler = (index) => () => {
         this.props.switchGameState(index);
     }
 
@@ -37,7 +35,7 @@ class Sidebar extends React.Component {
             me: this.props.users[currentPlayer],
             state: gameState,
             previousState: this.props.gameStates[index - 1],
-            users: this.props.players.map(userId => this.props.users[userId]),
+            users: this.props.players.map((userId) => this.props.users[userId]),
         });
 
         if (!message) {
@@ -79,7 +77,7 @@ class Sidebar extends React.Component {
         return ReactDOM.createPortal(
             <div
                 className="cbf-helper-sidebar"
-                onMouseDown={event => event.stopPropagation()}
+                onMouseDown={(event) => event.stopPropagation()}
             >
                 <div className="cbf-helper-sidebar__history">
                     <div className="cbf-helper-sidebar__history-header">
@@ -111,17 +109,4 @@ Sidebar.propTypes = {
     users: PropTypes.object.isRequired,
 };
 
-export default connectWithRouter(
-    (state, ownProps) => ({
-        actionIndex: state.gameStates.actionIndex,
-        currentState: state.gameStates.currentState,
-        gameStates: state.gameStates.states,
-        players: state.games[ownProps.match.params.gameId].players,
-        stateCountSinceLastLoad: state.gameStates.stateCountSinceLastLoad,
-        users: state.users,
-    }),
-    {
-        switchGameState,
-    },
-    Sidebar
-);
+export default Sidebar;

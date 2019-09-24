@@ -1,0 +1,36 @@
+type Query {
+    match(id: ID!): Match!
+    matches: [Match!]!
+}
+
+type Mutation {
+    createMatch(input: CreateMatchInput!): Match!
+    openMatch(id: ID!): Match!
+    joinMatch(id: ID!): Match!
+    startMatch(id: ID!): Match!
+}
+
+type Match {
+    id: ID!
+    status: MatchStatus!
+    handle: String!
+    initialState: JSON
+    actions: [Action!]!
+    players: [User!]!
+    creator: User!
+}
+
+type Action {
+    randomSeed: String
+}
+
+enum MatchStatus {
+    SETTING_UP
+    OPEN
+    ACTIVE
+    FINISHED
+}
+
+input CreateMatchInput {
+    handle: String!
+}

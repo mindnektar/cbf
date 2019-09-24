@@ -1,74 +1,61 @@
-import _ from 'lodash';
-import mongoose from '../mongoose';
-import gameConstants from '../../shared/constants/games';
-import randomizer from '../helpers/randomizer';
+import BaseModel from './_base';
 
-const MatchSchema = new mongoose.Schema({
-    status: {
-        type: Number,
-        required: true,
-        default: gameConstants.GAME_STATUS_SETTING_UP,
-        enum: Object.values(gameConstants),
-    },
-    handle: {
-        type: String,
-        required: true,
-        enum: ['azul', 'five-tribes'],
-    },
-    initialState: {
-        type: Object,
-        required: true,
-        default: {},
-    },
-    actions: {
-        type: Object,
-        required: true,
-        default: [],
-    },
-    players: [mongoose.Schema.Types.ObjectId],
-    scores: {
-        type: Object,
-        required: true,
-        default: [],
-    },
-    randomSeed: {
-        type: Number,
-        required: true,
-        default: () => Math.random(),
-    },
-}, {
-    minimize: false,
-    timestamps: true,
-});
+class Match extends BaseModel {
+    static get tableName() {
+        return 'match';
+    }
 
-MatchSchema.methods.toJSON = function () {
-    return {
-        ..._.omit(this.toObject(), ['_id', '__v', 'randomSeed']),
-        id: this.id,
-    };
-};
+    static get STATUS() {
+        return {
+            SETTING_UP: 'SETTING_UP',
+            OPEN: 'OPEN',
+            ACTIVE: 'ACTIVE',
+            FINISHED: 'FINISHED',
+        };
+    }
 
-MatchSchema.methods.generateStates = function (actions) {
-    return this.actions.reduce((result, [actionId, payload], index) => {
-        const action = actions.findById(actionId);
-
-        if (action.isEndGameAction) {
-            return result;
-        }
-
-        return [
-            ...result,
-            {
-                ...action.perform(
-                    result[index],
-                    payload,
-                    this.players,
-                    randomizer(this.randomSeed)
-                ),
-                action: [actionId, payload, result[index].currentPlayer],
+    static get jsonSchema() {
+        return {
+            type: 'object',
+            properties: {
+                id: { type: 'string' },
+                handle: { type: 'string' },
+                status: {
+                    type: 'enum',
+                    default: Match.STATUS.SETTING_UP,
+                    enum: Object.values(Match.STATUS),
+                },
+                initialState: { type: ['json', 'null'] },
+                createdAt: { type: 'string' },
+                updatedAt: { type: 'string' },
             },
-        ];
-    }, [this.initialState]);
-};
+        };
+    }
 
-export const Match = mongoose.model('Match', MatchSchema);
+    static get relationMappings() {
+        return {
+            creator: {
+                relation: BaseModel.BelongsToOneRelation,
+                modelClass: 'User',
+                join: {
+                    from: 'match.creator_user_id',
+                    to: 'user.id',
+                },
+            },
+            players: {
+                relation: BaseModel.ManyToManyRelation,
+                modelClass: 'User',
+                join: {
+                    from: 'match.id',
+                    through: {
+                        from: 'match_participant.match_id',
+                        to: 'match_participant.user_id',
+                    },
+                    to: 'user.id',
+                },
+            },
+        };
+    }
+}
+
+export default Match;

@@ -1,9 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import connectWithRouter from 'helpers/connectWithRouter';
-import { replace } from 'actions/history';
-import { clearGameStates, loadGameStates } from 'actions/populate';
 import gameConstants from 'shared/constants/games';
 import gameComponents from 'components/App/games';
 
@@ -112,9 +109,9 @@ class Arena extends React.Component {
                         transform: `scale(${this.state.zoom}) translate(${-this.state.x}px, ${-this.state.y}px)`,
                     }}
                 >
-                    {this.props.gameStates &&
+                    {this.props.gameStates && (
                         React.createElement(gameComponents[this.props.game.handle])
-                    }
+                    )}
                 </div>
             </div>
         );
@@ -133,15 +130,4 @@ Arena.propTypes = {
     replace: PropTypes.func.isRequired,
 };
 
-export default connectWithRouter(
-    (state, ownProps) => ({
-        game: state.games[ownProps.match.params.gameId],
-        gameStates: state.gameStates,
-    }),
-    {
-        clearGameStates,
-        loadGameStates,
-        replace,
-    },
-    Arena
-);
+export default Arena;

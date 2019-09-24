@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Switch, Route } from 'react-router-dom';
-import connectWithRouter from 'helpers/connectWithRouter';
-import { replace } from 'actions/history';
 import Setup from './Game/Setup';
 import Lobby from './Game/Lobby';
 import Arena from './Game/Arena';
@@ -35,13 +33,4 @@ Game.propTypes = {
     replace: PropTypes.func.isRequired,
 };
 
-export default connectWithRouter(
-    (state, ownProps) => ({
-        gameExists: !!state.games[ownProps.match.params.gameId],
-        me: state.me,
-    }),
-    {
-        replace,
-    },
-    Game
-);
+export default Game;

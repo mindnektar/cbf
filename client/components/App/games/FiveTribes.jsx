@@ -1,5 +1,4 @@
 import React from 'react';
-import connectWithRouter from 'helpers/connectWithRouter';
 import { actions, states } from 'shared/games/five-tribes';
 import Game from './helpers/Game';
 import Sidebar from './helpers/Sidebar';
@@ -51,8 +50,4 @@ class FiveTribes extends React.Component {
     }
 }
 
-export default connectWithRouter(
-    null,
-    null,
-    FiveTribes
-);
+export default FiveTribes;

@@ -10,10 +10,9 @@ module.exports = webpackMerge(require('./webpack.config.common.js'), {
         contentBase: path.join(__dirname, 'public'),
         hot: true,
         inline: true,
-        port: config.development.PORTS.WEBPACK_DEV_SERVER,
+        port: config.port.webpackDevServer,
         host: '0.0.0.0',
         disableHostCheck: true,
-        proxy: { '**': `http://localhost:${config.development.PORTS.EXPRESS}` },
     },
 
     plugins: [

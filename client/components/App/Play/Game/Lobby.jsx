@@ -1,8 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import connectWithRouter from 'helpers/connectWithRouter';
-import { startGame } from 'actions/games';
-import { replace } from 'actions/history';
 import gameConstants from 'shared/constants/games';
 import games from 'data/games';
 import Button from 'Button';
@@ -43,13 +40,15 @@ class Lobby extends React.Component {
 
                 {
                     games[this.props.game.handle].playerCount
-                        .includes(this.props.game.players.length) &&
-                    this.props.game.players[0] === this.props.me.id &&
-                    <Button
-                        onClick={this.startGame}
-                    >
-                        Start game
-                    </Button>
+                        .includes(this.props.game.players.length)
+                    && this.props.game.players[0] === this.props.me.id
+                    && (
+                        <Button
+                            onClick={this.startGame}
+                        >
+                            Start game
+                        </Button>
+                    )
                 }
             </div>
         );
@@ -64,15 +63,4 @@ Lobby.propTypes = {
     users: PropTypes.object.isRequired,
 };
 
-export default connectWithRouter(
-    (state, ownProps) => ({
-        game: state.games[ownProps.match.params.gameId],
-        me: state.me,
-        users: state.users,
-    }),
-    {
-        replace,
-        startGame,
-    },
-    Lobby
-);
+export default Lobby;

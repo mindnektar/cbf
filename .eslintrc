@@ -46,6 +46,7 @@
     "no-use-before-define": [0],
     "object-curly-newline": ["error", { "consistent": true }],
     "object-shorthand": [0],
+    "react/destructuring-assignment": [0],
     "react/forbid-prop-types": [0],
     "react/jsx-indent": ["error", 4],
     "react/jsx-indent-props": ["error", 4],
@@ -59,6 +60,7 @@
     "react/prop-types": [2, { "skipUndeclared": true }],
     "react/sort-comp": [2, {
       "order": ["state", "instance-variables", "static-methods", "lifecycle", "everything-else", "render"]
-    }]
+    }],
+    "react/state-in-constructor": [0]
   }
 }

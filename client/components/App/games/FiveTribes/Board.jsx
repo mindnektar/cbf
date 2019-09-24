@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import connectWithRouter from 'helpers/connectWithRouter';
 import { actions, assets, states } from 'shared/games/five-tribes';
 import Action from '../helpers/Action';
 
@@ -19,12 +18,12 @@ class Board extends React.Component {
 
         return (
             <div className="five-tribes__board">
-                {this.props.gameState.public.game.board.map((row, rowIndex) =>
+                {this.props.gameState.public.game.board.map((row, rowIndex) => (
                     <div
                         className="five-tribes__board-row"
                         key={`row${row[0][0]}`}
                     >
-                        {row.map((item, itemIndex) =>
+                        {row.map((item, itemIndex) => (
                             <Action
                                 action={action}
                                 key={item[0]}
@@ -45,7 +44,7 @@ class Board extends React.Component {
                                     </div>
 
                                     <div className="five-tribes__tile-meeples">
-                                        {item[1].map((meeple, meepleIndex) =>
+                                        {item[1].map((meeple, meepleIndex) => (
                                             <Action
                                                 action={actions.KILL_MEEPLE_ON_BOARD}
                                                 key={meeple}
@@ -59,40 +58,40 @@ class Board extends React.Component {
                                                     key={meeple}
                                                 />
                                             </Action>
-                                        )}
+                                        ))}
                                     </div>
 
-                                    {item[2] !== null &&
+                                    {item[2] !== null && (
                                         <div
                                             className={classNames(
                                                 'five-tribes__tile-camel',
                                                 `five-tribes__player-${item[2]}`
                                             )}
                                         />
-                                    }
+                                    )}
 
                                     <div className="five-tribes__tile-buildings">
-                                        {item[3] > 0 &&
+                                        {item[3] > 0 && (
                                             <div className="five-tribes__tile-palm-tree">
-                                                {Array(item[3]).fill(null).map((_, index) =>
+                                                {Array(item[3]).fill(null).map((_, index) => (
                                                     <span key={index}>&#x1f334;</span>
-                                                )}
+                                                ))}
                                             </div>
-                                        }
+                                        )}
 
-                                        {item[4] > 0 &&
+                                        {item[4] > 0 && (
                                             <div className="five-tribes__tile-palace">
-                                                {Array(item[4]).fill(null).map((_, index) =>
+                                                {Array(item[4]).fill(null).map((_, index) => (
                                                     <span key={index}>&pi;</span>
-                                                )}
+                                                ))}
                                             </div>
-                                        }
+                                        )}
                                     </div>
                                 </div>
                             </Action>
-                        )}
+                        ))}
                     </div>
-                )}
+                ))}
             </div>
         );
     }
@@ -102,10 +101,4 @@ Board.propTypes = {
     gameState: PropTypes.object.isRequired,
 };
 
-export default connectWithRouter(
-    state => ({
-        gameState: state.gameStates.states[state.gameStates.currentState],
-    }),
-    null,
-    Board
-);
+export default Board;

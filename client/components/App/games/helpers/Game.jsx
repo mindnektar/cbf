@@ -1,9 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import connectWithRouter from 'helpers/connectWithRouter';
-import gameConstants from 'shared/constants/games';
-import { updateGameState, updateGlobalGameParams } from 'actions/games';
 
 class Game extends React.Component {
     componentDidMount() {
@@ -69,21 +66,4 @@ Game.propTypes = {
     updateGlobalGameParams: PropTypes.func.isRequired,
 };
 
-export default connectWithRouter(
-    (state, ownProps) => ({
-        gameId: ownProps.match.params.gameId,
-        gameState: state.gameStates.states[state.gameStates.currentState],
-        isGameActive: (
-            state.games[ownProps.match.params.gameId].status === gameConstants.GAME_STATUS_ACTIVE
-        ),
-        isLatestState: state.gameStates.currentState === (
-            (state.gameStates.stateCountSinceLastLoad - 1) + state.gameStates.actionIndex
-        ),
-        me: state.me,
-    }),
-    {
-        updateGameState,
-        updateGlobalGameParams,
-    },
-    Game
-);
+export default Game;

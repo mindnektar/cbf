@@ -1,14 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import connectWithRouter from 'helpers/connectWithRouter';
-import { createGame } from 'actions/games';
-import { push } from 'actions/history';
 import Button from 'Button';
 import Headline from 'Headline';
 import games from 'data/games';
 
 class AllGames extends React.Component {
-    createGameHandler = handle => () => {
+    createGameHandler = (handle) => () => {
         this.props.createGame(handle).then((newGame) => {
             this.props.push('play', newGame.id);
         });
@@ -19,7 +16,7 @@ class AllGames extends React.Component {
             <div className="cbf-all-games">
                 <Headline>All games</Headline>
 
-                {Object.values(games).map(game => (
+                {Object.values(games).map((game) => (
                     <div
                         className="cbf-all-games__item"
                         key={game.handle}
@@ -35,20 +32,24 @@ class AllGames extends React.Component {
                                 <div>
                                     {game.playerCount[0]}
                                     -
-                                    {game.playerCount[game.playerCount.length - 1]}&nbsp;
+                                    {game.playerCount[game.playerCount.length - 1]}
+                                    &nbsp;
                                     players
                                 </div>
-                                <div>{game.playTime} minutes</div>
+                                <div>
+                                    {game.playTime}
+                                    minutes
+                                </div>
                             </div>
 
                             <div className="cbf-all-games__item-options">
-                                {this.props.me &&
+                                {this.props.me && (
                                     <Button
                                         onClick={this.createGameHandler(game.handle)}
                                     >
                                         Start new game
                                     </Button>
-                                }
+                                )}
                             </div>
                         </div>
                     </div>
@@ -68,13 +69,4 @@ AllGames.propTypes = {
     push: PropTypes.func.isRequired,
 };
 
-export default connectWithRouter(
-    state => ({
-        me: state.me,
-    }),
-    {
-        createGame,
-        push,
-    },
-    AllGames,
-);
+export default AllGames;

@@ -1,13 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
-import connectWithRouter from 'helpers/connectWithRouter';
-import {
-    redoGameAction,
-    switchToLatestGameState,
-    undoGameAction,
-    updateGameState,
-} from 'actions/games';
 import Button from 'Button';
 
 class Status extends React.Component {
@@ -33,7 +26,7 @@ class Status extends React.Component {
         this.props.updateGameState(
             this.props.game.id,
             performOnConfirm(),
-            params.map(param => this.props.globalGameParams[param.name]),
+            params.map((param) => this.props.globalGameParams[param.name]),
         );
     }
 
@@ -53,21 +46,21 @@ class Status extends React.Component {
         const { performOnConfirm, params } = this.props.states.findById(this.props.gameState.state);
 
         return (
-            this.props.isLatestState &&
-            this.props.me.id === this.props.gameState.currentPlayer &&
-            params.every(param => this.props.globalGameParams[param.name] !== undefined) &&
-            performOnConfirm().isValid(
+            this.props.isLatestState
+            && this.props.me.id === this.props.gameState.currentPlayer
+            && params.every((param) => this.props.globalGameParams[param.name] !== undefined)
+            && performOnConfirm().isValid(
                 this.props.gameState,
-                params.map(param => this.props.globalGameParams[param.name])
+                params.map((param) => this.props.globalGameParams[param.name])
             )
         );
     }
 
     mayEndTurn() {
         return (
-            this.props.isLatestState &&
-            this.props.me.id === this.props.gameState.currentPlayer &&
-            this.props.endTurnAction.isValid(this.props.gameState)
+            this.props.isLatestState
+            && this.props.me.id === this.props.gameState.currentPlayer
+            && this.props.endTurnAction.isValid(this.props.gameState)
         );
     }
 
@@ -85,8 +78,7 @@ class Status extends React.Component {
                 <div className="cbf-helper-status__text">
                     {this.getInstruction()}
 
-                    {
-                        this.props.states.findById(this.props.gameState.state).performOnConfirm &&
+                    {this.props.states.findById(this.props.gameState.state).performOnConfirm && (
                         <Button
                             disabled={!this.mayContinueTurn()}
                             onClick={this.continueTurn}
@@ -94,16 +86,16 @@ class Status extends React.Component {
                         >
                             Continue
                         </Button>
-                    }
+                    )}
 
-                    {!this.props.isLatestState &&
+                    {!this.props.isLatestState && (
                         <Button
                             onClick={this.exitHistoryMode}
                             secondary
                         >
                             Exit
                         </Button>
-                    }
+                    )}
                 </div>
 
                 <div className="cbf-helper-status__options">
@@ -154,24 +146,4 @@ Status.propTypes = {
     users: PropTypes.object.isRequired,
 };
 
-export default connectWithRouter(
-    (state, ownProps) => ({
-        actionIndex: state.gameStates.actionIndex,
-        actions: state.gameStates.actions,
-        game: state.games[ownProps.match.params.gameId],
-        gameState: state.gameStates.states[state.gameStates.currentState],
-        globalGameParams: state.gameStates.globalGameParams,
-        isLatestState: state.gameStates.currentState === (
-            (state.gameStates.stateCountSinceLastLoad - 1) + state.gameStates.actionIndex
-        ),
-        me: state.me,
-        users: state.users,
-    }),
-    {
-        redoGameAction,
-        switchToLatestGameState,
-        undoGameAction,
-        updateGameState,
-    },
-    Status
-);
+export default Status;

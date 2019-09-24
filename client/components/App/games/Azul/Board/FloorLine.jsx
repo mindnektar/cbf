@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import connectWithRouter from 'helpers/connectWithRouter';
 import { actions } from 'shared/games/azul';
 import Action from '../../helpers/Action';
 import Tile from '../Tile';
@@ -29,8 +28,4 @@ FloorLine.propTypes = {
     floorLine: PropTypes.array.isRequired,
 };
 
-export default connectWithRouter(
-    null,
-    null,
-    FloorLine
-);
+export default FloorLine;

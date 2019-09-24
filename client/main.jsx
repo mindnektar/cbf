@@ -1,19 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
+import { ApolloProvider } from 'react-apollo';
 import { Router } from 'react-router-dom';
 import 'polyfills';
-import store, { browserHistory } from 'store';
+import history from 'browserHistory';
+import apolloClient from 'apolloClient';
 import App from 'components/App';
 import 'style/main.sass';
 
 const render = (AppComponent) => {
     ReactDOM.render(
-        <Provider store={store}>
-            <Router history={browserHistory}>
+        <ApolloProvider client={apolloClient}>
+            <Router history={history}>
                 <AppComponent />
             </Router>
-        </Provider>,
+        </ApolloProvider>,
         document.getElementById('app'),
     );
 };
@@ -21,15 +22,5 @@ const render = (AppComponent) => {
 render(App);
 
 if (module.hot) {
-    module.hot.accept(['./components/App'], () => {
-        // eslint-disable-next-line global-require
-        const AppComponent = require('./components/App').default;
-
-        render(AppComponent);
-    });
-
-    module.hot.accept('./reducers', () => {
-        // eslint-disable-next-line global-require
-        store.replaceReducer(require('./reducers').default);
-    });
+    module.hot.accept();
 }

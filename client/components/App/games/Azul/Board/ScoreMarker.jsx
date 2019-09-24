@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import connectWithRouter from 'helpers/connectWithRouter';
 
 class ScoreMarker extends React.Component {
     getPosition() {
@@ -27,8 +26,4 @@ ScoreMarker.propTypes = {
     score: PropTypes.number.isRequired,
 };
 
-export default connectWithRouter(
-    null,
-    null,
-    ScoreMarker
-);
+export default ScoreMarker;

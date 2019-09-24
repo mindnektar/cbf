@@ -1,7 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import connectWithRouter from 'helpers/connectWithRouter';
-import { push } from 'actions/history';
 import Button from 'Button';
 import Headline from 'Headline';
 import games from 'data/games';
@@ -9,13 +7,13 @@ import gameConstants from 'shared/constants/games';
 
 class MyGames extends React.Component {
     getFilteredGames() {
-        return Object.values(this.props.games).filter(game => (
-            game.status !== gameConstants.GAME_STATUS_FINISHED &&
-            game.players.includes(this.props.me.id)
+        return Object.values(this.props.games).filter((game) => (
+            game.status !== gameConstants.GAME_STATUS_FINISHED
+            && game.players.includes(this.props.me.id)
         ));
     }
 
-    openGameHandler = id => () => {
+    openGameHandler = (id) => () => {
         this.props.push('play', id);
     }
 
@@ -24,7 +22,7 @@ class MyGames extends React.Component {
             <div className="cbf-my-games">
                 <Headline>My active games</Headline>
 
-                {this.getFilteredGames().map(game => (
+                {this.getFilteredGames().map((game) => (
                     <div
                         className="cbf-all-games__item"
                         key={game.id}
@@ -42,7 +40,7 @@ class MyGames extends React.Component {
                                     {games[game.handle].title}
                                 </div>
 
-                                {game.players.map(userId => (
+                                {game.players.map((userId) => (
                                     <div key={userId}>
                                         {this.props.users[userId].username}
                                     </div>
@@ -69,14 +67,4 @@ MyGames.propTypes = {
     users: PropTypes.object.isRequired,
 };
 
-export default connectWithRouter(
-    state => ({
-        games: state.games,
-        me: state.me,
-        users: state.users,
-    }),
-    {
-        push,
-    },
-    MyGames,
-);
+export default MyGames;

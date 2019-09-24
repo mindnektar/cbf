@@ -1,8 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import connectWithRouter from 'helpers/connectWithRouter';
-import { joinGame } from 'actions/games';
-import { push } from 'actions/history';
 import Button from 'Button';
 import Headline from 'Headline';
 import games from 'data/games';
@@ -14,14 +11,14 @@ class OpenGames extends React.Component {
             const { playerCount } = games[game.handle];
 
             return (
-                !game.players.includes(this.props.me.id) &&
-                game.players.length < playerCount[playerCount.length - 1] &&
-                game.status === gameConstants.GAME_STATUS_OPEN
+                !game.players.includes(this.props.me.id)
+                && game.players.length < playerCount[playerCount.length - 1]
+                && game.status === gameConstants.GAME_STATUS_OPEN
             );
         });
     }
 
-    joinGameHandler = id => () => {
+    joinGameHandler = (id) => () => {
         this.props.joinGame(id).then(() => {
             this.props.push('play', id);
         });
@@ -32,7 +29,7 @@ class OpenGames extends React.Component {
             <div className="cbf-open-games">
                 <Headline>Open invitations</Headline>
 
-                {this.getFilteredGames().map(game => (
+                {this.getFilteredGames().map((game) => (
                     <div
                         className="cbf-all-games__item"
                         key={game.id}
@@ -50,7 +47,7 @@ class OpenGames extends React.Component {
                                     {games[game.handle].title}
                                 </div>
 
-                                {game.players.map(userId => (
+                                {game.players.map((userId) => (
                                     <div key={userId}>
                                         {this.props.users[userId].username}
                                     </div>
@@ -78,15 +75,4 @@ OpenGames.propTypes = {
     users: PropTypes.object.isRequired,
 };
 
-export default connectWithRouter(
-    state => ({
-        games: state.games,
-        me: state.me,
-        users: state.users,
-    }),
-    {
-        joinGame,
-        push,
-    },
-    OpenGames,
-);
+export default OpenGames;

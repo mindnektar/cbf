@@ -1,18 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import connectWithRouter from 'helpers/connectWithRouter';
 
 class Player extends React.Component {
     render() {
         return (
             <div className="cbf-helper-player">
                 <div className="cbf-helper-player__header">
-                    {this.props.color &&
+                    {this.props.color && (
                         <div
                             className="cbf-helper-player__color"
                             style={{ backgroundColor: this.props.color }}
                         />
-                    }
+                    )}
 
                     <div className="cbf-helper-player__name">
                         {this.props.username}
@@ -35,11 +34,7 @@ Player.propTypes = {
     username: PropTypes.string.isRequired,
 };
 
-export default connectWithRouter(
-    null,
-    null,
-    Player
-);
+export default Player;
 
 export { default as PlayerDetail } from './Player/PlayerDetail';
 export { default as PlayerRow } from './Player/PlayerRow';

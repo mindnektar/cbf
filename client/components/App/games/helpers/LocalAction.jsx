@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import connectWithRouter from 'helpers/connectWithRouter';
 
 class LocalAction extends React.Component {
     onClick = (event) => {
@@ -51,8 +50,4 @@ LocalAction.propTypes = {
     selected: PropTypes.bool,
 };
 
-export default connectWithRouter(
-    null,
-    null,
-    LocalAction
-);
+export default LocalAction;

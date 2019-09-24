@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import connectWithRouter from 'helpers/connectWithRouter';
 
 class PlayerDetail extends React.Component {
     render() {
@@ -21,8 +20,4 @@ PlayerDetail.propTypes = {
     header: PropTypes.string.isRequired,
 };
 
-export default connectWithRouter(
-    null,
-    null,
-    PlayerDetail
-);
+export default PlayerDetail;

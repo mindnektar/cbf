@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import connectWithRouter from 'helpers/connectWithRouter';
-import { updateGlobalGameParams } from 'actions/games';
 import { actions, assets, states } from 'shared/games/five-tribes';
 import Action from '../helpers/Action';
 import LocalAction from '../helpers/LocalAction';
@@ -15,7 +13,7 @@ const playerColors = [
     '#f1bed7',
 ];
 
-const sortResources = resources => (
+const sortResources = (resources) => (
     resources
         .sort((a, b) => {
             if (assets.resources[a] === 'Fakir') {
@@ -31,7 +29,7 @@ const sortResources = resources => (
 );
 
 class Players extends React.Component {
-    selectElderHandler = resource => () => {
+    selectElderHandler = (resource) => () => {
         const selectedElders = [...this.props.globalGameParams.selectedElders];
         const elderIndex = selectedElders.indexOf(resource);
 
@@ -44,7 +42,7 @@ class Players extends React.Component {
         this.props.updateGlobalGameParams({ selectedElders });
     }
 
-    selectFakirHandler = resource => () => {
+    selectFakirHandler = (resource) => () => {
         const selectedFakirs = [...this.props.globalGameParams.selectedFakirs];
         const fakirIndex = selectedFakirs.indexOf(resource);
 
@@ -97,7 +95,7 @@ class Players extends React.Component {
 
         return (
             <div className="five-tribes__players">
-                {this.props.playerOrder.map((userId, playerIndex) =>
+                {this.props.playerOrder.map((userId, playerIndex) => (
                     <Player
                         color={playerColors[playerIndex]}
                         key={userId}
@@ -108,16 +106,16 @@ class Players extends React.Component {
                                 {playerData[playerIndex].camelCount}
                             </PlayerDetail>
 
-                            {userId === this.props.me.id &&
+                            {userId === this.props.me.id && (
                                 <PlayerDetail header="Gold coins">
                                     {privatePlayerData[playerIndex].goldCoinCount}
                                 </PlayerDetail>
-                            }
+                            )}
                         </PlayerRow>
 
                         <PlayerRow>
                             <PlayerDetail header="Viziers">
-                                {playerData[playerIndex].viziers.map((meeple, meepleIndex) =>
+                                {playerData[playerIndex].viziers.map((meeple, meepleIndex) => (
                                     <Action
                                         action={actions.KILL_VIZIER_FROM_PLAYER}
                                         key={meeple}
@@ -130,25 +128,25 @@ class Players extends React.Component {
                                             )}
                                         />
                                     </Action>
-                                )}
+                                ))}
                             </PlayerDetail>
 
                             <PlayerDetail header="Elders">
-                                {playerData[playerIndex].elders.map((meeple, meepleIndex) =>
+                                {playerData[playerIndex].elders.map((meeple, meepleIndex) => (
                                     this.renderElder(meeple, meepleIndex, playerIndex)
-                                )}
+                                ))}
                             </PlayerDetail>
                         </PlayerRow>
 
                         <PlayerDetail header="Resources">
                             {userId === this.props.me.id ? (
-                                sortResources(privatePlayerData[playerIndex].resources).map(resource =>
+                                sortResources(privatePlayerData[playerIndex].resources).map((resource) => (
                                     <LocalAction
                                         active={
                                             actions.SELECT_FAKIRS_FOR_MEEPLE_ACTION.isSelectable(
                                                 this.props.gameState, resource
-                                            ) ||
-                                            actions.COLLECT_DJINN.isFakirSelectable(
+                                            )
+                                            || actions.COLLECT_DJINN.isFakirSelectable(
                                                 this.props.gameState, resource
                                             )
                                         }
@@ -158,24 +156,24 @@ class Players extends React.Component {
                                     >
                                         <Resource resource={resource} />
                                     </LocalAction>
-                                )
+                                ))
                             ) : (
-                                Array(playerData[playerIndex].resourceCount).fill(null).map((resource, index) =>
+                                Array(playerData[playerIndex].resourceCount).fill(null).map((resource, index) => (
                                     <Resource
                                         key={index}
                                         resource={null}
                                     />
-                                )
+                                ))
                             )}
                         </PlayerDetail>
 
                         <PlayerDetail header="Djinns">
-                            {playerData[playerIndex].djinns.map(djinn =>
+                            {playerData[playerIndex].djinns.map((djinn) => (
                                 <Djinn key={djinn} djinn={djinn} />
-                            )}
+                            ))}
                         </PlayerDetail>
                     </Player>
-                )}
+                ))}
             </div>
         );
     }
@@ -190,16 +188,4 @@ Players.propTypes = {
     users: PropTypes.object.isRequired,
 };
 
-export default connectWithRouter(
-    (state, ownProps) => ({
-        gameState: state.gameStates.states[state.gameStates.currentState],
-        globalGameParams: state.gameStates.globalGameParams,
-        me: state.me,
-        playerOrder: state.games[ownProps.match.params.gameId].playerOrder,
-        users: state.users,
-    }),
-    {
-        updateGlobalGameParams,
-    },
-    Players
-);
+export default Players;

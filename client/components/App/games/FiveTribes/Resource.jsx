@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import connectWithRouter from 'helpers/connectWithRouter';
 import { assets } from 'shared/games/five-tribes';
 
 class Resource extends React.Component {
@@ -22,13 +21,14 @@ class Resource extends React.Component {
                     {type}
                 </div>
 
-                {this.props.resource !== null &&
+                {this.props.resource !== null && (
                     <div className="five-tribes__resource-frequency">
                         {assets.resources.filter(
-                            name => name === type
-                        ).length}x
+                            (name) => name === type
+                        ).length}
+                        x
                     </div>
-                }
+                )}
             </div>
         );
     }
@@ -42,8 +42,4 @@ Resource.propTypes = {
     resource: PropTypes.string,
 };
 
-export default connectWithRouter(
-    null,
-    null,
-    Resource
-);
+export default Resource;

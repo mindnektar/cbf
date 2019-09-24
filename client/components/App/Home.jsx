@@ -1,5 +1,4 @@
 import React from 'react';
-import connectWithRouter from 'helpers/connectWithRouter';
 
 class Home extends React.Component {
     render() {
@@ -11,4 +10,4 @@ class Home extends React.Component {
     }
 }
 
-export default connectWithRouter(null, null, Home);
+export default Home;

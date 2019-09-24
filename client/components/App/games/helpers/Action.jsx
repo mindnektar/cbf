@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import connectWithRouter from 'helpers/connectWithRouter';
-import { updateGameState } from 'actions/games';
 
 class Action extends React.Component {
     onClick = () => {
@@ -59,13 +57,4 @@ Action.propTypes = {
     updateGameState: PropTypes.func.isRequired,
 };
 
-export default connectWithRouter(
-    (state, ownProps) => ({
-        gameId: ownProps.match.params.gameId,
-        gameState: state.gameStates.states[state.gameStates.currentState],
-    }),
-    {
-        updateGameState,
-    },
-    Action
-);
+export default Action;
