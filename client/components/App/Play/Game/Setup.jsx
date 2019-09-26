@@ -10,9 +10,7 @@ class Setup extends React.Component {
     componentWillMount() {
         if (this.props.data.match.status === gameConstants.GAME_STATUS_OPEN) {
             this.props.history.replace(`/play/${this.props.data.match.id}/lobby`);
-        }
-
-        if (this.props.data.match.status === gameConstants.GAME_STATUS_ACTIVE) {
+        } else if (this.props.data.match.status === gameConstants.GAME_STATUS_ACTIVE) {
             this.props.history.replace(`/play/${this.props.data.match.id}`);
         }
     }

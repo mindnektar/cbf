@@ -30,6 +30,10 @@
     position: relative
     width: 400px
 
+    .azul--num-players-3 &,
+    .azul--num-players-4 &
+        width: 600px
+
 .azul__board
     background-image: url('/img/games/azul/board.jpg')
     background-repeat: no-repeat
@@ -43,10 +47,28 @@
         left: 50%
         transform: translateX(-50%)
 
+        .azul--num-players-4 &
+            left: 10%
+            transform: translateX(0)
+
     &.player-1
         top: 0
         left: 50%
         transform: translateX(-50%) rotate(180deg)
+
+        .azul--num-players-3 &,
+        .azul--num-players-4 &
+            left: 10%
+            transform: translateX(0) rotate(180deg)
+
+    &.player-2
+        top: 0
+        right: 10%
+        transform: rotate(180deg)
+
+    &.player-3
+        bottom: 0
+        right: 10%
 
 .azul__score-marker
     background: black

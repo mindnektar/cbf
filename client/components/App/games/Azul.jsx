@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import { withRouter } from 'react-router-dom';
 import GameModel from 'models/play/game';
 import { actions, states } from 'shared/games/azul';
@@ -25,7 +26,12 @@ const Azul = (props) => {
 
     return (
         <Game states={states}>
-            <div className="azul">
+            <div
+                className={classNames(
+                    'azul',
+                    `azul--num-players-${players.length}`
+                )}
+            >
                 <Status
                     endTurnAction={actions.END_TURN}
                     states={states}
