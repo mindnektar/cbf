@@ -4,28 +4,26 @@ import { actions } from 'shared/games/azul';
 import Action from '../../helpers/Action';
 import Tile from '../Tile';
 
-class FloorLine extends React.Component {
-    render() {
-        return (
-            <Action
-                action={actions.SELECT_PATTERN_LINE}
-                payload={[null]}
-            >
-                <div className="azul__floor-line">
-                    {this.props.floorLine.map((tile, tileIndex) => (
-                        <Tile
-                            key={tileIndex}
-                            type={tile}
-                        />
-                    ))}
-                </div>
-            </Action>
-        );
-    }
-}
+const FloorLine = (props) => (
+    <Action
+        action={actions.SELECT_PATTERN_LINE}
+        payload={[null]}
+        disabled={props.actionsDisabled}
+    >
+        <div className="azul__floor-line">
+            {props.floorLine.map((tile, tileIndex) => (
+                <Tile
+                    key={tileIndex}
+                    type={tile}
+                />
+            ))}
+        </div>
+    </Action>
+);
 
 FloorLine.propTypes = {
     floorLine: PropTypes.array.isRequired,
+    actionsDisabled: PropTypes.bool.isRequired,
 };
 
 export default FloorLine;

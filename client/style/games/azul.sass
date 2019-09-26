@@ -26,14 +26,27 @@
 
 .azul__game
     display: flex
+    height: 700px
+    position: relative
+    width: 400px
 
 .azul__board
     background-image: url('/img/games/azul/board.jpg')
     background-repeat: no-repeat
     background-size: contain
-    height: 20vw
-    position: relative
-    width: 20vw
+    height: 200px
+    position: absolute
+    width: 200px
+
+    &.player-0
+        bottom: 0
+        left: 50%
+        transform: translateX(-50%)
+
+    &.player-1
+        top: 0
+        left: 50%
+        transform: translateX(-50%) rotate(180deg)
 
 .azul__score-marker
     background: black
@@ -71,13 +84,17 @@
 
 .azul__floor-line
     display: flex
+    height: 8%
     left: 3%
     position: absolute
     top: 86%
+    width: 66%
 
 .azul__factory
-    margin-left: 3vw
-    position: relative
+    left: 50%
+    position: absolute
+    top: 50%
+    transform: translate(-50%, -50%)
 
 .azul__factory--display-count-5
     .azul__factory-circle

@@ -6,6 +6,10 @@ import performAction from 'helpers/performAction';
 import GameModel from 'models/play/game';
 
 const Action = (props) => {
+    if (props.disabled) {
+        return props.children;
+    }
+
     const state = props.data.match.states[props.data.match.stateIndex];
     const isActive = props.action.isValid({
         state,
@@ -53,6 +57,7 @@ const Action = (props) => {
 
 Action.defaultProps = {
     payload: [],
+    disabled: false,
 };
 
 Action.propTypes = {
@@ -63,6 +68,7 @@ Action.propTypes = {
     payload: PropTypes.array,
     pushActions: PropTypes.func.isRequired,
     performAction: PropTypes.func.isRequired,
+    disabled: PropTypes.bool,
 };
 
 export default withRouter(GameModel.graphql(Action));

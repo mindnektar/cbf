@@ -1,38 +1,40 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import ScoreMarker from './Board/ScoreMarker';
 import PatternLines from './Board/PatternLines';
 import Wall from './Board/Wall';
 import FloorLine from './Board/FloorLine';
 
-class Board extends React.Component {
-    render() {
-        return (
-            <div className="azul__board">
-                <ScoreMarker
-                    score={this.props.player.score}
-                />
+const Board = (props) => (
+    <div
+        className={classNames(
+            'azul__board',
+            `player-${props.index}`
+        )}
+    >
+        <ScoreMarker score={props.player.score} />
 
-                <div className="azul__board-middle">
-                    <PatternLines
-                        lines={this.props.player.patternLines}
-                    />
+        <div className="azul__board-middle">
+            <PatternLines
+                lines={props.player.patternLines}
+                actionsDisabled={props.actionsDisabled}
+            />
 
-                    <Wall
-                        wall={this.props.player.wall}
-                    />
-                </div>
+            <Wall wall={props.player.wall} />
+        </div>
 
-                <FloorLine
-                    floorLine={this.props.player.floorLine}
-                />
-            </div>
-        );
-    }
-}
+        <FloorLine
+            floorLine={props.player.floorLine}
+            actionsDisabled={props.actionsDisabled}
+        />
+    </div>
+);
 
 Board.propTypes = {
     player: PropTypes.object.isRequired,
+    index: PropTypes.number.isRequired,
+    actionsDisabled: PropTypes.bool.isRequired,
 };
 
 export default Board;

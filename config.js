@@ -20,7 +20,7 @@ const config = convict({
         },
         connection: {
             format: String,
-            default: 'postgresql://localhost:5432/cbf',
+            default: 'postgresql://localhost:5433/cbf',
             env: 'POSTGRES_URI',
         },
         migrations: {

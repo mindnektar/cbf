@@ -11,6 +11,17 @@ import Factory from './Azul/Factory';
 
 const Azul = (props) => {
     const state = props.data.match.states[props.data.match.stateIndex];
+    const players = Object.entries(state.public.players).sort(([a], [b]) => {
+        if (a === props.data.me.id) {
+            return -1;
+        }
+
+        if (b === props.data.me.id) {
+            return 1;
+        }
+
+        return a.localeCompare(b);
+    });
 
     return (
         <Game states={states}>
@@ -23,7 +34,14 @@ const Azul = (props) => {
                 <Sidebar actions={actions} />
 
                 <div className="azul__game">
-                    <Board player={state.public.players[props.data.me.id]} />
+                    {players.map(([id, player], index) => (
+                        <Board
+                            key={id}
+                            index={index}
+                            player={player}
+                            actionsDisabled={id !== props.data.me.id}
+                        />
+                    ))}
 
                     <Factory
                         centerTiles={state.public.game.centerTiles}
