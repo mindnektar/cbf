@@ -62,9 +62,11 @@ class Arena extends React.Component {
         const { offsetHeight, offsetWidth } = document.querySelector('.cbf-helper-game');
         const heightRatio = (window.innerHeight - 226) / offsetHeight;
         const widthRatio = (window.innerWidth - 396) / offsetWidth;
+        const zoom = heightRatio < widthRatio ? heightRatio : widthRatio;
 
         this.setState({
-            zoom: heightRatio < widthRatio ? heightRatio : widthRatio,
+            zoom,
+            minimumZoom: zoom,
         });
     }
 
@@ -74,9 +76,9 @@ class Arena extends React.Component {
         const delta = event.deltaY ? event.deltaY / 400 : event.detail / 100;
 
         const zoom = Math.max(
-            0.3,
+            this.state.minimumZoom,
             Math.min(
-                2.5,
+                this.state.minimumZoom * 3,
                 this.state.zoom -= delta
             )
         );
