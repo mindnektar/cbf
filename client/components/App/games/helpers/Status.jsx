@@ -1,149 +1,140 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
+import { withRouter } from 'react-router-dom';
+import GameModel from 'models/play/game';
 import Button from 'Button';
 
-class Status extends React.Component {
-    getInstruction() {
-        if (!this.props.isLatestState) {
+const Status = (props) => {
+    const state = props.data.match.states[props.data.match.stateIndex];
+    const isLatestState = props.data.match.stateIndex === props.data.match.states.length - 1;
+
+    const getInstruction = () => {
+        if (!isLatestState) {
             return '- HISTORY MODE -';
         }
 
-        if (this.props.game.scores.length > 0) {
-            return `${this.props.users[this.props.game.scores[0].player].username} won the game!`;
+        // if (props.game.scores.length > 0) {
+        //     return `${props.users[props.game.scores[0].player].username} won the game!`;
+        // }
+
+        if (!state.activePlayers.includes(props.data.me.id)) {
+            return `It's ${props.data.me.name}'s turn.`;
         }
 
-        if (this.props.gameState.currentPlayer !== this.props.me.id) {
-            return `It's ${this.props.users[this.props.gameState.currentPlayer].username}'s turn.`;
-        }
+        return props.states.findById(state.state).instruction || '';
+    };
 
-        return this.props.states.findById(this.props.gameState.state).instruction || '';
-    }
+    const continueTurn = () => {
+        const { performOnConfirm, params } = props.states.findById(state.state);
 
-    continueTurn = () => {
-        const { performOnConfirm, params } = this.props.states.findById(this.props.gameState.state);
-
-        this.props.updateGameState(
-            this.props.game.id,
+        props.updateGameState(
+            props.match.params.gameId,
             performOnConfirm(),
-            params.map((param) => this.props.globalGameParams[param.name]),
+            params.map((param) => props.data.match.globalParams[param.name]),
         );
-    }
+    };
 
-    endTurn = () => {
-        this.props.updateGameState(
-            this.props.game.id,
-            this.props.endTurnAction,
-            this.props.globalGameParams,
+    const endTurn = () => {
+        props.updateGameState(
+            props.match.params.gameId,
+            props.endTurnAction,
+            props.data.match.globalParams,
         );
-    }
+    };
 
-    exitHistoryMode = () => {
-        this.props.switchToLatestGameState();
-    }
+    const exitHistoryMode = () => {
+        props.switchToLatestGameState();
+    };
 
-    mayContinueTurn() {
-        const { performOnConfirm, params } = this.props.states.findById(this.props.gameState.state);
+    const mayContinueTurn = () => {
+        const { performOnConfirm, params } = props.states.findById(state.state);
 
         return (
-            this.props.isLatestState
-            && this.props.me.id === this.props.gameState.currentPlayer
-            && params.every((param) => this.props.globalGameParams[param.name] !== undefined)
+            isLatestState
+            && state.activePlayers.includes(props.data.me.id)
+            && params.every((param) => props.data.match.globalParams[param.name] !== undefined)
             && performOnConfirm().isValid(
-                this.props.gameState,
-                params.map((param) => this.props.globalGameParams[param.name])
+                state,
+                params.map((param) => props.data.match.globalParams[param.name])
             )
         );
-    }
+    };
 
-    mayEndTurn() {
-        return (
-            this.props.isLatestState
-            && this.props.me.id === this.props.gameState.currentPlayer
-            && this.props.endTurnAction.isValid(this.props.gameState)
-        );
-    }
+    const mayEndTurn = () => (
+        isLatestState
+        && state.activePlayers.includes(props.data.me.id)
+        && props.endTurnAction.isValid(state)
+    );
 
-    redo = () => {
-        this.props.redoGameAction(this.props.states);
-    }
+    const redo = () => {
+        props.redoGameAction(props.states);
+    };
 
-    undo = () => {
-        this.props.undoGameAction(this.props.states);
-    }
+    const undo = () => {
+        props.undoGameAction(props.states);
+    };
 
-    render() {
-        return ReactDOM.createPortal(
-            <div className="cbf-helper-status">
-                <div className="cbf-helper-status__text">
-                    {this.getInstruction()}
+    return ReactDOM.createPortal(
+        <div className="cbf-helper-status">
+            <div className="cbf-helper-status__text">
+                {getInstruction()}
 
-                    {this.props.states.findById(this.props.gameState.state).performOnConfirm && (
-                        <Button
-                            disabled={!this.mayContinueTurn()}
-                            onClick={this.continueTurn}
-                            secondary
-                        >
-                            Continue
-                        </Button>
-                    )}
-
-                    {!this.props.isLatestState && (
-                        <Button
-                            onClick={this.exitHistoryMode}
-                            secondary
-                        >
-                            Exit
-                        </Button>
-                    )}
-                </div>
-
-                <div className="cbf-helper-status__options">
+                {props.states.findById(state.state).performOnConfirm && (
                     <Button
-                        disabled={this.props.actionIndex === 0}
-                        onClick={this.undo}
+                        disabled={!mayContinueTurn()}
+                        onClick={continueTurn}
                         secondary
                     >
-                        Undo
+                        Continue
                     </Button>
+                )}
 
+                {!isLatestState && (
                     <Button
-                        disabled={this.props.actionIndex === this.props.actions.length}
-                        onClick={this.redo}
+                        onClick={exitHistoryMode}
                         secondary
                     >
-                        Redo
+                        Exit
                     </Button>
+                )}
+            </div>
 
-                    <Button
-                        disabled={!this.mayEndTurn()}
-                        onClick={this.endTurn}
-                        secondary
-                    >
-                        End turn
-                    </Button>
-                </div>
-            </div>,
-            document.body
-        );
-    }
-}
+            <div className="cbf-helper-status__options">
+                <Button
+                    disabled={props.stateIndex === 0}
+                    onClick={undo}
+                    secondary
+                >
+                    Undo
+                </Button>
 
-Status.propTypes = {
-    actionIndex: PropTypes.number.isRequired,
-    actions: PropTypes.array.isRequired,
-    endTurnAction: PropTypes.object.isRequired,
-    game: PropTypes.object.isRequired,
-    gameState: PropTypes.object.isRequired,
-    globalGameParams: PropTypes.object.isRequired,
-    isLatestState: PropTypes.bool.isRequired,
-    me: PropTypes.object.isRequired,
-    redoGameAction: PropTypes.func.isRequired,
-    states: PropTypes.object.isRequired,
-    switchToLatestGameState: PropTypes.func.isRequired,
-    undoGameAction: PropTypes.func.isRequired,
-    updateGameState: PropTypes.func.isRequired,
-    users: PropTypes.object.isRequired,
+                <Button
+                    disabled={props.stateIndex === props.data.match.states.length}
+                    onClick={redo}
+                    secondary
+                >
+                    Redo
+                </Button>
+
+                <Button
+                    disabled={!mayEndTurn()}
+                    onClick={endTurn}
+                    secondary
+                >
+                    End turn
+                </Button>
+            </div>
+        </div>,
+        document.body
+    );
 };
 
-export default Status;
+Status.propTypes = {
+    endTurnAction: PropTypes.object.isRequired,
+    match: PropTypes.object.isRequired,
+    states: PropTypes.object.isRequired,
+    data: PropTypes.object.isRequired,
+};
+
+export default withRouter(GameModel.graphql(Status));

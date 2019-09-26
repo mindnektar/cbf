@@ -5,9 +5,10 @@ const actions = {
     SCORE_BONUSES: require('./actions/SCORE_BONUSES'),
     SCORE_FINISHED_LINES: require('./actions/SCORE_FINISHED_LINES'),
     SELECT_PATTERN_LINE: require('./actions/SELECT_PATTERN_LINE'),
+    SETUP: require('./actions/SETUP'),
 };
 
 module.exports = {
     ...actions,
-    findById: id => Object.values(actions).find(action => action.id === id),
+    findById: (id) => Object.values(actions).find((action) => action.id === id),
 };

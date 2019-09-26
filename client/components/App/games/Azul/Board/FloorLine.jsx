@@ -9,7 +9,7 @@ class FloorLine extends React.Component {
         return (
             <Action
                 action={actions.SELECT_PATTERN_LINE}
-                params={[null]}
+                payload={[null]}
             >
                 <div className="azul__floor-line">
                     {this.props.floorLine.map((tile, tileIndex) => (

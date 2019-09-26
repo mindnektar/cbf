@@ -1,18 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import { withRouter } from 'react-router-dom';
+import GameModel from 'models/play/game';
 
-class Game extends React.Component {
-    componentDidMount() {
-        this.checkAutomaticActions();
-    }
+const Game = (props) => {
+    useEffect(() => {
+        checkAutomaticActions();
+    });
 
-    componentDidUpdate() {
-        this.checkAutomaticActions();
-    }
+    const state = props.data.match.states[props.data.match.stateIndex];
+    const isLatestState = props.data.match.stateIndex === props.data.match.states.length - 1;
+    const isGameActive = props.data.match.status === 'ACTIVE';
 
-    checkAutomaticActions() {
-        if (!this.props.isLatestState || !this.props.isGameActive) {
+    const checkAutomaticActions = () => {
+        if (!isLatestState || !isGameActive) {
             return;
         }
 
@@ -20,10 +22,10 @@ class Game extends React.Component {
             performAutomatically,
             performOnConfirm,
             params,
-        } = this.props.states.findById(this.props.gameState.state);
+        } = props.states.findById(state.state);
 
         if (performAutomatically) {
-            this.props.updateGameState(this.props.gameId, performAutomatically());
+            props.updateGameState(props.match.params.gameId, performAutomatically());
         }
 
         if (performOnConfirm) {
@@ -33,37 +35,29 @@ class Game extends React.Component {
                 globalParams[param.name] = param.defaultValue;
             });
 
-            this.props.updateGlobalGameParams(globalParams, true);
+            props.updateGlobalGameParams(globalParams, true);
         }
-    }
+    };
 
-    render() {
-        const { currentPlayer } = this.props.gameState;
-        const awaitsAction = this.props.isLatestState && this.props.me.id === currentPlayer;
+    const { activePlayers } = state;
+    const awaitsAction = isLatestState && activePlayers.includes(props.data.me.id);
 
-        return (
-            <div
-                className={classNames(
-                    'cbf-helper-game',
-                    { 'cbf-helper-game--awaits-action': awaitsAction }
-                )}
-            >
-                {this.props.children}
-            </div>
-        );
-    }
-}
+    return (
+        <div
+            className={classNames(
+                'cbf-helper-game',
+                { 'cbf-helper-game--awaits-action': awaitsAction }
+            )}
+        >
+            {props.children}
+        </div>
+    );
+};
 
 Game.propTypes = {
     children: PropTypes.node.isRequired,
-    gameId: PropTypes.string.isRequired,
-    gameState: PropTypes.object.isRequired,
-    isGameActive: PropTypes.bool.isRequired,
-    isLatestState: PropTypes.bool.isRequired,
-    me: PropTypes.object.isRequired,
-    states: PropTypes.object.isRequired,
-    updateGameState: PropTypes.func.isRequired,
-    updateGlobalGameParams: PropTypes.func.isRequired,
+    match: PropTypes.object.isRequired,
+    data: PropTypes.object.isRequired,
 };
 
-export default Game;
+export default withRouter(GameModel.graphql(Game));

@@ -25,7 +25,6 @@ class Match extends BaseModel {
                     default: Match.STATUS.SETTING_UP,
                     enum: Object.values(Match.STATUS),
                 },
-                initialState: { type: ['json', 'null'] },
                 createdAt: { type: 'string' },
                 updatedAt: { type: 'string' },
             },
@@ -52,6 +51,15 @@ class Match extends BaseModel {
                         to: 'match_participant.user_id',
                     },
                     to: 'user.id',
+                },
+            },
+            actions: {
+                relation: BaseModel.HasManyRelation,
+                modelClass: 'Action',
+                modify: (builder) => builder.orderBy('index'),
+                join: {
+                    from: 'match.id',
+                    to: 'action.match_id',
                 },
             },
         };

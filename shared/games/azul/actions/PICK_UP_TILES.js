@@ -12,7 +12,7 @@ module.exports = {
         return `${me.username} picks up ${pickUpCount} ${tileMap[type]} tile${pickUpCount > 1 ? 's' : ''}.`;
     },
 
-    isValid: (state, [display, type]) => {
+    isValid: ({ state, payload: [display, type] }) => {
         if (state.state !== states.PICK_UP_TILES.id) {
             return false;
         }
@@ -24,24 +24,25 @@ module.exports = {
         return state.public.game.factoryTiles[display].includes(type);
     },
 
-    perform: (state, [display, type]) => {
+    perform: ({ state, player, payload: [display, type] }) => {
         const clonedState = clone(state);
-        let { centerTiles, factoryTiles } = clonedState.public.game;
+        let { centerTiles } = clonedState.public.game;
+        const { factoryTiles } = clonedState.public.game;
         let pickUpCount;
-        const { floorLine } = clonedState.public.players[clonedState.currentPlayer];
+        const { floorLine } = clonedState.public.players[player.id];
 
         if (display === null) {
-            pickUpCount = centerTiles.filter(tile => tile === type).length;
-            centerTiles = centerTiles.filter(tile => tile !== type);
+            pickUpCount = centerTiles.filter((tile) => tile === type).length;
+            centerTiles = centerTiles.filter((tile) => tile !== type);
 
             if (centerTiles[0] === 5) {
                 floorLine.push(centerTiles.shift());
             }
         } else {
-            pickUpCount = factoryTiles[display].filter(tile => tile === type).length;
+            pickUpCount = factoryTiles[display].filter((tile) => tile === type).length;
             centerTiles = [
                 ...centerTiles,
-                ...factoryTiles[display].filter(tile => tile !== type),
+                ...factoryTiles[display].filter((tile) => tile !== type),
             ];
             factoryTiles[display] = [];
         }
@@ -58,8 +59,8 @@ module.exports = {
                 },
                 players: {
                     ...clonedState.public.players,
-                    [clonedState.currentPlayer]: {
-                        ...clonedState.public.players[clonedState.currentPlayer],
+                    [player.id]: {
+                        ...clonedState.public.players[player.id],
                         floorLine,
                     },
                 },

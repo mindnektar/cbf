@@ -1,4 +1,5 @@
 const clone = require('clone');
+const shuffle = require('knuth-shuffle-seeded');
 const states = require('../states');
 const assets = require('../assets');
 
@@ -12,26 +13,25 @@ module.exports = {
         return `${me.username} scores ${score} point${score !== 1 ? 's' : ''}.`;
     },
 
-    isValid: state => (
+    isValid: ({ state }) => (
         state.state === states.SCORE_FINISHED_LINES.id
     ),
 
-    perform: (state, payload, players, randomizer) => {
+    perform: ({ state, player, randomSeed }) => {
         const clonedState = clone(state);
-        let { currentPlayer } = clonedState;
         let nextState = clonedState.state;
+        const { factoryTiles } = clonedState.public.game;
         let {
             centerTiles,
             discardedTiles,
-            factoryTiles,
             gameEndTriggered,
             nextStartPlayer,
             playerOrder,
         } = clonedState.public.game;
-        let {
-            patternLines, floorLine, wall, score,
-        } = clonedState.public.players[currentPlayer];
+        const { patternLines, wall } = clonedState.public.players[player.id];
+        let { floorLine, score } = clonedState.public.players[player.id];
         let { remainingTiles } = clonedState.private.game;
+        let activePlayers;
 
         patternLines.forEach((patternLine, index) => {
             if (patternLine.length === index + 1) {
@@ -92,27 +92,27 @@ module.exports = {
 
         if (firstPlayerTokenIndex >= 0) {
             centerTiles = floorLine.splice(firstPlayerTokenIndex, 1);
-            nextStartPlayer = currentPlayer;
+            nextStartPlayer = player.id;
         }
 
         discardedTiles = [...discardedTiles, ...floorLine];
         floorLine = [];
 
-        const nextPlayerIndex = playerOrder.indexOf(players.indexOf(currentPlayer)) + 1;
+        const nextPlayerIndex = playerOrder.indexOf(player.id) + 1;
 
-        if (nextPlayerIndex === players.length) {
+        if (nextPlayerIndex === playerOrder.length) {
             if (gameEndTriggered) {
                 nextState = states.SCORE_BONUSES.id;
-                currentPlayer = players[playerOrder[0]];
+                activePlayers = [playerOrder[0]];
             } else {
-                const nextStartPlayerIndex = playerOrder.indexOf(players.indexOf(nextStartPlayer));
+                const nextStartPlayerIndex = playerOrder.indexOf(nextStartPlayer);
 
                 nextState = states.PICK_UP_TILES.id;
                 playerOrder = [
                     ...playerOrder.slice(nextStartPlayerIndex),
                     ...playerOrder.slice(0, nextStartPlayerIndex),
                 ];
-                currentPlayer = nextStartPlayer;
+                activePlayers = [nextStartPlayer];
 
                 for (let i = 0; i < factoryTiles.length; i += 1) {
                     let currentTiles = remainingTiles.splice(0, 4);
@@ -123,7 +123,7 @@ module.exports = {
                             break;
                         }
 
-                        remainingTiles = randomizer.shuffle(discardedTiles);
+                        remainingTiles = shuffle(discardedTiles, randomSeed);
                         discardedTiles = [];
                         currentTiles = [
                             ...currentTiles,
@@ -135,7 +135,7 @@ module.exports = {
                 }
             }
         } else {
-            currentPlayer = players[playerOrder[nextPlayerIndex]];
+            activePlayers = [playerOrder[nextPlayerIndex]];
         }
 
         return {
@@ -170,7 +170,7 @@ module.exports = {
                 },
             },
             state: nextState,
-            currentPlayer,
+            activePlayers,
         };
     },
 };

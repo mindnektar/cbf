@@ -14,14 +14,18 @@ type Match {
     id: ID!
     status: MatchStatus!
     handle: String!
-    initialState: JSON
     actions: [Action!]!
     players: [User!]!
     creator: User!
 }
 
 type Action {
+    index: Int!
     randomSeed: String
+    type: Int!
+    payload: JSON
+    match: Match!
+    player: User
 }
 
 enum MatchStatus {

@@ -18,6 +18,7 @@ module.exports = {
         modules: [
             path.join(__dirname),
             path.join(__dirname, 'client'),
+            path.join(__dirname, 'client/components/hoc'),
             path.join(__dirname, 'client/components/ui'),
             'node_modules',
         ],

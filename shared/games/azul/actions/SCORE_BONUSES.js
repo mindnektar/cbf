@@ -11,27 +11,28 @@ module.exports = {
         return `${me.username} scores ${score} bonus point${score !== 1 ? 's' : ''}.`;
     },
 
-    isValid: state => (
+    isValid: ({ state }) => (
         state.state === states.SCORE_BONUSES.id
     ),
 
-    perform: (state, payload, players) => {
+    perform: ({ state, player }) => {
         const clonedState = clone(state);
-        let { currentPlayer } = clonedState;
         let nextState = clonedState.state;
         const { playerOrder } = clonedState.public.game;
-        let { wall, score } = clonedState.public.players[currentPlayer];
+        const { wall } = clonedState.public.players[player.id];
+        let { score } = clonedState.public.players[player.id];
+        let activePlayers = [player.id];
 
-        score += wall.filter(line => !line.includes(null)).length * 2;
-        score += wall.filter((_, index) => wall.every(line => line[index] !== null)).length * 7;
-        score += wall.filter((_, index) => wall.every(line => line.includes(index))).length * 10;
+        score += wall.filter((line) => !line.includes(null)).length * 2;
+        score += wall.filter((_, index) => wall.every((line) => line[index] !== null)).length * 7;
+        score += wall.filter((_, index) => wall.every((line) => line.includes(index))).length * 10;
 
-        const nextPlayerIndex = playerOrder.indexOf(players.indexOf(currentPlayer)) + 1;
+        const nextPlayerIndex = playerOrder.indexOf(player.id) + 1;
 
-        if (nextPlayerIndex === players.length) {
+        if (nextPlayerIndex === playerOrder.length) {
             nextState = states.END_GAME.id;
         } else {
-            currentPlayer = players[playerOrder[nextPlayerIndex]];
+            activePlayers = [playerOrder[nextPlayerIndex]];
         }
 
         return {
@@ -47,7 +48,7 @@ module.exports = {
                 },
             },
             state: nextState,
-            currentPlayer,
+            activePlayers,
         };
     },
 };

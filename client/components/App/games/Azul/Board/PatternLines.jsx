@@ -12,7 +12,7 @@ class PatternLines extends React.Component {
                     <Action
                         action={actions.SELECT_PATTERN_LINE}
                         key={index}
-                        params={[index]}
+                        payload={[index]}
                     >
                         <div
                             className="azul__pattern-line"

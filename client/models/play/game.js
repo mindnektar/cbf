@@ -3,7 +3,7 @@ import BaseModel from 'react-apollo-models';
 export default class GameModel extends BaseModel {
     static query = {
         query: `
-            query plays($id: ID!) {
+            query game($id: ID!) {
                 me {
                     id
                     name
@@ -28,6 +28,18 @@ export default class GameModel extends BaseModel {
                         id
                         name
                     }
+                    actions {
+                        randomSeed
+                        type
+                        payload
+                        player {
+                            id
+                            name
+                        }
+                    }
+                    states @client
+                    stateIndex @client
+                    globalParams @client
                 }
             }
         `,

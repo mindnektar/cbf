@@ -21,7 +21,7 @@ module.exports = {
         'The game is over.'
     ),
 
-    isValid: state => (
+    isValid: ({ state }) => (
         state.state === states.END_GAME.id
     ),
 };

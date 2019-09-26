@@ -56,7 +56,7 @@ class Header extends React.Component {
                                     'cbf-header__menu-item',
                                     { 'cbf-header__menu-item--active': this.props.history.location.pathname.includes('login') }
                                 )}
-                                onClick={this.changePageHandler('login')}
+                                onClick={this.changePageHandler('/login')}
                             >
                                 Login
                             </div>

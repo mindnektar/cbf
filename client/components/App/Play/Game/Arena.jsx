@@ -24,7 +24,7 @@ class Arena extends React.Component {
             return;
         }
 
-        this.props.loadGameStates(this.props.data.match.id).then(this.setZoom);
+        this.setZoom();
     }
 
     componentDidMount() {
@@ -65,13 +65,13 @@ class Arena extends React.Component {
     }
 
     setZoom = () => {
-        const { offsetHeight, offsetWidth } = document.querySelector('.cbf-helper-game');
-        const heightRatio = (window.innerHeight - 226) / offsetHeight;
-        const widthRatio = (window.innerWidth - 396) / offsetWidth;
-
-        this.setState({
-            zoom: heightRatio < widthRatio ? heightRatio : widthRatio,
-        });
+        // const { offsetHeight, offsetWidth } = document.querySelector('.cbf-helper-game');
+        // const heightRatio = (window.innerHeight - 226) / offsetHeight;
+        // const widthRatio = (window.innerWidth - 396) / offsetWidth;
+        //
+        // this.setState({
+        //     zoom: heightRatio < widthRatio ? heightRatio : widthRatio,
+        // });
     }
 
     changeZoom = (event) => {
@@ -110,24 +110,15 @@ class Arena extends React.Component {
                         transform: `scale(${this.state.zoom}) translate(${-this.state.x}px, ${-this.state.y}px)`,
                     }}
                 >
-                    {this.props.gameStates && (
-                        React.createElement(gameComponents[this.props.data.match.handle])
-                    )}
+                    {React.createElement(gameComponents[this.props.data.match.handle])}
                 </div>
             </div>
         );
     }
 }
 
-Arena.defaultProps = {
-    gameStates: null,
-};
-
 Arena.propTypes = {
-    clearGameStates: PropTypes.func.isRequired,
     data: PropTypes.object.isRequired,
-    gameStates: PropTypes.object,
-    loadGameStates: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
 };
 

@@ -24,7 +24,7 @@ class Factory extends React.Component {
                                 <Action
                                     action={actions.PICK_UP_TILES}
                                     key={tileIndex}
-                                    params={[index, tile]}
+                                    payload={[index, tile]}
                                 >
                                     <Tile type={tile} />
                                 </Action>
@@ -38,7 +38,7 @@ class Factory extends React.Component {
                         <Action
                             action={actions.PICK_UP_TILES}
                             key={index}
-                            params={[null, tile]}
+                            payload={[null, tile]}
                         >
                             <Tile type={tile} />
                         </Action>

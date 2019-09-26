@@ -9,33 +9,33 @@ module.exports = {
         `${me.username} ends their turn.`
     ),
 
-    isValid: state => (
+    isValid: ({ state }) => (
         state.state === states.END_TURN.id
     ),
 
-    perform: (state, payload, players) => {
+    perform: ({ state, player }) => {
         const clonedState = clone(state);
         const { centerTiles, factoryTiles, playerOrder } = clonedState.public.game;
         let nextState;
-        let { currentPlayer } = clonedState;
+        let activePlayers;
 
-        if (factoryTiles.some(display => display.length > 0) || centerTiles.length > 0) {
-            let playerIndex = playerOrder.indexOf(`${players.indexOf(currentPlayer)}`) + 1;
+        if (factoryTiles.some((display) => display.length > 0) || centerTiles.length > 0) {
+            let playerIndex = playerOrder.indexOf(player.id) + 1;
 
             if (playerIndex === playerOrder.length) {
                 playerIndex = 0;
             }
 
             nextState = states.PICK_UP_TILES.id;
-            currentPlayer = players[playerOrder[playerIndex]];
+            activePlayers = [playerOrder[playerIndex]];
         } else {
             nextState = states.SCORE_FINISHED_LINES.id;
-            currentPlayer = players[playerOrder[0]];
+            activePlayers = [playerOrder[0]];
         }
 
         return {
             ...clonedState,
-            currentPlayer,
+            activePlayers,
             state: nextState,
         };
     },

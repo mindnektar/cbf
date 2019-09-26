@@ -4,7 +4,6 @@ import { HttpLink } from 'apollo-link-http';
 import { onError } from 'apollo-link-error';
 import { setContext } from 'apollo-link-context';
 import { WebSocketLink } from 'apollo-link-ws';
-import { withClientState } from 'apollo-link-state';
 import { ApolloLink, split } from 'apollo-link';
 import { getMainDefinition } from 'apollo-utilities';
 import fetch from 'unfetch';
@@ -16,10 +15,9 @@ import {
     AUTH_TYPE_USER,
     AUTH_TYPE_NONE,
 } from 'auth';
-import clientState from './apolloClient/clientState';
+import { resolvers, typeDefs } from './apolloClient/resolvers';
 
 const cache = new InMemoryCache({
-    addTypename: false,
     dataIdFromObject: (object) => object.id,
 });
 
@@ -40,10 +38,6 @@ const client = new ApolloClient({
             },
         }),
         ApolloLink.from([
-            withClientState({
-                cache,
-                ...clientState,
-            }),
             onError(({ graphQLErrors, networkError }) => {
                 if (graphQLErrors) {
                     graphQLErrors.forEach(({ name, message, locations, path }) => {
@@ -84,6 +78,8 @@ const client = new ApolloClient({
         ]),
     ),
     cache,
+    typeDefs,
+    resolvers,
 });
 
 BaseModel.configure({

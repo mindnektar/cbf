@@ -5,7 +5,6 @@ exports.up = async (knex) => {
         t.foreign('creator_user_id').references('user.id').onDelete('CASCADE');
         t.string('handle').notNullable();
         t.string('status').notNullable().defaultTo('SETTING_UP');
-        t.json('initial_state');
         t.timestamps(true, true);
     });
 };

@@ -12,9 +12,9 @@ module.exports = {
         return `${me.username} places their tiles on their ${lineText}.`;
     },
 
-    isValid: (state, [lineIndex]) => {
+    isValid: ({ state, player, payload: [lineIndex] }) => {
         const { hand } = state.public.game;
-        const { patternLines, wall } = state.public.players[state.currentPlayer];
+        const { patternLines, wall } = state.public.players[player.id];
 
         if (state.state !== states.SELECT_PATTERN_LINE.id) {
             return false;
@@ -27,16 +27,16 @@ module.exports = {
         const line = patternLines[lineIndex];
 
         return (
-            line.length < lineIndex + 1 &&
-            (!line[0] || line[0] === hand[0]) &&
-            !wall[lineIndex].includes(hand[0])
+            line.length < lineIndex + 1
+            && (!line[0] || line[0] === hand[0])
+            && !wall[lineIndex].includes(hand[0])
         );
     },
 
-    perform: (state, [lineIndex]) => {
+    perform: ({ state, player, payload: [lineIndex] }) => {
         const clonedState = clone(state);
         const { hand, discardedTiles } = clonedState.public.game;
-        const { patternLines, floorLine } = clonedState.public.players[clonedState.currentPlayer];
+        const { patternLines, floorLine } = clonedState.public.players[player.id];
 
         if (lineIndex !== null) {
             while (hand.length > 0 && patternLines[lineIndex].length < lineIndex + 1) {
@@ -63,8 +63,8 @@ module.exports = {
                 },
                 players: {
                     ...clonedState.public.players,
-                    [clonedState.currentPlayer]: {
-                        ...clonedState.public.players[clonedState.currentPlayer],
+                    [player.id]: {
+                        ...clonedState.public.players[player.id],
                         floorLine,
                         patternLines,
                     },
