@@ -151,6 +151,35 @@ export default {
                     };
                 });
 
+                while (states.findById(currentState.state).performAutomatically) {
+                    const action = states.findById(currentState.state).performAutomatically();
+
+                    if (!action.isValid({ state: currentState })) {
+                        throw new Error(`Invalid action: ${action}`);
+                    }
+
+                    if (action.isEndGameAction) {
+                        break;
+                    }
+
+                    const randomSeed = action.isServerAction ? generateRandomSeed() : null;
+
+                    currentState = action.perform({
+                        state: currentState,
+                        allPlayers: match.players,
+                        randomSeed,
+                    });
+
+                    stateIndex += 1;
+
+                    newActions.push({
+                        match_id: match.id,
+                        index: stateIndex,
+                        random_seed: randomSeed,
+                        type: action.id,
+                    });
+                }
+
                 await Action.query(trx).insert(newActions);
 
                 return match.$graphqlLoadRelated(trx, info);

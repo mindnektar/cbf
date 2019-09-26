@@ -34,7 +34,12 @@ const Sidebar = (props) => {
 
         const { player, type, payload } = props.data.match.actions[index];
         const message = props.actions.findById(type).toString({
-            me: player,
+            me: (
+                props.data.match.actions[index].player
+                || props.data.match.players.find(({ id }) => (
+                    id === props.data.match.states[index - 1].activePlayers[0]
+                ))
+            ),
             payload,
             state: gameState,
             previousState: props.data.match.states[index - 1],
@@ -45,10 +50,11 @@ const Sidebar = (props) => {
             return null;
         }
 
-        const groupStart = actionOwner !== player.id;
+        const playerId = player ? player.id : null;
+        const groupStart = actionOwner !== playerId;
 
         messageIndex += 1;
-        actionOwner = player.id;
+        actionOwner = playerId;
 
         return (
             <div

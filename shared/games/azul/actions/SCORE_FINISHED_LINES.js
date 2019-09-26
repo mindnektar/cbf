@@ -17,7 +17,7 @@ module.exports = {
         state.state === states.SCORE_FINISHED_LINES.id
     ),
 
-    perform: ({ state, player, randomSeed }) => {
+    perform: ({ state, randomSeed }) => {
         const clonedState = clone(state);
         let nextState = clonedState.state;
         const { factoryTiles } = clonedState.public.game;
@@ -28,10 +28,10 @@ module.exports = {
             nextStartPlayer,
             playerOrder,
         } = clonedState.public.game;
-        const { patternLines, wall } = clonedState.public.players[player.id];
-        let { floorLine, score } = clonedState.public.players[player.id];
+        let { activePlayers } = clonedState;
+        const { patternLines, wall } = clonedState.public.players[activePlayers[0]];
+        let { floorLine, score } = clonedState.public.players[activePlayers[0]];
         let { remainingTiles } = clonedState.private.game;
-        let activePlayers;
 
         patternLines.forEach((patternLine, index) => {
             if (patternLine.length === index + 1) {
@@ -92,13 +92,13 @@ module.exports = {
 
         if (firstPlayerTokenIndex >= 0) {
             centerTiles = floorLine.splice(firstPlayerTokenIndex, 1);
-            nextStartPlayer = player.id;
+            [nextStartPlayer] = activePlayers;
         }
 
         discardedTiles = [...discardedTiles, ...floorLine];
         floorLine = [];
 
-        const nextPlayerIndex = playerOrder.indexOf(player.id) + 1;
+        const nextPlayerIndex = playerOrder.indexOf(activePlayers[0]) + 1;
 
         if (nextPlayerIndex === playerOrder.length) {
             if (gameEndTriggered) {
@@ -153,8 +153,8 @@ module.exports = {
                 },
                 players: {
                     ...clonedState.public.players,
-                    [clonedState.currentPlayer]: {
-                        ...clonedState.public.players[clonedState.currentPlayer],
+                    [clonedState.activePlayers[0]]: {
+                        ...clonedState.public.players[clonedState.activePlayers[0]],
                         floorLine,
                         patternLines,
                         score,
