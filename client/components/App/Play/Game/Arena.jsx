@@ -16,25 +16,19 @@ class Arena extends React.Component {
     componentWillMount() {
         if (this.props.data.match.status === 'SETTING_UP') {
             this.props.history.replace(`/play/${this.props.data.match.id}/setup`);
-            return;
-        }
-
-        if (this.props.data.match.status === 'OPEN') {
+        } else if (this.props.data.match.status === 'OPEN') {
             this.props.history.replace(`/play/${this.props.data.match.id}/lobby`);
-            return;
         }
-
-        this.setZoom();
     }
 
     componentDidMount() {
         this.arenaRef.addEventListener('mousewheel', this.changeZoom);
         this.arenaRef.addEventListener('DOMMouseScroll', this.changeZoom);
+
+        this.setZoom();
     }
 
     componentWillUnmount() {
-        // this.props.clearGameStates();
-
         this.arenaRef.removeEventListener('mousewheel', this.changeZoom);
         this.arenaRef.removeEventListener('DOMMouseScroll', this.changeZoom);
     }
@@ -65,13 +59,13 @@ class Arena extends React.Component {
     }
 
     setZoom = () => {
-        // const { offsetHeight, offsetWidth } = document.querySelector('.cbf-helper-game');
-        // const heightRatio = (window.innerHeight - 226) / offsetHeight;
-        // const widthRatio = (window.innerWidth - 396) / offsetWidth;
-        //
-        // this.setState({
-        //     zoom: heightRatio < widthRatio ? heightRatio : widthRatio,
-        // });
+        const { offsetHeight, offsetWidth } = document.querySelector('.cbf-helper-game');
+        const heightRatio = (window.innerHeight - 226) / offsetHeight;
+        const widthRatio = (window.innerWidth - 396) / offsetWidth;
+
+        this.setState({
+            zoom: heightRatio < widthRatio ? heightRatio : widthRatio,
+        });
     }
 
     changeZoom = (event) => {

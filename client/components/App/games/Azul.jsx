@@ -57,4 +57,6 @@ Azul.propTypes = {
     data: PropTypes.object.isRequired,
 };
 
-export default withRouter(GameModel.graphql(Azul));
+export default withRouter(GameModel.graphql(React.memo(Azul, (prevProps, nextProps) => (
+    prevProps.data.match.stateIndex === nextProps.data.match.stateIndex
+))));
