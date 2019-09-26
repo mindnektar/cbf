@@ -4,12 +4,11 @@ const states = require('../states');
 module.exports = {
     id: 2,
 
-    toString: ({ me, state }) => {
-        const [lineIndex] = state.action[1];
+    toString: ({ me, payload: [lineIndex] }) => {
         const numberMap = ['first', 'second', 'third', 'fourth', 'fifth'];
         const lineText = lineIndex === null ? 'floor line' : `${numberMap[lineIndex]} pattern line`;
 
-        return `${me.username} places their tiles on their ${lineText}.`;
+        return `${me.name} places their tiles on their ${lineText}.`;
     },
 
     isValid: ({ state, player, payload: [lineIndex] }) => {

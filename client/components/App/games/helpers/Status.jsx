@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 import { withRouter } from 'react-router-dom';
+import performAction from 'helpers/performAction';
 import GameModel from 'models/play/game';
 import Button from 'Button';
 
@@ -19,7 +20,11 @@ const Status = (props) => {
         // }
 
         if (!state.activePlayers.includes(props.data.me.id)) {
-            return `It's ${props.data.me.name}'s turn.`;
+            const playerList = props.data.match.players
+                .filter(({ id }) => state.activePlayers.includes(id))
+                .map(({ name }) => `${name}'s`)
+                .join(' and ');
+            return `It's ${playerList} turn.`;
         }
 
         return props.states.findById(state.state).instruction || '';
@@ -36,11 +41,14 @@ const Status = (props) => {
     };
 
     const endTurn = () => {
-        props.updateGameState(
-            props.match.params.gameId,
-            props.endTurnAction,
-            props.data.match.globalParams,
-        );
+        performAction({
+            match: props.data.match,
+            action: props.endTurnAction,
+            player: props.data.me,
+            payload: props.data.match.globalParams,
+            performAction: props.performAction,
+            pushActions: props.pushActions,
+        });
     };
 
     const exitHistoryMode = () => {
@@ -54,17 +62,17 @@ const Status = (props) => {
             isLatestState
             && state.activePlayers.includes(props.data.me.id)
             && params.every((param) => props.data.match.globalParams[param.name] !== undefined)
-            && performOnConfirm().isValid(
+            && performOnConfirm().isValid({
                 state,
-                params.map((param) => props.data.match.globalParams[param.name])
-            )
+                payload: params.map((param) => props.data.match.globalParams[param.name]),
+            })
         );
     };
 
     const mayEndTurn = () => (
         isLatestState
         && state.activePlayers.includes(props.data.me.id)
-        && props.endTurnAction.isValid(state)
+        && props.endTurnAction.isValid({ state })
     );
 
     const redo = () => {
@@ -135,6 +143,8 @@ Status.propTypes = {
     match: PropTypes.object.isRequired,
     states: PropTypes.object.isRequired,
     data: PropTypes.object.isRequired,
+    pushActions: PropTypes.func.isRequired,
+    performAction: PropTypes.func.isRequired,
 };
 
 export default withRouter(GameModel.graphql(Status));

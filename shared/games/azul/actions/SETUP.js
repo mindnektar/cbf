@@ -11,7 +11,7 @@ module.exports = {
 
     perform: ({ allPlayers, randomSeed }) => {
         const playerOrder = shuffle(allPlayers.map(({ id }) => id), randomSeed);
-        const remainingTiles = shuffle(assets.tiles, randomSeed);
+        const remainingTiles = shuffle([...assets.tiles], randomSeed);
         const factoryTiles = [];
         const factoryTileCounts = { 2: 5, 3: 7, 4: 9 };
 
@@ -19,7 +19,7 @@ module.exports = {
             factoryTiles.push(remainingTiles.splice(0, 4));
         }
 
-        return {
+        const a = {
             public: {
                 game: {
                     factoryTiles,
@@ -33,8 +33,8 @@ module.exports = {
                     ...result,
                     [current]: {
                         score: 0,
-                        patternLines: Array(5).fill([]),
-                        wall: Array(5).fill(Array(5).fill(null)),
+                        patternLines: Array.from(Array(5), () => []),
+                        wall: Array.from(Array(5), () => Array(5).fill(null)),
                         floorLine: [],
                     },
                 }), {}),
@@ -48,5 +48,7 @@ module.exports = {
             action: null,
             activePlayers: [playerOrder[0]],
         };
+
+        return a;
     },
 };

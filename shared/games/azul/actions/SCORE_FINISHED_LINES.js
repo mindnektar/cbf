@@ -10,7 +10,7 @@ module.exports = {
     toString: ({ me, state, previousState }) => {
         const score = state.public.players[me.id].score - previousState.public.players[me.id].score;
 
-        return `${me.username} scores ${score} point${score !== 1 ? 's' : ''}.`;
+        return `${me.name} scores ${score} point${score !== 1 ? 's' : ''}.`;
     },
 
     isValid: ({ state }) => (

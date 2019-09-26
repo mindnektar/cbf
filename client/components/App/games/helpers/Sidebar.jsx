@@ -32,9 +32,10 @@ const Sidebar = (props) => {
         //     return null;
         // }
 
-        const { player, type } = props.data.match.actions[index];
+        const { player, type, payload } = props.data.match.actions[index];
         const message = props.actions.findById(type).toString({
             me: player,
+            payload,
             state: gameState,
             previousState: props.data.match.states[index - 1],
             players: props.data.match.players,

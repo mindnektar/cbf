@@ -4,12 +4,11 @@ const states = require('../states');
 module.exports = {
     id: 1,
 
-    toString: ({ me, state }) => {
-        const [, type] = state.action[1];
+    toString: ({ me, state, payload: [, type] }) => {
         const pickUpCount = state.public.game.hand.length;
         const tileMap = ['white', 'yellow', 'blue', 'red', 'black'];
 
-        return `${me.username} picks up ${pickUpCount} ${tileMap[type]} tile${pickUpCount > 1 ? 's' : ''}.`;
+        return `${me.name} picks up ${pickUpCount} ${tileMap[type]} tile${pickUpCount > 1 ? 's' : ''}.`;
     },
 
     isValid: ({ state, payload: [display, type] }) => {

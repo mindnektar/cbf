@@ -16,7 +16,7 @@ class Action extends BaseModel {
                 index: { type: 'integer' },
                 randomSeed: { type: 'string' },
                 type: { type: 'integer' },
-                payload: { type: ['json', 'null'] },
+                payload: { type: ['array', 'null'] },
                 createdAt: { type: 'string' },
                 updatedAt: { type: 'string' },
             },

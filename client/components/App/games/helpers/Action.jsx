@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withRouter } from 'react-router-dom';
+import performAction from 'helpers/performAction';
 import GameModel from 'models/play/game';
 
 const Action = (props) => {
@@ -14,11 +15,14 @@ const Action = (props) => {
 
     const onClick = () => {
         if (isActive) {
-            props.updateGameState(
-                props.match.params.gameId,
-                props.action,
-                props.payload,
-            );
+            performAction({
+                match: props.data.match,
+                action: props.action,
+                payload: props.payload,
+                player: props.data.me,
+                pushActions: props.pushActions,
+                performAction: props.performAction,
+            });
         }
     };
 
@@ -57,6 +61,8 @@ Action.propTypes = {
     match: PropTypes.object.isRequired,
     data: PropTypes.object.isRequired,
     payload: PropTypes.array,
+    pushActions: PropTypes.func.isRequired,
+    performAction: PropTypes.func.isRequired,
 };
 
 export default withRouter(GameModel.graphql(Action));

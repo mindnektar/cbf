@@ -39,6 +39,7 @@ export default class GameModel extends BaseModel {
                     }
                     states @client
                     stateIndex @client
+                    stateCountSinceLastLoad @client
                     globalParams @client
                 }
             }
@@ -72,5 +73,49 @@ export default class GameModel extends BaseModel {
         optimisticResponse: () => ({
             status: 'ACTIVE',
         }),
+    }, {
+        mutation: `
+            mutation pushActions($input: PushActionsInput!) {
+                pushActions(input: $input) {
+                    id
+                    actions {
+                        randomSeed
+                        type
+                        payload
+                        player {
+                            id
+                            name
+                        }
+                    }
+                    states @client
+                    stateIndex @client
+                    stateCountSinceLastLoad @client
+                    globalParams @client
+                }
+            }
+        `,
+        optimisticResponse: null,
+    }, {
+        mutation: `
+            mutation performAction($input: PerformActionInput!) {
+                performAction(input: $input) @client {
+                    id
+                    actions {
+                        randomSeed
+                        type
+                        payload
+                        player {
+                            id
+                            name
+                        }
+                    }
+                    states @client
+                    stateIndex @client
+                    stateCountSinceLastLoad @client
+                    globalParams @client
+                }
+            }
+        `,
+        optimisticResponse: null,
     }]
 }

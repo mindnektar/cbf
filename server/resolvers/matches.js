@@ -1,5 +1,6 @@
-import uuid from 'uuid';
+import generateStates from '../../shared/helpers/generateStates';
 import transaction from './helpers/transaction';
+import generateRandomSeed from '../helpers/generateRandomSeed';
 import Match from '../models/Match';
 import Action from '../models/Action';
 
@@ -83,9 +84,74 @@ export default {
                 await Action.query(trx).insert({
                     index: 0,
                     match_id: match.id,
-                    random_seed: uuid().substring(0, 4),
+                    random_seed: generateRandomSeed(),
                     type: setupAction.id,
                 });
+
+                return match.$graphqlLoadRelated(trx, info);
+            })
+        ),
+        pushActions: (parent, { input }, { auth }, info) => (
+            transaction(async (trx) => {
+                const match = await Match.query(trx)
+                    .eager('[players, actions.player]')
+                    .findById(input.id);
+
+                if (
+                    !match
+                    || match.status !== Match.STATUS.ACTIVE
+                    || !match.players.some(({ id }) => id === auth.id)
+                ) {
+                    return {};
+                }
+
+                const actions = require(`../../shared/games/${match.handle}/actions`);
+                const states = require(`../../shared/games/${match.handle}/states`);
+                const allStates = generateStates(match);
+                let stateIndex = allStates.length - 1;
+                let currentState = allStates.pop();
+                const { activePlayers } = currentState;
+
+                if (!activePlayers.includes(auth.id)) {
+                    return {};
+                }
+
+                const newActions = input.actions.map(({ type, payload }) => {
+                    const action = actions.findById(type);
+                    const player = match.players.find(({ id }) => id === auth.id);
+                    const isValid = action.isValid({
+                        state: currentState,
+                        player,
+                        payload,
+                    });
+
+                    if (!isValid) {
+                        throw new Error(`Invalid action: ${action.id}`);
+                    }
+
+                    const randomSeed = action.isServerAction ? generateRandomSeed() : null;
+
+                    currentState = action.perform({
+                        state: currentState,
+                        payload,
+                        player,
+                        allPlayers: match.players,
+                        randomSeed,
+                    });
+
+                    stateIndex += 1;
+
+                    return {
+                        match_id: match.id,
+                        index: stateIndex,
+                        user_id: auth.id,
+                        random_seed: randomSeed,
+                        type,
+                        payload,
+                    };
+                });
+
+                await Action.query(trx).insert(newActions);
 
                 return match.$graphqlLoadRelated(trx, info);
             })

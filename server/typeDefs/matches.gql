@@ -8,6 +8,7 @@ type Mutation {
     openMatch(id: ID!): Match!
     joinMatch(id: ID!): Match!
     startMatch(id: ID!): Match!
+    pushActions(input: PushActionsInput!): Match!
 }
 
 type Match {
@@ -41,4 +42,14 @@ input MatchFilter {
 
 input CreateMatchInput {
     handle: String!
+}
+
+input PushActionsInput {
+    id: ID!
+    actions: [ActionInput!]!
+}
+
+input ActionInput {
+    type: Int!
+    payload: JSON
 }

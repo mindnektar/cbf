@@ -6,7 +6,7 @@ module.exports = {
     isServerAction: true,
 
     toString: ({ me }) => (
-        `${me.username} ends their turn.`
+        `${me.name} ends their turn.`
     ),
 
     isValid: ({ state }) => (

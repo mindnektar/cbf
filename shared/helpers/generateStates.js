@@ -7,7 +7,7 @@ const gameMap = {
 };
 
 export default (match) => (
-    match.actions.reduce((result, { type, payload }, index) => {
+    match.actions.reduce((result, { type, payload, randomSeed, player }, index) => {
         const action = gameMap[match.handle].actions.findById(type);
 
         if (action.isEndGameAction) {
@@ -16,15 +16,13 @@ export default (match) => (
 
         return [
             ...result,
-            {
-                ...action.perform({
-                    state: index > 0 ? result[index - 1] : null,
-                    payload,
-                    player: action.player,
-                    allPlayers: match.players,
-                    randomSeed: match.randomSeed,
-                }),
-            },
+            action.perform({
+                state: index > 0 ? result[index - 1] : null,
+                payload,
+                player,
+                allPlayers: match.players,
+                randomSeed,
+            }),
         ];
     }, [])
 );
