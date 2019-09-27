@@ -75,13 +75,38 @@
             transform-origin: 50% 90%
 
 .azul__score-marker
-    background: black
-    height: 0
+    background-color: #353535
+    border: 2px solid #505050
+    border-bottom-color: #000000
+    border-radius: 2px
+    border-right-color: #000000
+    box-sizing: border-box
+    height: 20px
     left: 0
-    padding-bottom: 4.5%
     position: absolute
+    transform-style: preserve-3d
     top: 0
-    width: 4.5%
+    width: 20px
+
+    &::before
+        background: #262626
+        border: inherit
+        border-top: none
+        border-radius: 2px
+        box-shadow: 8px 0px 1px 0px rgba(black, 0.3)
+        box-sizing: border-box
+        content: ""
+        height: 20px
+        left: -2px
+        position: absolute
+        top: 12px
+        width: 20px
+        transform: translateZ(-1px)
+
+    .player-1 &,
+    .player-3 &
+        transform: rotate(180deg)
+        transform-origin: 50% 120%
 
 .azul__pattern-lines
     height: 205px

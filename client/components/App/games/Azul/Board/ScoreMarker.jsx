@@ -1,26 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-class ScoreMarker extends React.Component {
-    getPosition() {
-        if (this.props.score === 0) {
-            return [100, 0];
-        }
+const ScoreMarker = (props) => {
+    const tops = [-4, 18, 42, 67, 93, 119];
+    const style = { left: 26, top: tops[0] };
 
-        return [100 * (this.props.score % 20), 120 * Math.ceil(this.props.score / 20)];
+    if (props.score !== 0) {
+        style.left += 20.5 * (props.score % 20);
+        style.top = tops[Math.ceil(props.score / 20)];
     }
 
-    render() {
-        const [x, y] = this.getPosition();
-
-        return (
-            <div
-                className="azul__score-marker"
-                style={{ transform: `translate(${x}%, ${y}%)` }}
-            />
-        );
-    }
-}
+    return (
+        <div
+            className="azul__score-marker"
+            style={style}
+        />
+    );
+};
 
 ScoreMarker.propTypes = {
     score: PropTypes.number.isRequired,
