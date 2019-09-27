@@ -47,6 +47,26 @@ export default class GameModel extends BaseModel {
         variables: (props) => ({
             id: props.match.params.gameId,
         }),
+        subscriptions: [{
+            subscription: `
+                subscription playerJoined {
+                    playerJoined {
+                        id
+                        players {
+                            id
+                            name
+                        }
+                    }
+                }
+            `,
+            cacheUpdatePath: ({ item }) => ({
+                match: {
+                    players: {
+                        $set: item.players,
+                    },
+                },
+            }),
+        }],
     }
 
     static mutations = [{
@@ -59,6 +79,7 @@ export default class GameModel extends BaseModel {
             }
         `,
         optimisticResponse: () => ({
+            __typename: 'Match',
             status: 'OPEN',
         }),
     }, {
@@ -71,6 +92,7 @@ export default class GameModel extends BaseModel {
             }
         `,
         optimisticResponse: () => ({
+            __typename: 'Match',
             status: 'ACTIVE',
         }),
     }, {

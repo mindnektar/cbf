@@ -10,9 +10,7 @@ class Lobby extends React.Component {
     componentWillMount() {
         if (this.props.data.match.status === 'SETTING_UP') {
             this.props.history.replace(`/play/${this.props.data.match.id}/setup`);
-        }
-
-        if (this.props.data.match.status === 'ACTIVE') {
+        } else if (this.props.data.match.status === 'ACTIVE') {
             this.props.history.replace(`/play/${this.props.data.match.id}`);
         }
     }

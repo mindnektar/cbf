@@ -48,6 +48,7 @@ export default class PlayModel extends BaseModel {
             }
         `,
         optimisticResponse: ({ props, mutationVariables }) => ({
+            __typename: 'Match',
             players: [
                 ...props.data.matches.find(({ id }) => id === mutationVariables.id).players,
                 props.data.me,
@@ -68,6 +69,7 @@ export default class PlayModel extends BaseModel {
             }
         `,
         optimisticResponse: ({ props }) => ({
+            __typename: 'Match',
             id: null,
             status: 'SETTING_UP',
             players: [props.data.me],

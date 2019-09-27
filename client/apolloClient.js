@@ -28,7 +28,7 @@ const client = new ApolloClient({
             return kind === 'OperationDefinition' && operation === 'subscription';
         },
         new WebSocketLink({
-            uri: 'http://localhost:5051',
+            uri: 'ws://localhost:5051',
             options: {
                 lazy: true,
                 reconnect: true,

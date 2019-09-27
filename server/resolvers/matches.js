@@ -1,5 +1,6 @@
 import generateStates from '../../shared/helpers/generateStates';
 import transaction from './helpers/transaction';
+import subscription from './helpers/subscription';
 import generateRandomSeed from '../helpers/generateRandomSeed';
 import Match from '../models/Match';
 import Action from '../models/Action';
@@ -46,7 +47,7 @@ export default {
                 return match.$graphqlLoadRelated(trx, info);
             })
         ),
-        joinMatch: (parent, { id }, { auth }, info) => (
+        joinMatch: (parent, { id }, { auth, pubsub }, info) => (
             transaction(async (trx) => {
                 const match = await Match.query(trx).eager('players').findById(id);
 
@@ -60,7 +61,11 @@ export default {
 
                 await match.$relatedQuery('players', trx).relate(auth.id);
 
-                return match.$graphqlLoadRelated(trx, info);
+                const result = await match.$graphqlLoadRelated(trx, info);
+
+                pubsub.publish('playerJoined', result);
+
+                return result;
             })
         ),
         startMatch: (parent, { id }, { auth }, info) => (
@@ -185,5 +190,12 @@ export default {
                 return match.$graphqlLoadRelated(trx, info);
             })
         ),
+    },
+    Subscription: {
+        ...subscription('playerJoined', (payload, variables, context, info) => (
+            Match.fromJson(payload).$graphqlLoadRelated(info, { players: {} })
+        ), async (payload, variables, { auth }) => (
+            payload.players.some(({ id }) => id === auth.id)
+        )),
     },
 };

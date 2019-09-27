@@ -35,6 +35,27 @@ const config = convict({
             env: 'DATABASE_DEBUG',
         },
     },
+    redis: {
+        port: {
+            format: 'nat',
+            default: 6380,
+            env: 'REDIS_PORT',
+        },
+        retry: {
+            maxTotalTime: {
+                format: 'nat',
+                default: 1000 * 60 * 60,
+            },
+            maxAttempts: {
+                format: 'nat',
+                default: 12,
+            },
+            maxReconnectDelay: {
+                format: 'nat',
+                default: 1000 * 60,
+            },
+        },
+    },
     bcrypt: {
         saltRounds: {
             format: 'nat',

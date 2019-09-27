@@ -11,6 +11,10 @@ type Mutation {
     pushActions(input: PushActionsInput!): Match!
 }
 
+type Subscription {
+    playerJoined: Match!
+}
+
 type Match {
     id: ID!
     status: MatchStatus!
