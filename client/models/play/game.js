@@ -117,5 +117,15 @@ export default class GameModel extends BaseModel {
             }
         `,
         optimisticResponse: null,
+    }, {
+        mutation: `
+            mutation goToAction($input: GoToActionInput!) {
+                goToAction(input: $input) @client {
+                    id
+                    stateIndex @client
+                }
+            }
+        `,
+        optimisticResponse: null,
     }]
 }

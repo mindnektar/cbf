@@ -4,6 +4,7 @@ import generateStates from 'shared/helpers/generateStates';
 export const typeDefs = gql`
     extend type Mutation {
         performAction(input: PerformActionInput!): Match!
+        goToAction(input: GoToActionInput!): Match!
     }
 
     extend type Match {
@@ -29,6 +30,11 @@ export const typeDefs = gql`
         id: ID!
         name: String!
     }
+
+    input GoToActionInput {
+        id: ID!
+        index: Int!
+    }
 `;
 
 export const resolvers = {
@@ -37,7 +43,7 @@ export const resolvers = {
             const match = cache.readFragment({
                 id: input.id,
                 fragment: gql`
-                    fragment readMatch on Match {
+                    fragment readPerformAction on Match {
                         actions {
                             randomSeed
                             type
@@ -63,7 +69,7 @@ export const resolvers = {
             cache.writeFragment({
                 id: input.id,
                 fragment: gql`
-                    fragment writeMatch on Match {
+                    fragment writePerformAction on Match {
                         actions {
                             randomSeed
                             type
@@ -81,7 +87,41 @@ export const resolvers = {
             });
 
             return {
+                id: input.id,
+                ...data,
+            };
+        },
+        goToAction: (parent, { input }, { cache }) => {
+            const match = cache.readFragment({
+                id: input.id,
+                fragment: gql`
+                    fragment readGoToAction on Match {
+                        states
+                        stateIndex
+                        stateCountSinceLastLoad
+                    }
+                `,
+            });
+
+            const data = {
                 __typename: 'Match',
+                stateIndex: Math.min(
+                    match.states.length - 1,
+                    Math.max(0, input.index),
+                ),
+            };
+
+            cache.writeFragment({
+                id: input.id,
+                fragment: gql`
+                    fragment writeGoToAction on Match {
+                        stateIndex
+                    }
+                `,
+                data,
+            });
+
+            return {
                 id: input.id,
                 ...data,
             };
@@ -95,7 +135,7 @@ export const resolvers = {
                 match = cache.readFragment({
                     id: parent.id,
                     fragment: gql`
-                        fragment readMatch2 on Match {
+                        fragment readStates on Match {
                             handle
                             actions {
                                 randomSeed
@@ -130,7 +170,7 @@ export const resolvers = {
             cache.writeFragment({
                 id: parent.id,
                 fragment: gql`
-                    fragment writeMatch2 on Match {
+                    fragment writeStates on Match {
                         states
                         stateIndex
                         stateCountSinceLastLoad

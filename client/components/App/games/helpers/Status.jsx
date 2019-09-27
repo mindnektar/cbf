@@ -77,13 +77,19 @@ const Status = (props) => {
     );
 
     const redo = () => {
-        props.redoGameAction(props.states);
+        props.goToAction({
+            id: props.data.match.id,
+            index: props.data.match.stateIndex + 1,
+        });
     };
 
     const undo = () => {
-        props.undoGameAction(props.states);
+        props.goToAction({
+            id: props.data.match.id,
+            index: props.data.match.stateIndex - 1,
+        });
     };
-
+console.log(props.data.match.stateCountSinceLastLoad, props.data.match.stateIndex);
     return ReactDOM.createPortal(
         <div className="cbf-helper-status">
             <div className="cbf-helper-status__text">
@@ -111,7 +117,7 @@ const Status = (props) => {
 
             <div className="cbf-helper-status__options">
                 <Button
-                    disabled={props.stateIndex === 0}
+                    disabled={props.data.match.stateIndex - (props.data.match.stateCountSinceLastLoad) < 0}
                     onClick={undo}
                     secondary
                 >
@@ -119,7 +125,7 @@ const Status = (props) => {
                 </Button>
 
                 <Button
-                    disabled={props.stateIndex === props.data.match.states.length}
+                    disabled={props.data.match.stateIndex === props.data.match.states.length - 1}
                     onClick={redo}
                     secondary
                 >
@@ -146,6 +152,7 @@ Status.propTypes = {
     data: PropTypes.object.isRequired,
     pushActions: PropTypes.func.isRequired,
     performAction: PropTypes.func.isRequired,
+    goToAction: PropTypes.func.isRequired,
 };
 
 export default withRouter(GameModel.graphql(Status));

@@ -7,7 +7,10 @@ import GameModel from 'models/play/game';
 
 const Sidebar = (props) => {
     const switchGameStateHandler = (index) => () => {
-        props.switchGameState(index);
+        props.goToAction({
+            id: props.data.match.id,
+            index,
+        });
     };
 
     const renderMessage = (gameState, index) => {
