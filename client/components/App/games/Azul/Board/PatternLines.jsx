@@ -15,6 +15,7 @@ const PatternLines = (props) => {
                     key={index}
                     payload={[index]}
                     disabled={props.actionsDisabled}
+                    offset={{ top: 14 }}
                 >
                     <div
                         className="azul__pattern-line"

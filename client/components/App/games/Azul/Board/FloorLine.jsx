@@ -9,6 +9,7 @@ const FloorLine = (props) => (
         action={actions.SELECT_PATTERN_LINE}
         payload={[null]}
         disabled={props.actionsDisabled}
+        offset={{ top: 14 }}
     >
         <div className="azul__floor-line">
             {props.floorLine.map((tile, tileIndex) => (

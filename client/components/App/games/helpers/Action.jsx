@@ -23,10 +23,12 @@ const Action = (props) => {
     useEffect(() => {
         const childRect = childRef.current.getBoundingClientRect();
         const gameRect = document.querySelector('.cbf-arena__canvas').getBoundingClientRect();
+        const offsetLeft = props.offset.left || 0;
+        const offsetTop = props.offset.top || 0;
 
         setStyle({
-            left: childRect.left - gameRect.left,
-            top: childRect.top - gameRect.top,
+            left: (childRect.left - gameRect.left) + offsetLeft,
+            top: (childRect.top - gameRect.top) + offsetTop,
             width: childRect.width,
             height: childRect.height,
         });
@@ -66,6 +68,7 @@ const Action = (props) => {
 Action.defaultProps = {
     payload: [],
     disabled: false,
+    offset: {},
 };
 
 Action.propTypes = {
@@ -77,6 +80,10 @@ Action.propTypes = {
     pushActions: PropTypes.func.isRequired,
     performAction: PropTypes.func.isRequired,
     disabled: PropTypes.bool,
+    offset: PropTypes.shape({
+        top: PropTypes.number,
+        left: PropTypes.number,
+    }),
 };
 
 export default withRouter(GameModel.graphql(Action));
