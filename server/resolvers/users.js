@@ -1,4 +1,5 @@
 import bcrypt from '../services/bcrypt';
+import generateRandomSeed from '../helpers/generateRandomSeed';
 import User from '../models/User';
 
 export default {
@@ -14,7 +15,7 @@ export default {
         login: async (parent, { input }) => {
             const user = await User.query().where('name', input.name).first();
 
-            if (!user) {
+            if (!user || !user.active) {
                 return {};
             }
 
@@ -26,15 +27,26 @@ export default {
                 authToken: await user.generateAuthToken(),
             };
         },
-        signup: async (parent, { input: { password, ...input } }) => {
-            const user = await User.query().insert({
-                ...input,
-                passwordHash: await bcrypt.hash(password),
-            });
-
-            return {
-                authToken: await user.generateAuthToken(),
-            };
-        },
+        confirmUser: async (parent, { input }, context, info) => (
+            User.query()
+                .where('invite_code', input.inviteCode)
+                .where('name', input.name)
+                .patch({
+                    email: input.email,
+                    passwordHash: await bcrypt.hash(input.password),
+                })
+                .first()
+                .returning('*')
+                .graphqlEager(info)
+        ),
+        createUser: async (parent, { input }, context, info) => (
+            User.query()
+                .insert({
+                    ...input,
+                    inviteCode: generateRandomSeed(),
+                })
+                .returning('*')
+                .graphqlEager(info)
+        ),
     },
 };

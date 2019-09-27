@@ -4,7 +4,8 @@ type Query {
 }
 
 type Mutation {
-    signup(input: SignupInput!): LoginResult!
+    createUser(input: CreateUserInput!): User!
+    confirmUser(input: ConfirmUserInput!): User!
     login(input: LoginInput!): LoginResult!
 }
 
@@ -12,15 +13,21 @@ type User {
     id: ID!
     name: String!
     matches: [Match!]!
+    inviteCode: String!
 }
 
 type LoginResult {
     authToken: String!
 }
 
-input SignupInput {
-    email: String!
+input CreateUserInput {
     name: String!
+}
+
+input ConfirmUserInput {
+    name: String!
+    email: String!
+    inviteCode: String!
     password: String!
 }
 

@@ -16,6 +16,7 @@ class User extends BaseModel {
                 email: { type: 'string' },
                 name: { type: 'string' },
                 passwordHash: { type: 'string' },
+                inviteCode: { type: 'string' },
                 createdAt: { type: 'string' },
                 updatedAt: { type: 'string' },
             },
@@ -37,6 +38,10 @@ class User extends BaseModel {
                 },
             },
         };
+    }
+
+    get active() {
+        return !!this.passwordHash;
     }
 
     generateAuthToken() {
