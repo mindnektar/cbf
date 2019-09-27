@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withRouter } from 'react-router-dom';
@@ -10,12 +11,26 @@ const Action = (props) => {
         return props.children;
     }
 
+    const [style, setStyle] = useState(null);
+    const childRef = useRef();
     const state = props.data.match.states[props.data.match.stateIndex];
     const isActive = props.action.isValid({
         state,
         player: props.data.me,
         payload: props.payload,
     });
+
+    useEffect(() => {
+        const childRect = childRef.current.getBoundingClientRect();
+        const gameRect = document.querySelector('.cbf-arena__canvas').getBoundingClientRect();
+
+        setStyle({
+            left: childRect.left - gameRect.left,
+            top: childRect.top - gameRect.top,
+            width: childRect.width,
+            height: childRect.height,
+        });
+    }, []);
 
     const onClick = () => {
         if (isActive) {
@@ -30,28 +45,21 @@ const Action = (props) => {
         }
     };
 
-    const helperClassNames = classNames(
-        'cbf-helper-action',
-        { 'cbf-helper-action--active': isActive }
-    );
+    return (
+        <>
+            {React.cloneElement(props.children, { ref: childRef })}
 
-    if (!props.children.props.className) {
-        return (
-            <div
-                className={helperClassNames}
-                onClick={onClick}
-            >
-                {props.children}
-            </div>
-        );
-    }
-
-    return React.cloneElement(
-        props.children,
-        {
-            className: `${props.children.props.className} ${helperClassNames}`,
-            onClick: onClick,
-        }
+            {style && ReactDOM.createPortal((
+                <div
+                    className={classNames(
+                        'cbf-helper-action',
+                        { 'cbf-helper-action--active': isActive }
+                    )}
+                    onClick={onClick}
+                    style={style}
+                />
+            ), document.querySelector('.cbf-helper-game'))}
+        </>
     );
 };
 

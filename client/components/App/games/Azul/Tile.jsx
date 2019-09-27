@@ -2,19 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-class Tile extends React.Component {
-    render() {
-        return (
-            <div
-                className={classNames(
-                    'azul__tile',
-                    `azul__tile-${this.props.type}`
-                )}
-                style={this.props.style}
-            />
-        );
-    }
-}
+const Tile = React.forwardRef((props, ref) => (
+    <div
+        className={classNames(
+            'azul__tile',
+            `azul__tile-${props.type}`
+        )}
+        style={props.style}
+        ref={ref}
+    />
+));
 
 Tile.defaultProps = {
     style: {},

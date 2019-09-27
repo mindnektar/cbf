@@ -10,7 +10,7 @@ const Board = (props) => (
     <div
         className={classNames(
             'azul__board-wrapper',
-            `player-${props.index}`
+            `player-${props.playerIndex}`
         )}
     >
         <div className="azul__board">
@@ -20,9 +20,13 @@ const Board = (props) => (
                 <PatternLines
                     lines={props.player.patternLines}
                     actionsDisabled={props.actionsDisabled}
+                    playerIndex={props.playerIndex}
                 />
 
-                <Wall wall={props.player.wall} />
+                <Wall
+                    wall={props.player.wall}
+                    playerIndex={props.playerIndex}
+                />
             </div>
 
             <FloorLine
@@ -35,7 +39,7 @@ const Board = (props) => (
 
 Board.propTypes = {
     player: PropTypes.object.isRequired,
-    index: PropTypes.number.isRequired,
+    playerIndex: PropTypes.number.isRequired,
     actionsDisabled: PropTypes.bool.isRequired,
 };
 

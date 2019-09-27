@@ -45,7 +45,7 @@ const Azul = (props) => {
                     {players.map(([id, player], index) => (
                         <Board
                             key={id}
-                            index={index}
+                            playerIndex={index}
                             player={player}
                             actionsDisabled={!props.data.me || id !== props.data.me.id}
                         />

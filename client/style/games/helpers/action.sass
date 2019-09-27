@@ -1,25 +1,26 @@
 @keyframes pulse
-    0%
-        background-color: rgba(white, .8)
-        border-color: #2092db
-    40%
-        background-color: rgba(white, .5)
-        border-color: rgba(#2092db, .5)
+    90%
+        background-position: 0% 50%
+    100%
+        background-position: 100% 50%
 
 .cbf-helper-action
     cursor: pointer
-    display: inline-block
     pointer-events: none
-    position: relative
+    position: absolute
+    z-index: 100
 
     &::before
-        animation-delay: 1s
         animation-duration: 5s
         animation-iteration-count: infinite
+        animation-fill-mode: both
+        animation-timing-function: linear
         animation-name: pulse
         animation-play-state: paused
-        background-color: rgba(white, .5)
-        border: 1px solid rgba(#2092db, .5)
+        background-image: linear-gradient(-45deg, rgba(white, .4) 0%, rgba(white, .4) 40%, rgba(white, .7) 50%, rgba(white, .4) 60%, rgba(white, .4) 100%)
+        background-position: 0% 50%
+        background-size: 400%
+        border: 1px solid #2092db
         border-radius: 2px
         bottom: -3px
         content: ""
@@ -32,7 +33,7 @@
         z-index: 1
 
     &:hover::before
-        background-color: rgba(#2092db, .5)
+        background-color: rgba(white, .5)
 
 .cbf-helper-game--awaits-action
     .cbf-helper-action--active

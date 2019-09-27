@@ -49,11 +49,11 @@
             transform: translateX(0)
 
     &.player-2
-        top: 0
+        bottom: 0
         right: 10%
 
     &.player-3
-        bottom: 0
+        top: 0
         right: 10%
 
 .azul__board
@@ -66,15 +66,13 @@
     right: 4px
     top: 4px
 
-    .player-1 &
+    .player-1 &,
+    .player-3 &
         transform: rotate(180deg)
 
-        .azul--num-players-3 &,
-        .azul--num-players-4 &
+        .azul__tile
             transform: rotate(180deg)
-
-    .player-2 &
-        transform: rotate(180deg)
+            transform-origin: 50% 90%
 
 .azul__score-marker
     background: black
@@ -86,24 +84,27 @@
     width: 4.5%
 
 .azul__pattern-lines
-    height: 45%
-    left: 3%
+    height: 205px
+    left: 20px
     position: absolute
-    top: 34%
-    width: 43.5%
+    top: 152px
+    width: 200px
 
     .azul__pattern-line
         flex-direction: row-reverse
 
 .azul__pattern-line
     display: flex
-    height: 20%
+    height: 41px
     justify-content: flex-start
 
+    > div
+        margin: 0 1.7px
+
 .azul__wall
-    left: 51%
+    left: 240px
     position: absolute
-    top: 34%
+    top: 152px
 
     .azul__tile
         left: 0
@@ -173,8 +174,6 @@
     background-repeat: no-repeat
     background-size: contain
     bottom: 4px
-    display: flex
-    flex-wrap: wrap
     justify-content: center
     left: 4px
     position: absolute
@@ -182,7 +181,23 @@
     top: 4px
 
     > div
-        margin: 0 12px
+        position: absolute
+
+        &:nth-child(1)
+            left: 40px
+            top: 30px
+
+        &:nth-child(2)
+            right: 40px
+            top: 30px
+
+        &:nth-child(3)
+            left: 40px
+            bottom: 50px
+
+        &:nth-child(4)
+            right: 40px
+            bottom: 50px
 
 .azul__factory-center
     align-items: center
@@ -273,11 +288,10 @@
         background: #1d1f1f
 
 .azul__tile-5
-    background: white
+    background-image: url('/img/games/azul/first-player.png')
+    border-color: #e3e6ea
+    border-bottom-color: #b0bbce
+    border-right-color: #b0bbce
 
-    &::after
-        align-items: center
-        content: "1"
-        display: flex
-        font-weight: bold
-        justify-content: center
+    &::before
+        background: #cad2e0
