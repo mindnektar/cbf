@@ -9,25 +9,27 @@ import FloorLine from './Board/FloorLine';
 const Board = (props) => (
     <div
         className={classNames(
-            'azul__board',
+            'azul__board-wrapper',
             `player-${props.index}`
         )}
     >
-        <ScoreMarker score={props.player.score} />
+        <div className="azul__board">
+            <ScoreMarker score={props.player.score} />
 
-        <div className="azul__board-middle">
-            <PatternLines
-                lines={props.player.patternLines}
+            <div className="azul__board-middle">
+                <PatternLines
+                    lines={props.player.patternLines}
+                    actionsDisabled={props.actionsDisabled}
+                />
+
+                <Wall wall={props.player.wall} />
+            </div>
+
+            <FloorLine
+                floorLine={props.player.floorLine}
                 actionsDisabled={props.actionsDisabled}
             />
-
-            <Wall wall={props.player.wall} />
         </div>
-
-        <FloorLine
-            floorLine={props.player.floorLine}
-            actionsDisabled={props.actionsDisabled}
-        />
     </div>
 );
 

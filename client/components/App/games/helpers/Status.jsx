@@ -19,7 +19,7 @@ const Status = (props) => {
         //     return `${props.users[props.game.scores[0].player].username} won the game!`;
         // }
 
-        if (!state.activePlayers.includes(props.data.me.id)) {
+        if (!props.data.me || !state.activePlayers.includes(props.data.me.id)) {
             const playerList = props.data.match.players
                 .filter(({ id }) => state.activePlayers.includes(id))
                 .map(({ name }) => `${name}'s`)
@@ -71,6 +71,7 @@ const Status = (props) => {
 
     const mayEndTurn = () => (
         isLatestState
+        && props.data.me
         && state.activePlayers.includes(props.data.me.id)
         && props.endTurnAction.isValid({ state })
     );

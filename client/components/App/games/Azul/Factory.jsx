@@ -17,18 +17,20 @@ class Factory extends React.Component {
                 <div className="azul__factory-circle">
                     {this.props.factoryTiles.map((display, index) => (
                         <div
-                            className="azul__factory-display"
+                            className="azul__factory-display-wrapper"
                             key={index}
                         >
-                            {display.map((tile, tileIndex) => (
-                                <Action
-                                    action={actions.PICK_UP_TILES}
-                                    key={tileIndex}
-                                    payload={[index, tile]}
-                                >
-                                    <Tile type={tile} />
-                                </Action>
-                            ))}
+                            <div className="azul__factory-display">
+                                {display.map((tile, tileIndex) => (
+                                    <Action
+                                        action={actions.PICK_UP_TILES}
+                                        key={tileIndex}
+                                        payload={[index, tile]}
+                                    >
+                                        <Tile type={tile} />
+                                    </Action>
+                                ))}
+                            </div>
                         </div>
                     ))}
                 </div>

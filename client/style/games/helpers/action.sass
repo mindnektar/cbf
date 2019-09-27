@@ -1,3 +1,11 @@
+@keyframes pulse
+    0%
+        background-color: rgba(white, .8)
+        border-color: #2092db
+    40%
+        background-color: rgba(white, .5)
+        border-color: rgba(#2092db, .5)
+
 .cbf-helper-action
     cursor: pointer
     display: inline-block
@@ -5,16 +13,21 @@
     position: relative
 
     &::before
+        animation-delay: 1s
+        animation-duration: 5s
+        animation-iteration-count: infinite
+        animation-name: pulse
+        animation-play-state: paused
         background-color: rgba(white, .5)
-        border: 1px solid #2092db
+        border: 1px solid rgba(#2092db, .5)
         border-radius: 2px
-        bottom: -2px
+        bottom: -3px
         content: ""
         display: none
-        left: -2px
+        left: -3px
         position: absolute
-        right: -2px
-        top: -2px
+        right: -3px
+        top: -3px
         transition: $t-duration $t-easing background-color
         z-index: 1
 
@@ -26,6 +39,7 @@
         pointer-events: all
 
         &::before
+            animation-play-state: running
             display: block
 
     .cbf-helper-action--selected

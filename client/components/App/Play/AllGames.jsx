@@ -40,6 +40,7 @@ class AllGames extends React.Component {
                                 </div>
                                 <div>
                                     {game.playTime}
+                                    &nbsp;
                                     minutes
                                 </div>
                             </div>

@@ -3,12 +3,11 @@ import PropTypes from 'prop-types';
 import Button from 'Button';
 import Headline from 'Headline';
 import games from 'data/games';
-import gameConstants from 'shared/constants/games';
 
 class FinishedGames extends React.Component {
     getFilteredGames() {
         return Object.values(this.props.games).filter((game) => (
-            game.status === gameConstants.GAME_STATUS_FINISHED
+            game.status === 'FINISHED'
             && game.players.includes(this.props.me.id)
         ));
     }

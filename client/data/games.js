@@ -8,7 +8,7 @@ export default {
     },
     'five-tribes': {
         handle: 'five-tribes',
-        title: 'Five Tribes: The Djinns of Naqala',
+        title: 'Five Tribes',
         author: 'Bruno Cathala',
         playerCount: [2, 3, 4],
         playTime: '40-80',

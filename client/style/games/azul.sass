@@ -1,20 +1,8 @@
-@mixin on-circle($item-count, $circle-size, $item-size)
-    position: relative
-    width:  $circle-size
+@mixin on-circle($item-count, $circle-size)
+    width: $circle-size
     height: $circle-size
-    margin: $item-size / 2
-    padding: 0
-    border-radius: 50%
-    list-style: none
 
-    > *
-        display: block
-        position: absolute
-        top:  50%
-        left: 50%
-        width:  $item-size
-        height: $item-size
-        margin: -($item-size / 2)
+    > div
         $angle: (360 / $item-count)
         $rot: 0
 
@@ -26,21 +14,20 @@
 
 .azul__game
     display: flex
-    height: 800px
+    height: 1900px
     position: relative
-    width: 400px
+    width: 932px
 
     .azul--num-players-3 &,
     .azul--num-players-4 &
-        width: 600px
+        width: 1398px
 
-.azul__board
-    background-image: url('/img/games/azul/board.jpg')
-    background-repeat: no-repeat
-    background-size: contain
-    height: 200px
+.azul__board-wrapper
+    background-image: linear-gradient(to top left, #265f75, #76cbd7)
+    border-radius: 4px
+    height: 475px
     position: absolute
-    width: 200px
+    width: 466px
 
     &.player-0
         bottom: 0
@@ -54,21 +41,40 @@
     &.player-1
         top: 0
         left: 50%
-        transform: translateX(-50%) rotate(180deg)
+        transform: translateX(-50%)
 
         .azul--num-players-3 &,
         .azul--num-players-4 &
             left: 10%
-            transform: translateX(0) rotate(180deg)
+            transform: translateX(0)
 
     &.player-2
         top: 0
         right: 10%
-        transform: rotate(180deg)
 
     &.player-3
         bottom: 0
         right: 10%
+
+.azul__board
+    background-image: url('/img/games/azul/board.png')
+    background-repeat: no-repeat
+    background-size: contain
+    bottom: 4px
+    left: 4px
+    position: absolute
+    right: 4px
+    top: 4px
+
+    .player-1 &
+        transform: rotate(180deg)
+
+        .azul--num-players-3 &,
+        .azul--num-players-4 &
+            transform: rotate(180deg)
+
+    .player-2 &
+        transform: rotate(180deg)
 
 .azul__score-marker
     background: black
@@ -118,18 +124,24 @@
     top: 50%
     transform: translate(-50%, -50%)
 
+.azul__factory-circle
+    border-radius: 50%
+    padding: 0
+    position: relative
+    margin: 84px
+
 .azul__factory--display-count-5
     .azul__factory-circle
-        @include on-circle($item-count: 5, $circle-size: 18vw, $item-size: 6vw)
+        @include on-circle($item-count: 5, $circle-size: 460px)
 
     .azul__factory-center
-        height: 10vw
-        margin: 7vw
-        width: 10vw
+        height: 250px
+        margin: 190px 0 0 222px
+        width: 230px
 
 .azul__factory--display-count-7
     .azul__factory-circle
-        @include on-circle($item-count: 7, $circle-size: 20vw, $item-size: 6vw)
+        @include on-circle($item-count: 7, $circle-size: 540px)
 
     .azul__factory-center
         height: 12vw
@@ -138,26 +150,39 @@
 
 .azul__factory--display-count-9
     .azul__factory-circle
-        @include on-circle($item-count: 9, $circle-size: 22vw, $item-size: 6vw)
+        @include on-circle($item-count: 9, $circle-size: 620px)
 
     .azul__factory-center
         height: 14vw
         margin: 7vw
         width: 14vw
 
+.azul__factory-display-wrapper
+    background-image: linear-gradient(to top left, #7d411a, #e2a57e)
+    border-radius: 100%
+    height: 168px
+    left: 50%
+    margin: -84px
+    position: absolute
+    top: 50%
+    width: 168px
+
 .azul__factory-display
     align-items: center
-    background: white
-    border: .1vw solid black
-    border-radius: 100%
-    box-sizing: border-box
+    background-image: url('/img/games/azul/factory.png')
+    background-repeat: no-repeat
+    background-size: contain
+    bottom: 4px
     display: flex
     flex-wrap: wrap
     justify-content: center
-    padding: .8vw
+    left: 4px
+    position: absolute
+    right: 4px
+    top: 4px
 
     > div
-        margin: 3px
+        margin: 0 12px
 
 .azul__factory-center
     align-items: center
@@ -168,28 +193,84 @@
     position: absolute
     top: 0
 
+    > div
+        margin: 0 4px
+
 .azul__tile
-    border: .1vw solid black
-    border-radius: .5vw
+    background-position: center
+    background-repeat: no-repeat
+    background-size: cover
+    border: 2px solid black
+    border-radius: 6px
     box-sizing: border-box
-    height: 1.5vw
+    height: 36px
     position: relative
-    width: 1.5vw
+    width: 36px
+    transform-style: preserve-3d
+
+    &::before
+        background: inherit
+        border: inherit
+        border-top: none
+        border-radius: 8px
+        box-shadow: 8px 0px 1px 0px rgba(black, 0.3)
+        box-sizing: border-box
+        content: ""
+        height: 36px
+        left: -2px
+        position: absolute
+        top: 12px
+        width: 36px
+        transform: translateZ(-1px)
 
 .azul__tile-0
-    background: white
+    background-image: url('/img/games/azul/tile-white.png')
+    border-color: #8ccac2
+    border-bottom-color: #4aa99e
+    border-right-color: #4aa99e
+
+    &::before
+        background: #5ebfb4
 
 .azul__tile-1
-    background: yellow
+    background-color: #f1ab01
+    background-image: url('/img/games/azul/tile-yellow.png')
+    background-size: 88%
+    border-color: #ffc94c
+    border-bottom-color: #bf8600
+    border-right-color: #bf8600
+
+    &::before
+        background: #dc9a00
 
 .azul__tile-2
-    background: blue
+    background-color: #3b89a6
+    border-color: #6bb0ca
+    border-bottom-color: #225a6f
+    border-right-color: #225a6f
+
+    &::before
+        background: #30738c
 
 .azul__tile-3
-    background: red
+    background-color: #ea213b
+    border-color: #ff6378
+    border-bottom-color: #b11429
+    border-right-color: #b11429
+
+    &::before
+        background: #d01a33
 
 .azul__tile-4
-    background: black
+    background-color: #191415
+    background-image: url('/img/games/azul/tile-black.png')
+    background-size: 88%
+    border-color: #3d4e4e
+    border-bottom-color: #000000
+    border-right-color: #000000
+
+    &::before
+        background: #1d1f1f
 
 .azul__tile-5
     background: white

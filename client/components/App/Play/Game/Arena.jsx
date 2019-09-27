@@ -78,7 +78,7 @@ class Arena extends React.Component {
         const zoom = Math.max(
             this.state.minimumZoom,
             Math.min(
-                this.state.minimumZoom * 3,
+                this.state.minimumZoom * 5,
                 this.state.zoom -= delta
             )
         );

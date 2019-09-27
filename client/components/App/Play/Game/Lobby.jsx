@@ -2,18 +2,17 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import GameModel from 'models/play/game';
-import gameConstants from 'shared/constants/games';
 import games from 'data/games';
 import Button from 'Button';
 import Headline from 'Headline';
 
 class Lobby extends React.Component {
     componentWillMount() {
-        if (this.props.data.match.status === gameConstants.GAME_STATUS_SETTING_UP) {
+        if (this.props.data.match.status === 'SETTING_UP') {
             this.props.history.replace(`/play/${this.props.data.match.id}/setup`);
         }
 
-        if (this.props.data.match.status === gameConstants.GAME_STATUS_ACTIVE) {
+        if (this.props.data.match.status === 'ACTIVE') {
             this.props.history.replace(`/play/${this.props.data.match.id}`);
         }
     }

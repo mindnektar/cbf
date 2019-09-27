@@ -40,7 +40,7 @@ const Game = (props) => {
     };
 
     const { activePlayers } = state;
-    const awaitsAction = isLatestState && activePlayers.includes(props.data.me.id);
+    const awaitsAction = isLatestState && props.data.me && activePlayers.includes(props.data.me.id);
 
     return (
         <div

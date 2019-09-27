@@ -13,12 +13,14 @@ import Factory from './Azul/Factory';
 const Azul = (props) => {
     const state = props.data.match.states[props.data.match.stateIndex];
     const players = Object.entries(state.public.players).sort(([a], [b]) => {
-        if (a === props.data.me.id) {
-            return -1;
-        }
+        if (props.data.me) {
+            if (a === props.data.me.id) {
+                return -1;
+            }
 
-        if (b === props.data.me.id) {
-            return 1;
+            if (b === props.data.me.id) {
+                return 1;
+            }
         }
 
         return a.localeCompare(b);
@@ -45,7 +47,7 @@ const Azul = (props) => {
                             key={id}
                             index={index}
                             player={player}
-                            actionsDisabled={id !== props.data.me.id}
+                            actionsDisabled={!props.data.me || id !== props.data.me.id}
                         />
                     ))}
 
