@@ -1,18 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import FormItem from './Form/FormItem';
 
-class Headline extends React.Component {
+class Form extends React.Component {
     render() {
         return (
-            <div className="cbf-ui-headline">
+            <div className="cbf-ui-form">
                 {this.props.children}
             </div>
         );
     }
 }
 
-Headline.propTypes = {
+Form.propTypes = {
     children: PropTypes.node.isRequired,
 };
 
-export default Headline;
+export default Form;
+export { FormItem };

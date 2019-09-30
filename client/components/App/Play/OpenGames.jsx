@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import PlayModel from 'models/play';
-import Button from 'Button';
-import Headline from 'Headline';
 import games from 'data/games';
+import PlayModel from 'models/play';
+import Button from 'atoms/Button';
+import Headline from 'atoms/Headline';
 
 class OpenGames extends React.Component {
     getMatches() {

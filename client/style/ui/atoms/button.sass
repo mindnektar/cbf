@@ -8,6 +8,12 @@
     margin-right: 24px
     padding: 8px 24px
 
+.cbf-ui-button--disabled
+    box-shadow: none
+    background-color: $color-disabled
+    color: $color-light
+    pointer-events: none
+
 .cbf-ui-button--secondary
     background-color: $color-primary
     color: $color-white
@@ -15,7 +21,6 @@
     margin-right: 12px
     padding: 4px 12px
 
-.cbf-ui-button--disabled
-    box-shadow: none
-    color: $color-primary-dark
-    pointer-events: none
+    &.cbf-ui-button--disabled
+        background-color: $color-primary
+        color: $color-primary-dark

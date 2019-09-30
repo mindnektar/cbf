@@ -22,15 +22,16 @@ const Action = (props) => {
 
     useEffect(() => {
         const canvas = document.querySelector('.cbf-arena__canvas');
-        const canvasRect = canvas.getBoundingClientRect();
+        const table = document.querySelector('.cbf-helper-table');
+        const tableRect = table.getBoundingClientRect();
         const scale = parseFloat(canvas.style.transform.match(/scale\(([.0-9]+)\)/)[1]);
         const childRect = childRef.current.getBoundingClientRect();
         const offsetLeft = props.offset.left || 0;
         const offsetTop = props.offset.top || 0;
 
         setStyle({
-            left: ((childRect.left - canvasRect.left) / scale) + offsetLeft,
-            top: ((childRect.top - canvasRect.top) / scale) + offsetTop,
+            left: ((childRect.left - tableRect.left) / scale) + offsetLeft,
+            top: ((childRect.top - tableRect.top) / scale) + offsetTop,
             width: (childRect.width / scale),
             height: (childRect.height / scale),
         });
@@ -62,7 +63,7 @@ const Action = (props) => {
                     onClick={onClick}
                     style={style}
                 />
-            ), document.querySelector('.cbf-helper-game'))}
+            ), document.querySelector('.cbf-helper-table'))}
         </>
     );
 };

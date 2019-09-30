@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Button from 'Button';
-import Headline from 'Headline';
 import games from 'data/games';
+import Button from 'atoms/Button';
+import Headline from 'atoms/Headline';
 
 class FinishedGames extends React.Component {
     getFilteredGames() {

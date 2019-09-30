@@ -56,6 +56,7 @@ export default class GameModel extends BaseModel {
                         players {
                             id
                             name
+                            score
                         }
                     }
                 }
@@ -114,13 +115,20 @@ export default class GameModel extends BaseModel {
                 startMatch(id: $id) {
                     id
                     status
+                    actions {
+                        randomSeed
+                        type
+                        payload
+                        player {
+                            id
+                            name
+                        }
+                    }
+                    states @client
                 }
             }
         `,
-        optimisticResponse: () => ({
-            __typename: 'Match',
-            status: 'ACTIVE',
-        }),
+        optimisticResponse: null,
     }, {
         mutation: `
             mutation pushActions($input: PushActionsInput!) {

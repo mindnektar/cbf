@@ -46,12 +46,13 @@ const Azul = (props) => {
                 />
 
                 <div className="azul__game">
-                    {players.map(([id, player], index) => (
+                    {players.map(([id, playerData], index) => (
                         <Board
                             key={id}
                             playerIndex={index}
-                            player={player}
+                            player={playerData}
                             actionsDisabled={!props.data.me || id !== props.data.me.id}
+                            name={props.data.match.players.find((player) => player.id === id).name}
                         />
                     ))}
 

@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { setToken, AUTH_TYPE_USER } from 'auth';
 import LoginModel from 'models/login';
-import Form, { FormItem } from 'Form';
-import Button from 'Button';
-import TextField from 'TextField';
+import Form, { FormItem } from 'molecules/Form';
+import Button from 'atoms/Button';
+import TextField from 'atoms/TextField';
 
 class Login extends React.Component {
     state = {

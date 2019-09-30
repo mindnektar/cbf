@@ -22,6 +22,10 @@ class Arena extends React.Component {
     }
 
     componentDidMount() {
+        if (!this.arenaRef) {
+            return;
+        }
+
         this.arenaRef.addEventListener('mousewheel', this.changeZoom);
         this.arenaRef.addEventListener('DOMMouseScroll', this.changeZoom);
 
@@ -29,6 +33,10 @@ class Arena extends React.Component {
     }
 
     componentWillUnmount() {
+        if (!this.arenaRef) {
+            return;
+        }
+
         this.arenaRef.removeEventListener('mousewheel', this.changeZoom);
         this.arenaRef.removeEventListener('DOMMouseScroll', this.changeZoom);
     }
@@ -43,10 +51,12 @@ class Arena extends React.Component {
 
     onMouseMove = (event) => {
         if (this.state.moving) {
-            this.setState({
-                x: this.state.x - (event.nativeEvent.movementX / this.state.zoom),
-                y: this.state.y - (event.nativeEvent.movementY / this.state.zoom),
-            });
+            const movement = { x: event.movementX, y: event.movementY };
+
+            this.setState((prevState) => ({
+                x: prevState.x - (movement.x / prevState.zoom),
+                y: prevState.y - (movement.y / prevState.zoom),
+            }));
         }
     }
 
@@ -59,7 +69,7 @@ class Arena extends React.Component {
     }
 
     setZoom = () => {
-        const { offsetHeight, offsetWidth } = document.querySelector('.cbf-helper-game');
+        const { offsetHeight, offsetWidth } = document.querySelector('.cbf-helper-table');
         const heightRatio = (window.innerHeight - 226) / offsetHeight;
         const widthRatio = (window.innerWidth - 396) / offsetWidth;
         const zoom = heightRatio < widthRatio ? heightRatio : widthRatio;
@@ -75,19 +85,19 @@ class Arena extends React.Component {
 
         const delta = event.deltaY ? event.deltaY / 400 : event.detail / 100;
 
-        const zoom = Math.max(
-            this.state.minimumZoom,
-            Math.min(
-                this.state.minimumZoom * 5,
-                this.state.zoom -= delta
-            )
-        );
-
-        this.setState({ zoom });
+        this.setState((prevState) => ({
+            zoom: Math.max(
+                prevState.minimumZoom,
+                Math.min(
+                    prevState.minimumZoom * 5,
+                    prevState.zoom - delta
+                )
+            ),
+        }));
     }
 
     render() {
-        return (
+        return this.props.data.match.status === 'ACTIVE' && (
             <div
                 className={classNames(
                     'cbf-arena',

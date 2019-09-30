@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import { actions, assets, states } from 'shared/games/five-tribes';
 import Action from '../helpers/Action';
 import LocalAction from '../helpers/LocalAction';
-import Player, { PlayerDetail, PlayerRow } from '../helpers/Player';
 import Djinn from './Djinn';
 import Resource from './Resource';
 
@@ -95,7 +94,7 @@ class Players extends React.Component {
 
         return (
             <div className="five-tribes__players">
-                {this.props.playerOrder.map((userId, playerIndex) => (
+                {/*this.props.playerOrder.map((userId, playerIndex) => (
                     <Player
                         color={playerColors[playerIndex]}
                         key={userId}
@@ -173,7 +172,7 @@ class Players extends React.Component {
                             ))}
                         </PlayerDetail>
                     </Player>
-                ))}
+                ))*/}
             </div>
         );
     }

@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import { withRouter } from 'react-router-dom';
 import performAction from 'helpers/performAction';
 import GameModel from 'models/play/game';
-import Button from 'Button';
+import Button from 'atoms/Button';
 
 const Status = (props) => {
     const state = props.data.match.states[props.data.match.stateIndex];

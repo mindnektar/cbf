@@ -45,11 +45,20 @@ const Game = (props) => {
     return (
         <div
             className={classNames(
-                'cbf-helper-game',
-                { 'cbf-helper-game--awaits-action': awaitsAction }
+                'cbf-helper-table',
+                { 'cbf-helper-table--awaits-action': awaitsAction }
             )}
         >
-            {props.children}
+            <div className="cbf-helper-table__legs">
+                <div />
+                <div />
+                <div />
+                <div />
+            </div>
+
+            <div className="cbf-helper-table__content">
+                {props.children}
+            </div>
         </div>
     );
 };
