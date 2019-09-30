@@ -15,9 +15,11 @@ const Status = (props) => {
             return '- HISTORY MODE -';
         }
 
-        // if (props.game.scores.length > 0) {
-        //     return `${props.users[props.game.scores[0].player].username} won the game!`;
-        // }
+        if (props.data.match.status === 'FINISHED') {
+            const winner = props.data.match.players.sort((a, b) => b.score - a.score)[0];
+
+            return `${winner.name} won the game!`;
+        }
 
         if (!props.data.me || !state.activePlayers.includes(props.data.me.id)) {
             const playerList = props.data.match.players

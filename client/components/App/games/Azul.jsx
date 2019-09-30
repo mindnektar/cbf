@@ -39,7 +39,11 @@ const Azul = (props) => {
                     states={states}
                 />
 
-                <Sidebar actions={actions} />
+                <Sidebar
+                    actions={actions}
+                    isGameFinished={props.data.match.status === 'FINISHED'}
+                    players={props.data.match.players}
+                />
 
                 <div className="azul__game">
                     {players.map(([id, player], index) => (

@@ -5,15 +5,15 @@ module.exports = {
     isServerAction: true,
     isEndGameAction: true,
 
-    getScores: (state, players) => (
+    getScores: ({ state, players }) => (
         players
             .reduce((result, current) => [
                 ...result,
                 {
-                    player: current,
-                    score: state.public.players[current].score,
+                    id: current.id,
+                    score: state.public.players[current.id].score,
                 },
-            ], {})
+            ], [])
             .sort((a, b) => a.score < b.score)
     ),
 

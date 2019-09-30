@@ -27,6 +27,7 @@ export default class GameModel extends BaseModel {
                     players {
                         id
                         name
+                        score
                     }
                     actions {
                         randomSeed

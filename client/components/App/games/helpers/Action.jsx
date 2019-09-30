@@ -21,18 +21,20 @@ const Action = (props) => {
     });
 
     useEffect(() => {
+        const canvas = document.querySelector('.cbf-arena__canvas');
+        const canvasRect = canvas.getBoundingClientRect();
+        const scale = parseFloat(canvas.style.transform.match(/scale\(([.0-9]+)\)/)[1]);
         const childRect = childRef.current.getBoundingClientRect();
-        const gameRect = document.querySelector('.cbf-arena__canvas').getBoundingClientRect();
         const offsetLeft = props.offset.left || 0;
         const offsetTop = props.offset.top || 0;
 
         setStyle({
-            left: (childRect.left - gameRect.left) + offsetLeft,
-            top: (childRect.top - gameRect.top) + offsetTop,
-            width: childRect.width,
-            height: childRect.height,
+            left: ((childRect.left - canvasRect.left) / scale) + offsetLeft,
+            top: ((childRect.top - canvasRect.top) / scale) + offsetTop,
+            width: (childRect.width / scale),
+            height: (childRect.height / scale),
         });
-    }, []);
+    }, [props.data.match.states.length]);
 
     const onClick = () => {
         if (isActive) {

@@ -84,6 +84,7 @@ const Sidebar = (props) => {
 
     let messageIndex = 0;
     let actionOwner = null;
+    const players = props.players.sort((a, b) => b.score - a.score);
 
     return ReactDOM.createPortal(
         <div
@@ -96,6 +97,30 @@ const Sidebar = (props) => {
                 </div>
 
                 <div className="cbf-helper-sidebar__history-scroller">
+                    {props.isGameFinished && (
+                        <div className="cbf-helper-sidebar__history-scores">
+                            Game over!
+
+                            {players.map((player, index) => (
+                                <div
+                                    className="cbf-helper-sidebar__history-scores-player"
+                                    key={player.id}
+                                >
+                                    <span>
+                                        #
+                                        {index + 1}
+                                        :&nbsp;
+                                    </span>
+
+                                    {player.name}
+                                    ,&nbsp;
+                                    {player.score}
+                                    &nbsp;points
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
                     <div className="cbf-helper-sidebar__history-content">
                         {props.data.match.states.map((gameState, index) => (
                             renderMessage(gameState, index)
@@ -110,6 +135,8 @@ const Sidebar = (props) => {
 
 Sidebar.propTypes = {
     actions: PropTypes.object.isRequired,
+    isGameFinished: PropTypes.bool.isRequired,
+    players: PropTypes.array.isRequired,
 };
 
 export default withRouter(GameModel.graphql(Sidebar));

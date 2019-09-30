@@ -27,7 +27,7 @@ module.exports = {
 
         return (
             line.length < lineIndex + 1
-            && (!line[0] || line[0] === hand[0])
+            && (typeof line[0] === 'undefined' || line[0] === hand[0])
             && !wall[lineIndex].includes(hand[0])
         );
     },

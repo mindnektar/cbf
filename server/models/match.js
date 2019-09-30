@@ -49,6 +49,7 @@ class Match extends BaseModel {
                     through: {
                         from: 'match_participant.match_id',
                         to: 'match_participant.user_id',
+                        extra: ['score'],
                     },
                     to: 'user.id',
                 },

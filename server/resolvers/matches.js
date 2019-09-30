@@ -121,8 +121,10 @@ export default {
                     return {};
                 }
 
+                let action;
+
                 const newActions = input.actions.map(({ type, payload }) => {
-                    const action = actions.findById(type);
+                    action = actions.findById(type);
                     const player = match.players.find(({ id }) => id === auth.id);
                     const isValid = action.isValid({
                         state: currentState,
@@ -157,7 +159,7 @@ export default {
                 });
 
                 while (states.findById(currentState.state).performAutomatically) {
-                    const action = states.findById(currentState.state).performAutomatically();
+                    action = states.findById(currentState.state).performAutomatically();
 
                     if (!action.isValid({ state: currentState })) {
                         throw new Error(`Invalid action: ${action}`);
@@ -183,6 +185,17 @@ export default {
                         random_seed: randomSeed,
                         type: action.id,
                     });
+                }
+
+                if (action.isEndGameAction) {
+                    await Match.query(trx).upsertGraph({
+                        id: match.id,
+                        status: 'FINISHED',
+                        players: action.getScores({
+                            state: currentState,
+                            players: match.players,
+                        }),
+                    }, { relate: true });
                 }
 
                 const actionResult = await Action.query(trx).insert(newActions);

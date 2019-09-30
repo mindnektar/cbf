@@ -15,19 +15,19 @@ module.exports = {
         state.state === states.SCORE_BONUSES.id
     ),
 
-    perform: ({ state, player }) => {
+    perform: ({ state }) => {
         const clonedState = clone(state);
         let nextState = clonedState.state;
+        let { activePlayers } = clonedState;
         const { playerOrder } = clonedState.public.game;
-        const { wall } = clonedState.public.players[player.id];
-        let { score } = clonedState.public.players[player.id];
-        let activePlayers = [player.id];
+        const { wall } = clonedState.public.players[activePlayers[0]];
+        let { score } = clonedState.public.players[activePlayers[0]];
 
         score += wall.filter((line) => !line.includes(null)).length * 2;
         score += wall.filter((_, index) => wall.every((line) => line[index] !== null)).length * 7;
         score += wall.filter((_, index) => wall.every((line) => line.includes(index))).length * 10;
 
-        const nextPlayerIndex = playerOrder.indexOf(player.id) + 1;
+        const nextPlayerIndex = playerOrder.indexOf(activePlayers[0]) + 1;
 
         if (nextPlayerIndex === playerOrder.length) {
             nextState = states.END_GAME.id;
@@ -41,8 +41,8 @@ module.exports = {
                 ...clonedState.public,
                 players: {
                     ...clonedState.public.players,
-                    [clonedState.currentPlayer]: {
-                        ...clonedState.public.players[clonedState.currentPlayer],
+                    [clonedState.activePlayers[0]]: {
+                        ...clonedState.public.players[clonedState.activePlayers[0]],
                         score,
                     },
                 },

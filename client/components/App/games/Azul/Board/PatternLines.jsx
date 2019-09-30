@@ -6,23 +6,20 @@ import Tile from '../Tile';
 
 const PatternLines = (props) => {
     const isReversedPlayer = props.playerIndex % 2 === 1;
-    const alteredLines = isReversedPlayer ? [...props.lines].reverse() : props.lines;
 
     return (
-        <div
-            className="azul__pattern-lines"
-            style={isReversedPlayer ? { flexDirection: 'column-reverse' } : null}
-        >
-            {alteredLines.map((line, index) => (
+        <div className="azul__pattern-lines">
+            {[...props.lines].reverse().map((line, index) => (
                 <Action
                     action={actions.SELECT_PATTERN_LINE}
                     key={index}
-                    payload={[index]}
+                    payload={[4 - index]}
                     disabled={props.actionsDisabled}
                     offset={{ top: 14 }}
                 >
                     <div
                         className="azul__pattern-line"
+                        style={{ zIndex: isReversedPlayer ? index : 4 - index }}
                         key={index}
                     >
                         {line.map((tile, tileIndex) => (
