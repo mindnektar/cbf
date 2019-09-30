@@ -6,7 +6,7 @@ const gameMap = {
     'five-tribes': fiveTribes,
 };
 
-export default (match) => (
+export default (match, states = []) => (
     match.actions.reduce((result, { type, payload, randomSeed, player }, index) => {
         const action = gameMap[match.handle].actions.findById(type);
 
@@ -17,12 +17,12 @@ export default (match) => (
         return [
             ...result,
             action.perform({
-                state: index > 0 ? result[index - 1] : null,
+                state: result[(states.length + index) - 1] || null,
                 payload,
                 player,
                 allPlayers: match.players,
                 randomSeed,
             }),
         ];
-    }, [])
+    }, states)
 );

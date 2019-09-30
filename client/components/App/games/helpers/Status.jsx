@@ -89,7 +89,7 @@ const Status = (props) => {
             index: props.data.match.stateIndex - 1,
         });
     };
-console.log(props.data.match.stateCountSinceLastLoad, props.data.match.stateIndex);
+
     return ReactDOM.createPortal(
         <div className="cbf-helper-status">
             <div className="cbf-helper-status__text">

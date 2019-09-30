@@ -159,13 +159,16 @@ export const resolvers = {
                     return parent.states;
                 }
             } catch (error) {
-                // continue regardless of error
+                // there is no cache item yet
             }
+
+            const previousStates = match ? match.states : [];
+            const actions = match ? parent.actions.slice(previousStates.length) : parent.actions;
 
             const states = generateStates({
                 ...(match || parent),
-                actions: parent.actions,
-            });
+                actions,
+            }, previousStates);
 
             cache.writeFragment({
                 id: parent.id,

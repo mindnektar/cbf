@@ -66,6 +66,31 @@ export default class GameModel extends BaseModel {
                     },
                 },
             }),
+        }, {
+            subscription: `
+                subscription actionsPushed {
+                    actionsPushed {
+                        id
+                        actions {
+                            randomSeed
+                            type
+                            payload
+                            player {
+                                id
+                                name
+                            }
+                        }
+                        states @client
+                    }
+                }
+            `,
+            cacheUpdatePath: ({ item }) => ({
+                match: {
+                    actions: {
+                        $set: item.actions,
+                    },
+                },
+            }),
         }],
     }
 

@@ -96,7 +96,7 @@ export default {
                 return match.$graphqlLoadRelated(trx, info);
             })
         ),
-        pushActions: (parent, { input }, { auth }, info) => (
+        pushActions: (parent, { input }, { auth, pubsub }, info) => (
             transaction(async (trx) => {
                 const match = await Match.query(trx)
                     .eager('[players, actions.player]')
@@ -185,7 +185,9 @@ export default {
                     });
                 }
 
-                await Action.query(trx).insert(newActions);
+                const actionResult = await Action.query(trx).insert(newActions);
+
+                pubsub.publish('actionsPushed', actionResult);
 
                 return match.$graphqlLoadRelated(trx, info);
             })
@@ -197,5 +199,12 @@ export default {
         ), async (payload, variables, { auth }) => (
             payload.players.some(({ id }) => id === auth.id)
         )),
+        ...subscription('actionsPushed', (payload, variables, context, info) => (
+            Match.query().findById(payload[0].matchId).graphqlEager(info)
+        ), async (payload, variables, { auth }) => {
+            const match = await Match.query().findById(payload[0].matchId).eager('players');
+
+            return match.players.some(({ id }) => id === auth.id);
+        }),
     },
 };
