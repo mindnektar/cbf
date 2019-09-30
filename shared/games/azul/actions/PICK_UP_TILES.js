@@ -6,7 +6,7 @@ module.exports = {
 
     toString: ({ me, state, payload: [, type] }) => {
         const pickUpCount = state.public.game.hand.length;
-        const tileMap = ['white', 'yellow', 'blue', 'red', 'black'];
+        const tileMap = ['light blue', 'yellow', 'blue', 'red', 'black'];
 
         return `${me.name} picks up ${pickUpCount} ${tileMap[type]} tile${pickUpCount > 1 ? 's' : ''}.`;
     },

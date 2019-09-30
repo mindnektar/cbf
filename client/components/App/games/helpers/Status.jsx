@@ -26,10 +26,13 @@ const Status = (props) => {
                 .filter(({ id }) => state.activePlayers.includes(id))
                 .map(({ name }) => `${name}'s`)
                 .join(' and ');
+
             return `It's ${playerList} turn.`;
         }
 
-        return props.states.findById(state.state).instruction || '';
+        const { instruction } = props.states.findById(state.state);
+
+        return instruction ? instruction(state) : '';
     };
 
     const continueTurn = () => {
@@ -119,7 +122,9 @@ const Status = (props) => {
 
             <div className="cbf-helper-status__options">
                 <Button
-                    disabled={props.data.match.stateIndex - (props.data.match.stateCountSinceLastLoad) < 0}
+                    disabled={
+                        props.data.match.stateIndex - (props.data.match.stateCountSinceLastLoad) < 0
+                    }
                     onClick={undo}
                     secondary
                 >
