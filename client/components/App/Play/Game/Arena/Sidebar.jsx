@@ -1,16 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withRouter } from 'react-router-dom';
+import moment from 'moment';
 import games from 'data/games';
 import GameModel from 'models/play/game';
+import TextField from 'atoms/TextField';
 
 const Sidebar = (props) => {
+    const tabs = ['Turn history', 'Chat'];
+    const [activeTab, setActiveTab] = useState('Turn history');
+    const [message, setMessage] = useState('');
+
+    const changeTabHandler = (tab) => () => {
+        setActiveTab(tab);
+    };
+
     const switchGameStateHandler = (index) => () => {
         props.goToAction({
             id: props.data.match.id,
             index,
         });
+    };
+
+    const changeMessage = (event) => {
+        setMessage(event.target.value);
+    };
+
+    const submitMessage = () => {
+        props.createMessage({
+            id: props.data.match.id,
+            text: message,
+        });
+        setMessage('');
     };
 
     const renderMessage = (gameState, index) => {
@@ -32,7 +54,7 @@ const Sidebar = (props) => {
         }
 
         const { player, type, payload } = props.data.match.actions[index];
-        const message = games[props.data.match.handle].actions.findById(type).toString({
+        const actionText = games[props.data.match.handle].actions.findById(type).toString({
             me: (
                 props.data.match.actions[index].player
                 || props.data.match.players.find(({ id }) => (
@@ -45,7 +67,7 @@ const Sidebar = (props) => {
             players: props.data.match.players,
         });
 
-        if (!message) {
+        if (!actionText) {
             return null;
         }
 
@@ -72,7 +94,7 @@ const Sidebar = (props) => {
                 </div>
 
                 <div className="cbf-sidebar__history-message">
-                    {message}
+                    {actionText}
                 </div>
             </div>
         );
@@ -87,43 +109,93 @@ const Sidebar = (props) => {
             className="cbf-sidebar"
             onMouseDown={(event) => event.stopPropagation()}
         >
-            <div className="cbf-sidebar__history">
-                <div className="cbf-sidebar__history-header">
-                    Turn history
+            <div className="cbf-sidebar__tabs">
+                {tabs.map((tab) => (
+                    <div
+                        className={classNames(
+                            'cbf-sidebar__tab',
+                            { 'cbf-sidebar__tab--active': tab === activeTab }
+                        )}
+                        onClick={changeTabHandler(tab)}
+                        key={tab}
+                    >
+                        {tab}
+                    </div>
+                ))}
+            </div>
+
+            {activeTab === 'Turn history' && (
+                <div className="cbf-sidebar__history">
+                    <div className="cbf-sidebar__scroller">
+                        {props.isGameFinished && (
+                            <div className="cbf-sidebar__history-scores">
+                                Game over!
+
+                                {players.map((player, index) => (
+                                    <div
+                                        className="cbf-sidebar__history-scores-player"
+                                        key={player.id}
+                                    >
+                                        <span>
+                                            #
+                                            {index + 1}
+                                            :&nbsp;
+                                        </span>
+
+                                        {player.name}
+                                        ,&nbsp;
+                                        {player.score}
+                                        &nbsp;points
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        <div className="cbf-sidebar__history-content">
+                            {props.data.match.states.map((gameState, index) => (
+                                renderMessage(gameState, index)
+                            ))}
+                        </div>
+                    </div>
                 </div>
+            )}
 
-                <div className="cbf-sidebar__history-scroller">
-                    {props.isGameFinished && (
-                        <div className="cbf-sidebar__history-scores">
-                            Game over!
+            {activeTab === 'Chat' && (
+                <div className="cbf-sidebar__chat">
+                    <TextField
+                        onChange={changeMessage}
+                        onSubmit={submitMessage}
+                    >
+                        {message}
+                    </TextField>
 
-                            {players.map((player, index) => (
+                    <div className="cbf-sidebar__scroller">
+                        <div className="cbf-sidebar__chat-content">
+                            {props.data.match.messages.map((item) => (
                                 <div
-                                    className="cbf-sidebar__history-scores-player"
-                                    key={player.id}
+                                    className={classNames(
+                                        'cbf-sidebar__message',
+                                        { 'cbf-sidebar__message--mine': item.author.id === props.data.me.id }
+                                    )}
+                                    key={item.id}
                                 >
-                                    <span>
-                                        #
-                                        {index + 1}
-                                        :&nbsp;
-                                    </span>
+                                    <div className="cbf-sidebar__message-author">
+                                        {item.author.name}
+                                    </div>
 
-                                    {player.name}
-                                    ,&nbsp;
-                                    {player.score}
-                                    &nbsp;points
+                                    <div className="cbf-sidebar__message-text">
+                                        {item.text}
+                                    </div>
+
+                                    <div className="cbf-sidebar__message-date">
+                                        {moment(item.createdAt).format('LLL')}
+                                    </div>
                                 </div>
                             ))}
                         </div>
-                    )}
-
-                    <div className="cbf-sidebar__history-content">
-                        {props.data.match.states.map((gameState, index) => (
-                            renderMessage(gameState, index)
-                        ))}
                     </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };
@@ -133,6 +205,7 @@ Sidebar.propTypes = {
     isGameFinished: PropTypes.bool.isRequired,
     players: PropTypes.array.isRequired,
     goToAction: PropTypes.func.isRequired,
+    createMessage: PropTypes.func.isRequired,
 };
 
 export default withRouter(GameModel.graphql(Sidebar));

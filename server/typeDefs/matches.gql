@@ -9,11 +9,13 @@ type Mutation {
     joinMatch(id: ID!): Match!
     startMatch(id: ID!): Match!
     pushActions(input: PushActionsInput!): Match!
+    createMessage(input: CreateMessageInput!): Match!
 }
 
 type Subscription {
     playerJoined: Match!
     actionsPushed: Match!
+    messageCreated: Match!
 }
 
 type Match {
@@ -23,6 +25,15 @@ type Match {
     actions: [Action!]!
     players: [User!]!
     creator: User!
+    messages: [MatchMessage!]!
+}
+
+type MatchMessage {
+    id: ID!
+    match: Match!
+    author: User!
+    text: String!
+    createdAt: DateTime!
 }
 
 type Action {
@@ -57,4 +68,9 @@ input PushActionsInput {
 input ActionInput {
     type: Int!
     payload: JSON
+}
+
+input CreateMessageInput {
+    id: ID!
+    text: String!
 }

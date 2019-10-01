@@ -63,6 +63,15 @@ class Match extends BaseModel {
                     to: 'action.match_id',
                 },
             },
+            messages: {
+                relation: BaseModel.HasManyRelation,
+                modelClass: 'MatchMessage',
+                modify: (builder) => builder.orderBy('created_at', 'desc'),
+                join: {
+                    from: 'match.id',
+                    to: 'match_message.match_id',
+                },
+            },
         };
     }
 

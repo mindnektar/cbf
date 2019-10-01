@@ -3,6 +3,7 @@ import transaction from './helpers/transaction';
 import subscription from './helpers/subscription';
 import generateRandomSeed from '../helpers/generateRandomSeed';
 import Match from '../models/Match';
+import MatchMessage from '../models/MatchMessage';
 import Action from '../models/Action';
 
 export default {
@@ -198,9 +199,30 @@ export default {
                     }, { relate: true });
                 }
 
-                const actionResult = await Action.query(trx).insert(newActions);
+                await Action.query(trx).insert(newActions);
 
-                pubsub.publish('actionsPushed', actionResult);
+                pubsub.publish('actionsPushed', match);
+
+                return match.$graphqlLoadRelated(trx, info);
+            })
+        ),
+        createMessage: (parent, { input }, { auth, pubsub }, info) => (
+            transaction(async (trx) => {
+                const match = await Match.query(trx)
+                    .eager('[players]')
+                    .findById(input.id);
+
+                if (!match || !match.players.some(({ id }) => id === auth.id)) {
+                    return {};
+                }
+
+                await MatchMessage.query(trx).insert({
+                    match_id: match.id,
+                    user_id: auth.id,
+                    text: input.text,
+                });
+
+                pubsub.publish('messageCreated', match);
 
                 return match.$graphqlLoadRelated(trx, info);
             })
@@ -213,9 +235,16 @@ export default {
             payload.players.some(({ id }) => id === auth.id)
         )),
         ...subscription('actionsPushed', (payload, variables, context, info) => (
-            Match.query().findById(payload[0].matchId).graphqlEager(info)
+            Match.query().findById(payload.id).graphqlEager(info)
         ), async (payload, variables, { auth }) => {
-            const match = await Match.query().findById(payload[0].matchId).eager('players');
+            const match = await Match.query().findById(payload.id).eager('players');
+
+            return match.players.some(({ id }) => id === auth.id);
+        }),
+        ...subscription('messageCreated', (payload, variables, context, info) => (
+            Match.query().findById(payload.id).graphqlEager(info)
+        ), async (payload, variables, { auth }) => {
+            const match = await Match.query().findById(payload.id).eager('players');
 
             return match.players.some(({ id }) => id === auth.id);
         }),

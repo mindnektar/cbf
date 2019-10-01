@@ -9,20 +9,41 @@
     width: $sidebar-width
     z-index: 3
 
+.cbf-sidebar__tabs
+    border-bottom: 2px solid $color-light
+    border-bottom-left-radius: 8px
+    display: flex
+    font-size: .9em
+    margin-bottom: 12px
+    overflow: hidden
+    text-align: center
+
+.cbf-sidebar__tab
+    background-color: $color-primary
+    border: 2px solid $color-light
+    border-bottom: none
+    color: $color-light
+    cursor: pointer
+    padding: 4px 8px
+    transition-duration: 300ms
+    transition-property: background-color, color
+
+    &:first-child
+        border-top-left-radius: 8px
+
+    &:last-child
+        border-top-right-radius: 8px
+
+.cbf-sidebar__tab--active
+    background-color: $color-light
+    color: $color-primary-dark
+
 .cbf-sidebar__history
     display: flex
     flex-direction: column
     height: 100%
 
-.cbf-sidebar__history-header
-    border-bottom: 1px solid $color-light
-    color: $color-light
-    font-size: .9em
-    margin-bottom: 12px
-    padding-bottom: 4px
-    text-align: center
-
-.cbf-sidebar__history-scroller
+.cbf-sidebar__scroller
     overflow: auto
 
 .cbf-sidebar__history-scores
@@ -86,3 +107,42 @@
 
 .cbf-sidebar__history-message
     flex-grow: 1
+
+.cbf-sidebar__chat
+    .cbf-ui-text-field
+        margin-bottom: 8px
+
+        input
+            width: 100%
+
+.cbf-sidebar__chat-content
+    display: flex
+    flex-direction: column
+
+.cbf-sidebar__message
+    background-color: $color-primary
+    border-radius: 8px
+    display: inline-block
+    font-size: .8em
+    margin-bottom: 8px
+    margin-right: auto
+    padding: 4px 8px
+
+.cbf-sidebar__message--mine
+    background-color: $color-light
+    color: $color-primary-dark
+    margin-left: auto
+    margin-right: 0
+
+    .cbf-sidebar__message-date
+        color: $color-disabled
+
+.cbf-sidebar__message-author
+    font-weight: 700
+
+.cbf-sidebar__message-text
+    margin: 4px 0
+
+.cbf-sidebar__message-date
+    color: $color-primary-dark
+    font-size: italic

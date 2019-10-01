@@ -1,3 +1,4 @@
+import moment from 'moment';
 import BaseModel from 'react-apollo-models';
 
 export default class GameModel extends BaseModel {
@@ -34,6 +35,15 @@ export default class GameModel extends BaseModel {
                         type
                         payload
                         player {
+                            id
+                            name
+                        }
+                    }
+                    messages {
+                        id
+                        text
+                        createdAt
+                        author {
                             id
                             name
                         }
@@ -90,6 +100,30 @@ export default class GameModel extends BaseModel {
                 match: {
                     actions: {
                         $set: item.actions,
+                    },
+                },
+            }),
+        }, {
+            subscription: `
+                subscription messageCreated {
+                    messageCreated {
+                        id
+                        messages {
+                            id
+                            text
+                            createdAt
+                            author {
+                                id
+                                name
+                            }
+                        }
+                    }
+                }
+            `,
+            cacheUpdatePath: ({ item }) => ({
+                match: {
+                    messages: {
+                        $set: item.messages,
                     },
                 },
             }),
@@ -183,5 +217,35 @@ export default class GameModel extends BaseModel {
             }
         `,
         optimisticResponse: null,
+    }, {
+        mutation: `
+            mutation createMessage($input: CreateMessageInput!) {
+                createMessage(input: $input) {
+                    id
+                    messages {
+                        id
+                        text
+                        createdAt
+                        author {
+                            id
+                            name
+                        }
+                    }
+                }
+            }
+        `,
+        optimisticResponse: ({ props, mutationVariables }) => ({
+            __typename: 'Match',
+            messages: [
+                {
+                    __typename: 'MatchMessage',
+                    id: null,
+                    text: mutationVariables.text,
+                    createdAt: moment().toISOString(),
+                    author: props.data.me,
+                },
+                ...props.data.match.messages,
+            ],
+        }),
     }]
 }
