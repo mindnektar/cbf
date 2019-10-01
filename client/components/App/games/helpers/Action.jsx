@@ -22,7 +22,7 @@ const Action = (props) => {
 
     useEffect(() => {
         const canvas = document.querySelector('.cbf-arena__canvas');
-        const table = document.querySelector('.cbf-helper-table');
+        const table = document.querySelector('.cbf-table');
         const tableRect = table.getBoundingClientRect();
         const scale = parseFloat(canvas.style.transform.match(/scale\(([.0-9]+)\)/)[1]);
         const childRect = childRef.current.getBoundingClientRect();
@@ -63,7 +63,7 @@ const Action = (props) => {
                     onClick={onClick}
                     style={style}
                 />
-            ), document.querySelector('.cbf-helper-table'))}
+            ), document.querySelector('.cbf-table'))}
         </>
     );
 };

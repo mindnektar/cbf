@@ -4,6 +4,9 @@ import { withRouter } from 'react-router-dom';
 import classNames from 'classnames';
 import GameModel from 'models/play/game';
 import gameComponents from 'components/App/games';
+import Table from './Arena/Table';
+import Sidebar from './Arena/Sidebar';
+import Status from './Arena/Status';
 
 class Arena extends React.Component {
     state = {
@@ -69,7 +72,7 @@ class Arena extends React.Component {
     }
 
     setZoom = () => {
-        const { offsetHeight, offsetWidth } = document.querySelector('.cbf-helper-table');
+        const { offsetHeight, offsetWidth } = document.querySelector('.cbf-table');
         const heightRatio = (window.innerHeight - 226) / offsetHeight;
         const widthRatio = (window.innerWidth - 396) / offsetWidth;
         const zoom = heightRatio < widthRatio ? heightRatio : widthRatio;
@@ -98,27 +101,38 @@ class Arena extends React.Component {
 
     render() {
         return this.props.data.match.status === 'ACTIVE' && (
-            <div
-                className={classNames(
-                    'cbf-arena',
-                    { 'cbf-arena--moving': this.state.moving }
-                )}
-                onMouseDown={this.onMouseDown}
-                onMouseLeave={this.onMouseLeave}
-                onMouseMove={this.onMouseMove}
-                onMouseUp={this.onMouseUp}
-                onScroll={this.onScroll}
-                ref={this.setArenaRef}
-            >
+            <>
+                <Status />
+
+                <Sidebar
+                    isGameFinished={this.props.data.match.status === 'FINISHED'}
+                    players={this.props.data.match.players}
+                />
+
                 <div
-                    className="cbf-arena__canvas"
-                    style={{
-                        transform: `scale(${this.state.zoom}) translate(${-this.state.x}px, ${-this.state.y}px)`,
-                    }}
+                    className={classNames(
+                        'cbf-arena',
+                        { 'cbf-arena--moving': this.state.moving }
+                    )}
+                    onMouseDown={this.onMouseDown}
+                    onMouseLeave={this.onMouseLeave}
+                    onMouseMove={this.onMouseMove}
+                    onMouseUp={this.onMouseUp}
+                    onScroll={this.onScroll}
+                    ref={this.setArenaRef}
                 >
-                    {React.createElement(gameComponents[this.props.data.match.handle])}
+                    <div
+                        className="cbf-arena__canvas"
+                        style={{
+                            transform: `scale(${this.state.zoom}) translate(${-this.state.x}px, ${-this.state.y}px)`,
+                        }}
+                    >
+                        <Table>
+                            {React.createElement(gameComponents[this.props.data.match.handle])}
+                        </Table>
+                    </div>
                 </div>
-            </div>
+            </>
         );
     }
 }

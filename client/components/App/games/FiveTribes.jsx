@@ -1,8 +1,4 @@
 import React from 'react';
-import { actions, states } from 'shared/games/five-tribes';
-import Game from './helpers/Game';
-import Sidebar from './helpers/Sidebar';
-import Status from './helpers/Status';
 import BidOrder from './FiveTribes/BidOrder';
 import TurnOrder from './FiveTribes/TurnOrder';
 import Board from './FiveTribes/Board';
@@ -14,38 +10,29 @@ import Players from './FiveTribes/Players';
 class FiveTribes extends React.Component {
     render() {
         return (
-            <Game states={states}>
-                <div className="five-tribes">
-                    <Status
-                        endTurnAction={actions.END_TURN}
-                        states={states}
-                    />
+            <div className="five-tribes">
+                <div className="five-tribes__game">
+                    <div className="five-tribes__top">
+                        <div className="five-tribes__left">
+                            <div className="five-tribes__tracks">
+                                <BidOrder />
 
-                    <Sidebar actions={actions} />
-
-                    <div className="five-tribes__game">
-                        <div className="five-tribes__top">
-                            <div className="five-tribes__left">
-                                <div className="five-tribes__tracks">
-                                    <BidOrder />
-
-                                    <TurnOrder />
-                                </div>
-
-                                <Board />
+                                <TurnOrder />
                             </div>
 
-                            <Hand />
-
-                            <Djinns />
+                            <Board />
                         </div>
 
-                        <Market />
+                        <Hand />
+
+                        <Djinns />
                     </div>
 
-                    <Players />
+                    <Market />
                 </div>
-            </Game>
+
+                <Players />
+            </div>
         );
     }
 }

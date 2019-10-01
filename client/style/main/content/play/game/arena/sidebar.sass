@@ -1,20 +1,20 @@
-.cbf-helper-sidebar
+.cbf-sidebar
     background-color: $color-primary-dark
     bottom: 0
     box-sizing: border-box
     padding: 12px
-    position: fixed
+    position: absolute
     right: 0
-    top: #{$header-height + $status-height}
+    top: $status-height
     width: $sidebar-width
     z-index: 3
 
-.cbf-helper-sidebar__history
+.cbf-sidebar__history
     display: flex
     flex-direction: column
     height: 100%
 
-.cbf-helper-sidebar__history-header
+.cbf-sidebar__history-header
     border-bottom: 1px solid $color-light
     color: $color-light
     font-size: .9em
@@ -22,10 +22,10 @@
     padding-bottom: 4px
     text-align: center
 
-.cbf-helper-sidebar__history-scroller
+.cbf-sidebar__history-scroller
     overflow: auto
 
-.cbf-helper-sidebar__history-scores
+.cbf-sidebar__history-scores
     background-color: $color-primary
     border-radius: 6px
     color: $color-light
@@ -33,15 +33,15 @@
     line-height: 1.5em
     padding: 4px 8px
 
-.cbf-helper-sidebar__history-scores-player
+.cbf-sidebar__history-scores-player
     span
         font-weight: 700
 
-.cbf-helper-sidebar__history-content
+.cbf-sidebar__history-content
     display: flex
     flex-direction: column-reverse
 
-.cbf-helper-sidebar__history-item
+.cbf-sidebar__history-item
     background-color: $color-primary
     border-radius: 6px
     color: $color-primary-dark
@@ -59,10 +59,10 @@
         height: 32px
         justify-content: center
 
-.cbf-helper-sidebar__history-item--active
+.cbf-sidebar__history-item--active
     background-color: $color-light
 
-.cbf-helper-sidebar__history-item--group-start
+.cbf-sidebar__history-item--group-start
     margin-bottom: 17px
 
     &::after
@@ -74,7 +74,7 @@
         position: absolute
         width: 100%
 
-.cbf-helper-sidebar__history-index
+.cbf-sidebar__history-index
     align-items: center
     border-right: 1px solid $color-primary-dark
     display: flex
@@ -84,5 +84,5 @@
     text-align: center
     width: 40px
 
-.cbf-helper-sidebar__history-message
+.cbf-sidebar__history-message
     flex-grow: 1

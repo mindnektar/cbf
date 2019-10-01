@@ -1,3 +1,5 @@
+import azul from 'shared/games/azul';
+
 export default {
     azul: {
         handle: 'azul',
@@ -5,6 +7,8 @@ export default {
         author: 'Michael Kiesling',
         playerCount: [2, 3, 4],
         playTime: '30-45',
+        actions: azul.actions,
+        states: azul.states,
     },
     // 'five-tribes': {
     //     handle: 'five-tribes',

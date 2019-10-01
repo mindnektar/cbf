@@ -4,7 +4,7 @@ class Home extends React.Component {
     render() {
         return (
             <div>
-                Home
+                Welcome to Cardboard Frenzy!
             </div>
         );
     }

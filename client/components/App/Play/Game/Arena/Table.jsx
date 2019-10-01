@@ -2,9 +2,10 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withRouter } from 'react-router-dom';
+import games from 'data/games';
 import GameModel from 'models/play/game';
 
-const Game = (props) => {
+const Table = (props) => {
     useEffect(() => {
         checkAutomaticActions();
     });
@@ -22,7 +23,7 @@ const Game = (props) => {
             performAutomatically,
             performOnConfirm,
             params,
-        } = props.states.findById(state.state);
+        } = games[props.data.match.handle].states.findById(state.state);
 
         if (performAutomatically) {
             props.updateGameState(props.match.params.gameId, performAutomatically());
@@ -45,28 +46,28 @@ const Game = (props) => {
     return (
         <div
             className={classNames(
-                'cbf-helper-table',
-                { 'cbf-helper-table--awaits-action': awaitsAction }
+                'cbf-table',
+                { 'cbf-table--awaits-action': awaitsAction }
             )}
         >
-            <div className="cbf-helper-table__legs">
+            <div className="cbf-table__legs">
                 <div />
                 <div />
                 <div />
                 <div />
             </div>
 
-            <div className="cbf-helper-table__content">
+            <div className="cbf-table__content">
                 {props.children}
             </div>
         </div>
     );
 };
 
-Game.propTypes = {
+Table.propTypes = {
     children: PropTypes.node.isRequired,
     match: PropTypes.object.isRequired,
     data: PropTypes.object.isRequired,
 };
 
-export default withRouter(GameModel.graphql(Game));
+export default withRouter(GameModel.graphql(Table));

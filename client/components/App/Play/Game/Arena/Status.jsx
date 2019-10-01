@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import ReactDOM from 'react-dom';
 import { withRouter } from 'react-router-dom';
 import performAction from 'helpers/performAction';
+import games from 'data/games';
 import GameModel from 'models/play/game';
 import Button from 'atoms/Button';
 
@@ -30,13 +30,16 @@ const Status = (props) => {
             return `It's ${playerList} turn.`;
         }
 
-        const { instruction } = props.states.findById(state.state);
+        const { instruction } = games[props.data.match.handle].states.findById(state.state);
 
         return instruction ? instruction(state) : '';
     };
 
     const continueTurn = () => {
-        const { performOnConfirm, params } = props.states.findById(state.state);
+        const {
+            performOnConfirm,
+            params,
+        } = games[props.data.match.handle].states.findById(state.state);
 
         props.updateGameState(
             props.match.params.gameId,
@@ -48,7 +51,7 @@ const Status = (props) => {
     const endTurn = () => {
         performAction({
             match: props.data.match,
-            action: props.endTurnAction,
+            action: games[props.data.match.handle].actions.END_TURN,
             player: props.data.me,
             payload: props.data.match.globalParams,
             performAction: props.performAction,
@@ -61,7 +64,10 @@ const Status = (props) => {
     };
 
     const mayContinueTurn = () => {
-        const { performOnConfirm, params } = props.states.findById(state.state);
+        const {
+            performOnConfirm,
+            params,
+        } = games[props.data.match.handle].states.findById(state.state);
 
         return (
             isLatestState
@@ -78,7 +84,7 @@ const Status = (props) => {
         isLatestState
         && props.data.me
         && state.activePlayers.includes(props.data.me.id)
-        && props.endTurnAction.isValid({ state })
+        && games[props.data.match.handle].actions.END_TURN.isValid({ state })
     );
 
     const redo = () => {
@@ -95,12 +101,12 @@ const Status = (props) => {
         });
     };
 
-    return ReactDOM.createPortal(
-        <div className="cbf-helper-status">
-            <div className="cbf-helper-status__text">
+    return (
+        <div className="cbf-status">
+            <div className="cbf-status__text">
                 {getInstruction()}
 
-                {props.states.findById(state.state).performOnConfirm && (
+                {games[props.data.match.handle].states.findById(state.state).performOnConfirm && (
                     <Button
                         disabled={!mayContinueTurn()}
                         onClick={continueTurn}
@@ -120,7 +126,7 @@ const Status = (props) => {
                 )}
             </div>
 
-            <div className="cbf-helper-status__options">
+            <div className="cbf-status__options">
                 <Button
                     disabled={
                         props.data.match.stateIndex - (props.data.match.stateCountSinceLastLoad) < 0
@@ -147,15 +153,12 @@ const Status = (props) => {
                     End turn
                 </Button>
             </div>
-        </div>,
-        document.body
+        </div>
     );
 };
 
 Status.propTypes = {
-    endTurnAction: PropTypes.object.isRequired,
     match: PropTypes.object.isRequired,
-    states: PropTypes.object.isRequired,
     data: PropTypes.object.isRequired,
     pushActions: PropTypes.func.isRequired,
     performAction: PropTypes.func.isRequired,
