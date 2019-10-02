@@ -52,6 +52,7 @@ export default class GameModel extends BaseModel {
                     stateIndex @client
                     stateCountSinceLastLoad @client
                     globalParams @client
+                    historyMode @client
                 }
             }
         `,
@@ -213,6 +214,7 @@ export default class GameModel extends BaseModel {
                 goToAction(input: $input) @client {
                     id
                     stateIndex @client
+                    historyMode @client
                 }
             }
         `,

@@ -14,6 +14,7 @@ const History = (props) => {
         props.goToAction({
             id: props.data.match.id,
             index,
+            historyMode: true,
         });
     };
 

@@ -11,7 +11,7 @@ const Status = (props) => {
     const isLatestState = props.data.match.stateIndex === props.data.match.states.length - 1;
 
     const getInstruction = () => {
-        if (!isLatestState) {
+        if (props.data.match.historyMode) {
             return '- HISTORY MODE -';
         }
 
@@ -60,7 +60,11 @@ const Status = (props) => {
     };
 
     const exitHistoryMode = () => {
-        props.switchToLatestGameState();
+        props.goToAction({
+            id: props.data.match.id,
+            index: props.data.match.states.length - 1,
+            historyMode: false,
+        });
     };
 
     const mayContinueTurn = () => {
@@ -71,6 +75,7 @@ const Status = (props) => {
 
         return (
             isLatestState
+            && !props.data.match.historyMode
             && state.activePlayers.includes(props.data.me.id)
             && params.every((param) => props.data.match.globalParams[param.name] !== undefined)
             && performOnConfirm().isValid({
@@ -82,6 +87,7 @@ const Status = (props) => {
 
     const mayEndTurn = () => (
         isLatestState
+        && !props.data.match.historyMode
         && props.data.me
         && state.activePlayers.includes(props.data.me.id)
         && games[props.data.match.handle].actions.END_TURN.isValid({ state })
@@ -116,7 +122,7 @@ const Status = (props) => {
                     </Button>
                 )}
 
-                {!isLatestState && (
+                {props.data.match.historyMode && (
                     <Button
                         onClick={exitHistoryMode}
                         secondary
@@ -129,7 +135,11 @@ const Status = (props) => {
             <div className="cbf-status__options">
                 <Button
                     disabled={
-                        props.data.match.stateIndex - (props.data.match.stateCountSinceLastLoad) < 0
+                        props.data.match.historyMode
+                        || (
+                            props.data.match.stateIndex
+                            - (props.data.match.stateCountSinceLastLoad) < 0
+                        )
                     }
                     onClick={undo}
                     secondary
@@ -138,7 +148,10 @@ const Status = (props) => {
                 </Button>
 
                 <Button
-                    disabled={props.data.match.stateIndex === props.data.match.states.length - 1}
+                    disabled={
+                        props.data.match.historyMode
+                        || props.data.match.stateIndex === props.data.match.states.length - 1
+                    }
                     onClick={redo}
                     secondary
                 >

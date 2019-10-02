@@ -41,7 +41,11 @@ const Table = (props) => {
     };
 
     const { activePlayers } = state;
-    const awaitsAction = isLatestState && props.data.me && activePlayers.includes(props.data.me.id);
+    const awaitsAction = (
+        !props.data.match.historyMode
+        && props.data.me
+        && activePlayers.includes(props.data.me.id)
+    );
 
     return (
         <div

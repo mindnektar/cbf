@@ -12,6 +12,7 @@ export const typeDefs = gql`
         stateIndex: Int!
         stateCountSinceLastLoad: Int!
         globalParams: JSON!
+        historyMode: Boolean!
     }
 
     input PerformActionInput {
@@ -34,6 +35,7 @@ export const typeDefs = gql`
     input GoToActionInput {
         id: ID!
         index: Int!
+        historyMode: Boolean
     }
 `;
 
@@ -61,8 +63,8 @@ export const resolvers = {
 
             const data = {
                 __typename: 'Match',
-                actions: [...match.actions, input.action],
-                states: [...match.states, input.state],
+                actions: [...match.actions.slice(0, match.stateIndex + 1), input.action],
+                states: [...match.states.slice(0, match.stateIndex + 1), input.state],
                 stateIndex: match.stateIndex + 1,
             };
 
@@ -109,6 +111,7 @@ export const resolvers = {
                     match.states.length - 1,
                     Math.max(0, input.index),
                 ),
+                historyMode: input.historyMode || false,
             };
 
             cache.writeFragment({
@@ -116,6 +119,7 @@ export const resolvers = {
                 fragment: gql`
                     fragment writeGoToAction on Match {
                         stateIndex
+                        historyMode
                     }
                 `,
                 data,
@@ -178,6 +182,7 @@ export const resolvers = {
                         stateIndex
                         stateCountSinceLastLoad
                         globalParams
+                        historyMode
                     }
                 `,
                 data: {
@@ -186,6 +191,7 @@ export const resolvers = {
                     stateIndex: states.length - 1,
                     stateCountSinceLastLoad: states.length,
                     globalParams: [],
+                    historyMode: false,
                 },
             });
 
