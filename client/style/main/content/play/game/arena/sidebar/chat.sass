@@ -1,0 +1,43 @@
+.cbf-chat
+    .cbf-ui-text-field
+        margin-bottom: 8px
+
+        input
+            border: none
+            width: 100%
+
+.cbf-chat__content
+    display: flex
+    flex-direction: column
+    height: calc(100% - 80px)
+    overflow: auto
+
+.cbf-chat__message
+    background-color: $color-primary
+    border-radius: 8px
+    color: $color-primary-darker
+    display: inline-block
+    font-size: .8em
+    margin-bottom: 8px
+    margin-right: auto
+    padding: 4px 8px
+
+.cbf-chat__message--mine
+    background-color: $color-light
+    color: $color-primary-dark
+    margin-left: auto
+    margin-right: 0
+
+    .cbf-chat__message-date
+        color: $color-primary-light
+
+.cbf-chat__message-author
+    font-weight: 700
+
+.cbf-chat__message-text
+    margin: 4px 0
+
+.cbf-chat__message-date
+    color: $color-primary-dark
+    font-size: .8em
+    font-style: italic

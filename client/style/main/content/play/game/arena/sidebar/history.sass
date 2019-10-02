@@ -1,0 +1,67 @@
+.cbf-history
+    display: flex
+    flex-direction: column
+    height: calc(100% - 40px)
+    overflow: auto
+
+.cbf-history__scores
+    background-color: $color-primary
+    border-radius: 6px
+    color: $color-light
+    font-size: .8em
+    line-height: 1.5em
+    padding: 4px 8px
+
+.cbf-history__scores-player
+    span
+        font-weight: 700
+
+.cbf-history__content
+    display: flex
+    flex-direction: column-reverse
+
+.cbf-history__item
+    background-color: $color-primary
+    border-radius: 6px
+    color: $color-primary-dark
+    cursor: pointer
+    display: flex
+    flex-shrink: 0
+    font-size: .8em
+    line-height: 1.5em
+    margin-top: 6px
+    padding: 4px 8px
+    position: relative
+
+    &:first-child
+        align-items: center
+        height: 32px
+        justify-content: center
+
+.cbf-history__item--active
+    background-color: $color-light
+
+.cbf-history__item--group-start
+    margin-bottom: 17px
+
+    &::after
+        background-color: $color-primary
+        bottom: -12px
+        content: ""
+        height: 1px
+        left: 0
+        position: absolute
+        width: 100%
+
+.cbf-history__index
+    align-items: center
+    border-right: 1px solid $color-primary-dark
+    display: flex
+    flex-shrink: 0
+    justify-content: center
+    margin: 0 8px 0 -8px
+    text-align: center
+    width: 40px
+
+.cbf-history__message
+    flex-grow: 1
