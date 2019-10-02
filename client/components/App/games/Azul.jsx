@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { withRouter } from 'react-router-dom';
 import GameModel from 'models/play/game';
 import Board from './Azul/Board';
+import Hand from './Azul/Hand';
 import Factory from './Azul/Factory';
 
 const Azul = (props) => {
@@ -31,13 +32,24 @@ const Azul = (props) => {
         >
             <div className="azul__game">
                 {players.map(([id, playerData], index) => (
-                    <Board
+                    <div
+                        className={`player-${index}`}
                         key={id}
-                        playerIndex={index}
-                        player={playerData}
-                        actionsDisabled={!props.data.me || id !== props.data.me.id}
-                        name={props.data.match.players.find((player) => player.id === id).name}
-                    />
+                    >
+                        <Board
+                            playerIndex={index}
+                            player={playerData}
+                            actionsDisabled={!props.data.me || id !== props.data.me.id}
+                            name={props.data.match.players.find((player) => player.id === id).name}
+                        />
+
+                        {props.data.me && id === props.data.me.id && (
+                            <Hand
+                                playerIndex={index}
+                                hand={state.public.game.hand}
+                            />
+                        )}
+                    </div>
                 ))}
 
                 <Factory

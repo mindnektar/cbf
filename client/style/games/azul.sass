@@ -29,7 +29,7 @@
     position: absolute
     width: 466px
 
-    &.player-0
+    .player-0 &
         bottom: 0
         left: 50%
         transform: translateX(-50%)
@@ -38,7 +38,7 @@
             left: 10%
             transform: translateX(0)
 
-    &.player-1
+    .player-1 &
         top: 0
         left: 50%
         transform: translateX(-50%)
@@ -48,12 +48,12 @@
             left: 10%
             transform: translateX(0)
 
-    &.player-2
-        bottom: 0
+    .player-2 &
+        top: 0
         right: 10%
 
-    &.player-3
-        top: 0
+    .player-3 &
+        bottom: 0
         right: 10%
 
 .azul__board
@@ -67,7 +67,7 @@
     top: 4px
 
     .player-1 &,
-    .player-3 &
+    .player-2 &
         transform: rotate(180deg)
 
         .azul__tile
@@ -150,6 +150,22 @@
     .azul__tile
         margin-right: 7px
 
+.azul__hand
+    bottom: 16px
+    display: flex
+    flex-direction: column
+    height: 475px
+    justify-content: center
+    left: 160px
+    position: absolute
+
+    .azul--num-players-3 &,
+    .azul--num-players-4 &
+        left: 360px
+
+    .azul__tile
+        margin: 4px 0
+
 .azul__factory
     left: 50%
     position: absolute
@@ -176,9 +192,9 @@
         @include on-circle($item-count: 7, $circle-size: 540px)
 
     .azul__factory-center
-        height: 12vw
-        margin: 7vw
-        width: 12vw
+        height: 230px
+        margin: 204px 0 0 210px
+        width: 320px
 
 .azul__factory--display-count-9
     .azul__factory-circle

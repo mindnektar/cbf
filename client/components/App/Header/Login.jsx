@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import OutsideClickHandler from 'react-outside-click-handler';
@@ -30,7 +31,7 @@ const Login = (props) => {
         window.location.reload();
     };
 
-    return (
+    return ReactDOM.createPortal((
         <div className="cbf-login">
             <OutsideClickHandler onOutsideClick={props.close}>
                 <Collapsible collapsed={!props.isOpen}>
@@ -67,7 +68,7 @@ const Login = (props) => {
                 </Collapsible>
             </OutsideClickHandler>
         </div>
-    );
+    ), document.body);
 };
 
 Login.propTypes = {

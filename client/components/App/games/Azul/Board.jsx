@@ -1,18 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
 import ScoreMarker from './Board/ScoreMarker';
 import PatternLines from './Board/PatternLines';
 import Wall from './Board/Wall';
 import FloorLine from './Board/FloorLine';
 
 const Board = (props) => (
-    <div
-        className={classNames(
-            'azul__board-wrapper',
-            `player-${props.playerIndex}`
-        )}
-    >
+    <div className="azul__board-wrapper">
         <div className="azul__board">
             <ScoreMarker score={props.player.score} />
 
