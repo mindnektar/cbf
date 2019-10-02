@@ -188,7 +188,7 @@ const Sidebar = (props) => {
                                     </div>
 
                                     <div className="cbf-sidebar__message-date">
-                                        {moment(item.createdAt).format('LLL')}
+                                        {moment(item.createdAt).format('L LT')}
                                     </div>
                                 </div>
                             ))}

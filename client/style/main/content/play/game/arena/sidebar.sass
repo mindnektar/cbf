@@ -11,7 +11,6 @@
 
 .cbf-sidebar__tabs
     border-bottom: 2px solid $color-light
-    border-bottom-left-radius: 8px
     display: flex
     font-size: .9em
     margin-bottom: 12px
@@ -19,20 +18,13 @@
     text-align: center
 
 .cbf-sidebar__tab
-    background-color: $color-primary
-    border: 2px solid $color-light
     border-bottom: none
+    border-radius: 8px 8px 0 0
     color: $color-light
     cursor: pointer
     padding: 4px 8px
     transition-duration: 300ms
     transition-property: background-color, color
-
-    &:first-child
-        border-top-left-radius: 8px
-
-    &:last-child
-        border-top-right-radius: 8px
 
 .cbf-sidebar__tab--active
     background-color: $color-light
@@ -110,6 +102,7 @@
 
 .cbf-sidebar__chat
     .cbf-ui-text-field
+        border: none
         margin-bottom: 8px
 
         input
@@ -122,6 +115,7 @@
 .cbf-sidebar__message
     background-color: $color-primary
     border-radius: 8px
+    color: $color-primary-darker
     display: inline-block
     font-size: .8em
     margin-bottom: 8px
@@ -135,7 +129,7 @@
     margin-right: 0
 
     .cbf-sidebar__message-date
-        color: $color-disabled
+        color: $color-primary-light
 
 .cbf-sidebar__message-author
     font-weight: 700
@@ -145,4 +139,5 @@
 
 .cbf-sidebar__message-date
     color: $color-primary-dark
-    font-size: italic
+    font-size: .8em
+    font-style: italic
