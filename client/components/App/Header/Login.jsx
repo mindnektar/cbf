@@ -3,8 +3,9 @@ import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import OutsideClickHandler from 'react-outside-click-handler';
 import { setToken, AUTH_TYPE_USER } from 'auth';
+import handleErrors from 'helpers/handleErrors';
 import LoginModel from 'models/login';
-import Form, { FormItem } from 'molecules/Form';
+import Form, { FormItem, FormError } from 'molecules/Form';
 import Collapsible from 'molecules/Collapsible';
 import Button from 'atoms/Button';
 import TextField from 'atoms/TextField';
@@ -12,6 +13,7 @@ import TextField from 'atoms/TextField';
 const Login = (props) => {
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
+    const [generalError, setGeneralError] = useState(null);
 
     const changeName = (event) => {
         setName(event.target.value);
@@ -21,17 +23,43 @@ const Login = (props) => {
         setPassword(event.target.value);
     };
 
+    const close = () => {
+        setGeneralError(null);
+        props.close();
+    };
+
+    const maySubmit = () => (
+        !!name.trim() && !!password
+    );
+
     const login = async () => {
-        const { data } = await props.login({ name, password });
+        if (!maySubmit()) {
+            return;
+        }
 
-        setToken(AUTH_TYPE_USER, data.login.authToken);
+        setGeneralError(null);
 
-        window.location.reload();
+        try {
+            const { data } = await props.login({
+                name: name.trim(),
+                password,
+            });
+
+            setToken(AUTH_TYPE_USER, data.login.authToken);
+
+            window.location.reload();
+        } catch (error) {
+            handleErrors(error, {
+                InvalidCredentialsError: () => (
+                    setGeneralError('Your email or password is invalid.')
+                ),
+            });
+        }
     };
 
     return ReactDOM.createPortal((
         <div className="cbf-login">
-            <OutsideClickHandler onOutsideClick={props.close}>
+            <OutsideClickHandler onOutsideClick={close}>
                 <Collapsible collapsed={!props.isOpen}>
                     <div className="cbf-login__content">
                         <Form>
@@ -54,8 +82,13 @@ const Login = (props) => {
                                 </TextField>
                             </FormItem>
 
+                            <FormError>{generalError}</FormError>
+
                             <FormItem>
-                                <Button onClick={login}>
+                                <Button
+                                    onClick={login}
+                                    disabled={!maySubmit()}
+                                >
                                     Login
                                 </Button>
                             </FormItem>

@@ -8,6 +8,7 @@ const FormItem = (props) => (
                 {props.label}
             </div>
         )}
+
         {props.children}
     </div>
 );

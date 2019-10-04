@@ -1,5 +1,6 @@
 import bcrypt from '../services/bcrypt';
 import generateRandomSeed from '../helpers/generateRandomSeed';
+import { InvalidCredentialsError, IllegalArgumentError } from '../errors';
 import User from '../models/User';
 
 export default {
@@ -15,12 +16,8 @@ export default {
         login: async (parent, { input }) => {
             const user = await User.query().where('name', input.name).first();
 
-            if (!user || !user.active) {
-                return {};
-            }
-
-            if (!bcrypt.compare(input.password, user.passwordHash)) {
-                return {};
+            if (!user || !user.active || !bcrypt.compare(input.password, user.passwordHash)) {
+                throw new InvalidCredentialsError();
             }
 
             return {
@@ -41,7 +38,7 @@ export default {
                 .graphqlEager(info);
 
             if (!user) {
-                return {};
+                throw new IllegalArgumentError();
             }
 
             return {

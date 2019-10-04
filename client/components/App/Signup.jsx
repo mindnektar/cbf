@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { setToken, AUTH_TYPE_USER } from 'auth';
+import handleErrors from 'helpers/handleErrors';
 import SignupModel from 'models/signup';
-import Form, { FormItem } from 'molecules/Form';
+import Form, { FormItem, FormError } from 'molecules/Form';
 import Button from 'atoms/Button';
 import TextField from 'atoms/TextField';
 
@@ -12,6 +13,7 @@ const Signup = (props) => {
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
     const [inviteCode, setInviteCode] = useState('');
+    const [generalError, setGeneralError] = useState(null);
 
     useEffect(() => {
         if (!props.data.loading && props.data.me) {
@@ -44,17 +46,27 @@ const Signup = (props) => {
             return;
         }
 
-        const { data } = await props.confirmUser({
-            name: name.trim(),
-            password,
-            email: email.trim(),
-            inviteCode,
-        });
+        setGeneralError(null);
 
-        setToken(AUTH_TYPE_USER, data.confirmUser.authToken);
+        try {
+            const { data } = await props.confirmUser({
+                name: name.trim(),
+                password,
+                email: email.trim(),
+                inviteCode,
+            });
 
-        props.history.replace('/');
-        window.location.reload();
+            setToken(AUTH_TYPE_USER, data.confirmUser.authToken);
+
+            props.history.replace('/');
+            window.location.reload();
+        } catch (error) {
+            handleErrors(error, {
+                IllegalArgumentError: () => (
+                    setGeneralError('The data you entered is invalid.')
+                ),
+            });
+        }
     };
 
     return (
@@ -98,6 +110,8 @@ const Signup = (props) => {
                         {inviteCode}
                     </TextField>
                 </FormItem>
+
+                <FormError>{generalError}</FormError>
 
                 <FormItem>
                     <Button

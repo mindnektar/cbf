@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import FormItem from './Form/FormItem';
+import FormError from './Form/FormError';
 
 class Form extends React.Component {
     render() {
@@ -17,4 +18,4 @@ Form.propTypes = {
 };
 
 export default Form;
-export { FormItem };
+export { FormItem, FormError };
