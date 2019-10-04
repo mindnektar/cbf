@@ -214,7 +214,7 @@ export default {
                     .findById(input.id);
 
                 if (!match || !match.players.some(({ id }) => id === auth.id)) {
-                    return throw new IllegalArgumentError();
+                    throw new IllegalArgumentError();
                 }
 
                 await MatchMessage.query(trx).insert({

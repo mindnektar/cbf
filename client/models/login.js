@@ -7,6 +7,7 @@ export default class LoginModel extends BaseModel {
             mutation login($input: LoginInput!) {
                 login(input: $input) {
                     authToken
+                    renewalToken
                 }
             }
         `,

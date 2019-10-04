@@ -17,6 +17,7 @@ export default class SignupModel extends BaseModel {
             mutation confirmUser($input: ConfirmUserInput!) {
                 confirmUser(input: $input) {
                     authToken
+                    renewalToken
                 }
             }
         `,

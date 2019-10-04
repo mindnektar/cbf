@@ -10,8 +10,12 @@ const FormError = (props) => (
     </Collapsible>
 );
 
+FormError.defaultProps = {
+    children: null,
+};
+
 FormError.propTypes = {
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
 };
 
 export default FormError;

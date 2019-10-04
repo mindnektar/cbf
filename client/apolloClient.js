@@ -6,14 +6,16 @@ import { setContext } from 'apollo-link-context';
 import { WebSocketLink } from 'apollo-link-ws';
 import { ApolloLink, split } from 'apollo-link';
 import { getMainDefinition } from 'apollo-utilities';
+import gql from 'graphql-tag';
 import fetch from 'unfetch';
 import BaseModel from 'react-apollo-models';
-import history from 'browserHistory';
 import {
     getToken,
+    setToken,
     deleteToken,
     AUTH_TYPE_USER,
     AUTH_TYPE_NONE,
+    RENEWAL_TYPE_USER,
 } from 'auth';
 import { resolvers, typeDefs } from './apolloClient/resolvers';
 
@@ -40,11 +42,36 @@ const client = new ApolloClient({
         ApolloLink.from([
             onError(({ graphQLErrors, networkError }) => {
                 if (graphQLErrors) {
-                    graphQLErrors.forEach(({ name, message, locations, path }) => {
+                    graphQLErrors.forEach(async ({ name, message, locations, path }) => {
                         if (name) {
-                            if (name === 'TokenExpiredError' || name === 'AuthorizationRequiredError') {
-                                deleteToken();
-                                history.push('');
+                            if (name === 'TokenExpiredError') {
+                                const renewalToken = getToken(RENEWAL_TYPE_USER);
+
+                                if (!renewalToken) {
+                                    deleteToken(AUTH_TYPE_USER);
+                                    return
+                                }
+
+                                const { data } = await client.mutate({
+                                    mutation: gql`
+                                        mutation renewToken($input: RenewTokenInput!) {
+                                            renewToken(input: $input) {
+                                                authToken
+                                                renewalToken
+                                            }
+                                        }
+                                    `,
+                                    variables: {
+                                        input: { renewalToken },
+                                    },
+                                    context: {
+                                        authType: AUTH_TYPE_NONE,
+                                    },
+                                });
+
+                                setToken(AUTH_TYPE_USER, data.renewToken.authToken);
+                                setToken(RENEWAL_TYPE_USER, data.renewToken.renewalToken);
+
                                 window.location.reload();
                             }
 

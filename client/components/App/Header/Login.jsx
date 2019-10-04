@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import OutsideClickHandler from 'react-outside-click-handler';
-import { setToken, AUTH_TYPE_USER } from 'auth';
+import { setToken, AUTH_TYPE_USER, RENEWAL_TYPE_USER } from 'auth';
 import handleErrors from 'helpers/handleErrors';
 import LoginModel from 'models/login';
 import Form, { FormItem, FormError } from 'molecules/Form';
@@ -46,6 +46,7 @@ const Login = (props) => {
             });
 
             setToken(AUTH_TYPE_USER, data.login.authToken);
+            setToken(RENEWAL_TYPE_USER, data.login.renewalToken);
 
             window.location.reload();
         } catch (error) {

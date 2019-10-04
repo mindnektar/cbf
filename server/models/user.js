@@ -1,6 +1,8 @@
 import util from 'util';
 import jwt from 'jsonwebtoken';
 import BaseModel from './_base';
+import bcrypt from '../services/bcrypt';
+import tokenString from '../services/token-string';
 import config from '../../config';
 
 class User extends BaseModel {
@@ -20,6 +22,7 @@ class User extends BaseModel {
                 email: { type: 'string' },
                 name: { type: 'string' },
                 passwordHash: { type: 'string' },
+                renewalToken: { type: 'string' },
                 inviteCode: { type: 'string' },
                 createdAt: { type: 'string' },
                 updatedAt: { type: 'string' },
@@ -42,6 +45,39 @@ class User extends BaseModel {
                 },
             },
         };
+    }
+
+    async updateRenewalToken(trx) {
+        const token = tokenString(config.tokens.renewal.length);
+        const tokenHash = await bcrypt.hash(token);
+
+        await this.$query(trx).patch({ renewal_token: tokenHash });
+
+        this.$set({ token });
+
+        return this;
+    }
+
+    signRenewalToken() {
+        return util.promisify(jwt.sign)(
+            {
+                id: this.id,
+                token: this.token,
+            },
+            config.jwt.secret,
+            {
+                algorithm: config.tokens.renewal.algorithm,
+                expiresIn: config.tokens.renewal.expiresIn,
+            },
+        );
+    }
+
+    static verifyRenewalToken(renewalJwt) {
+        return util.promisify(jwt.verify)(
+            renewalJwt,
+            config.jwt.secret,
+            { algorithms: ['HS256', 'HS384', 'HS512'] },
+        );
     }
 
     get active() {

@@ -84,6 +84,23 @@ const config = convict({
                 env: 'IDENTITY_TOKEN_ALGORITHM',
             },
         },
+        renewal: {
+            length: {
+                format: 'nat',
+                default: 32,
+                env: 'RENEWAL_TOKEN_LENGTH',
+            },
+            expiresIn: {
+                format: String,
+                default: '60d',
+                env: 'RENEWAL_TOKEN_EXPIRES_IN',
+            },
+            algorithm: {
+                format: ['HS256', 'HS384', 'HS512'],
+                default: 'HS512',
+                env: 'RENEWAL_TOKEN_ALGORITHM',
+            },
+        },
     },
 });
 

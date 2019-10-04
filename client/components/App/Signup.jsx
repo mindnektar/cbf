@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import { setToken, AUTH_TYPE_USER } from 'auth';
+import { setToken, AUTH_TYPE_USER, RENEWAL_TYPE_USER } from 'auth';
 import handleErrors from 'helpers/handleErrors';
 import SignupModel from 'models/signup';
 import Form, { FormItem, FormError } from 'molecules/Form';
@@ -57,6 +57,7 @@ const Signup = (props) => {
             });
 
             setToken(AUTH_TYPE_USER, data.confirmUser.authToken);
+            setToken(RENEWAL_TYPE_USER, data.confirmUser.renewalToken);
 
             props.history.replace('/');
             window.location.reload();

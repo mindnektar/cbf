@@ -1,3 +1,4 @@
+import transaction from './helpers/transaction';
 import bcrypt from '../services/bcrypt';
 import generateRandomSeed from '../helpers/generateRandomSeed';
 import { InvalidCredentialsError, IllegalArgumentError } from '../errors';
@@ -20,8 +21,11 @@ export default {
                 throw new InvalidCredentialsError();
             }
 
+            await user.updateRenewalToken();
+
             return {
                 authToken: await user.generateAuthToken(),
+                renewalToken: await user.signRenewalToken(),
             };
         },
         confirmUser: async (parent, { input }, context, info) => {
@@ -41,8 +45,11 @@ export default {
                 throw new IllegalArgumentError();
             }
 
+            await user.updateRenewalToken();
+
             return {
                 authToken: await user.generateAuthToken(),
+                renewalToken: await user.signRenewalToken(),
             };
         },
         createUser: async (parent, { input }, context, info) => (
@@ -53,6 +60,23 @@ export default {
                 })
                 .returning('*')
                 .graphqlEager(info)
+        ),
+        renewToken: (_, { input }) => (
+            transaction(async (trx) => {
+                const data = await User.verifyRenewalToken(input.renewalToken);
+                const user = await User.query(trx).findById(data.id);
+
+                if (!user || !(await bcrypt.compare(data.token, user.renewalToken))) {
+                    throw new IllegalArgumentError();
+                }
+
+                await user.updateRenewalToken(trx);
+
+                return {
+                    authToken: await user.generateAuthToken(),
+                    renewalToken: await user.signRenewalToken(),
+                };
+            })
         ),
     },
 };
