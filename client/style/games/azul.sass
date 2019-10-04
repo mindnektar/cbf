@@ -18,43 +18,23 @@
     position: relative
     width: 1000px
 
-    .azul--num-players-3 &,
-    .azul--num-players-4 &
+    .azul--player-count-3 &,
+    .azul--player-count-4 &
         width: 1398px
+
+.azul__player-area
+    height: 475px
+    position: relative
 
 .azul__board-wrapper
     background-image: linear-gradient(to top left, #265f75, #76cbd7)
     border-radius: 4px
     height: 475px
+    left: 50%
     position: absolute
+    top: 0
+    transform: translateX(-50%)
     width: 466px
-
-    .player-0 &
-        bottom: 0
-        left: 50%
-        transform: translateX(-50%)
-
-        .azul--num-players-4 &
-            left: 10%
-            transform: translateX(0)
-
-    .player-1 &
-        top: 0
-        left: 50%
-        transform: translateX(-50%)
-
-        .azul--num-players-3 &,
-        .azul--num-players-4 &
-            left: 10%
-            transform: translateX(0)
-
-    .player-2 &
-        top: 0
-        right: 10%
-
-    .player-3 &
-        bottom: 0
-        right: 10%
 
 .azul__board
     background-image: url('/img/games/azul/board.png')
@@ -66,8 +46,8 @@
     right: 4px
     top: 4px
 
-    .player-1 &,
-    .player-2 &
+    .cbf-helper-player-area--player-1 &,
+    .cbf-helper-player-area--player-2 &
         transform: rotate(180deg)
 
         .azul__tile
@@ -103,8 +83,8 @@
         width: 20px
         transform: translateZ(-1px)
 
-    .player-1 &,
-    .player-3 &
+    .cbf-helper-player-area--player-1 &,
+    .cbf-helper-player-area--player-2 &
         transform: rotate(180deg)
         transform-origin: 50% 120%
 
@@ -159,8 +139,8 @@
     left: 160px
     position: absolute
 
-    .azul--num-players-3 &,
-    .azul--num-players-4 &
+    .azul--player-count-3 &,
+    .azul--player-count-4 &
         left: 360px
 
     .azul__tile

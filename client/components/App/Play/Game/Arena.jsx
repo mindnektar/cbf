@@ -73,8 +73,8 @@ class Arena extends React.Component {
 
     setZoom = () => {
         const { offsetHeight, offsetWidth } = document.querySelector('.cbf-table');
-        const heightRatio = (window.innerHeight - 226) / offsetHeight;
-        const widthRatio = (window.innerWidth - 396) / offsetWidth;
+        const heightRatio = (window.innerHeight - 300) / offsetHeight;
+        const widthRatio = (window.innerWidth - 400) / offsetWidth;
         const zoom = heightRatio < widthRatio ? heightRatio : widthRatio;
 
         this.setState({
