@@ -8,6 +8,10 @@ class User extends BaseModel {
         return 'user';
     }
 
+    static get virtualAttributes() {
+        return ['active', 'isAdmin'];
+    }
+
     static get jsonSchema() {
         return {
             type: 'object',
@@ -42,6 +46,10 @@ class User extends BaseModel {
 
     get active() {
         return !!this.passwordHash;
+    }
+
+    get isAdmin() {
+        return this.role === 'admin';
     }
 
     generateAuthToken() {

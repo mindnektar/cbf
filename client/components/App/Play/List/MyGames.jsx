@@ -2,32 +2,24 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import games from 'data/games';
-import PlayModel from 'models/play';
+import ListModel from 'models/play/list';
 import Button from 'atoms/Button';
 import Headline from 'atoms/Headline';
 
-class OpenGames extends React.Component {
+class MyGames extends React.Component {
     getMatches() {
-        return this.props.data.matches.filter((game) => {
-            const { playerCount } = games[game.handle];
-
-            return (
-                !game.players.some(({ id }) => id === this.props.data.me.id)
-                && game.players.length < playerCount[playerCount.length - 1]
-            );
-        });
+        return this.props.data.me.matches
+            .filter((match) => match.status !== 'FINISHED');
     }
 
-    joinMatchHandler = (id) => async () => {
-        await this.props.joinMatch(id);
-
+    openGameHandler = (id) => () => {
         this.props.history.push(`/play/${id}`);
     }
 
     render() {
         return (
-            <div className="cbf-open-games">
-                <Headline>Open invitations</Headline>
+            <div className="cbf-my-games">
+                <Headline>My active games</Headline>
 
                 {this.getMatches().map((match) => (
                     <div
@@ -55,8 +47,8 @@ class OpenGames extends React.Component {
                             </div>
 
                             <div className="cbf-all-games__item-options">
-                                <Button onClick={this.joinMatchHandler(match.id)}>
-                                    Join game
+                                <Button onClick={this.openGameHandler(match.id)}>
+                                    Open game
                                 </Button>
                             </div>
                         </div>
@@ -67,10 +59,9 @@ class OpenGames extends React.Component {
     }
 }
 
-OpenGames.propTypes = {
+MyGames.propTypes = {
     data: PropTypes.object.isRequired,
-    joinMatch: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
 };
 
-export default PlayModel.graphql(withRouter(OpenGames));
+export default withRouter(ListModel.graphql(MyGames));

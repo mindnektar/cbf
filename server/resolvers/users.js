@@ -5,7 +5,7 @@ import User from '../models/User';
 export default {
     Query: {
         users: (parent, params, context, info) => (
-            User.query().graphqlEager(info)
+            User.query().orderBy('name').graphqlEager(info)
         ),
         me: (parent, params, { auth }, info) => (
             User.query().findById(auth.id).graphqlEager(info)
@@ -27,18 +27,27 @@ export default {
                 authToken: await user.generateAuthToken(),
             };
         },
-        confirmUser: async (parent, { input }, context, info) => (
-            User.query()
+        confirmUser: async (parent, { input }, context, info) => {
+            const user = await User.query()
                 .where('invite_code', input.inviteCode)
                 .where('name', input.name)
+                .whereNull('email')
                 .patch({
                     email: input.email,
                     passwordHash: await bcrypt.hash(input.password),
                 })
                 .first()
                 .returning('*')
-                .graphqlEager(info)
-        ),
+                .graphqlEager(info);
+
+            if (!user) {
+                return {};
+            }
+
+            return {
+                authToken: await user.generateAuthToken(),
+            };
+        },
         createUser: async (parent, { input }, context, info) => (
             User.query()
                 .insert({

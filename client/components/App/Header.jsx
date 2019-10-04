@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import classNames from 'classnames';
-import { deleteToken, AUTH_TYPE_USER } from 'auth';
 import HeaderModel from 'models/header';
 import Login from './Header/Login';
+import UserMenu from './Header/UserMenu';
 
 const Header = (props) => {
     const [isLoginOpen, setIsLoginOpen] = useState(false);
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
     const menuItems = [
         { label: 'Home', route: '/', is: (path) => path === '/' },
@@ -18,12 +19,6 @@ const Header = (props) => {
         props.history.push(route);
     };
 
-    const logout = () => {
-        deleteToken(AUTH_TYPE_USER);
-        props.history.push('/');
-        window.location.reload();
-    };
-
     const openLogin = () => {
         setIsLoginOpen(true);
     };
@@ -32,9 +27,21 @@ const Header = (props) => {
         setIsLoginOpen(false);
     };
 
+    const openUserMenu = () => {
+        setIsUserMenuOpen(true);
+    };
+
+    const closeUserMenu = () => {
+        setIsUserMenuOpen(false);
+    };
+
     return (
         <div className="cbf-header">
-            <div className="cbf-header__logo">CBF</div>
+            <div className="cbf-header__logo">
+                <span>C</span>
+                <span>B</span>
+                <span>F</span>
+            </div>
 
             <div className="cbf-header__menu">
                 {menuItems.map((item) => (
@@ -54,14 +61,29 @@ const Header = (props) => {
             {!props.data.loading && (
                 <div className="cbf-header__login">
                     {props.data.me ? (
-                        <div
-                            className="cbf-header__menu-item"
-                            onClick={logout}
-                        >
-                            {props.data.me.name}
-                        </div>
+                        <>
+                            <div
+                                className="cbf-header__menu-item"
+                                onClick={openUserMenu}
+                            >
+                                {props.data.me.name}
+                            </div>
+
+                            <UserMenu
+                                isOpen={isUserMenuOpen}
+                                close={closeUserMenu}
+                                me={props.data.me}
+                            />
+                        </>
                     ) : (
                         <>
+                            <div
+                                className="cbf-header__menu-item"
+                                onClick={changePageHandler('signup')}
+                            >
+                                Signup
+                            </div>
+
                             <div
                                 className="cbf-header__menu-item"
                                 onClick={openLogin}

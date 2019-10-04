@@ -11,10 +11,22 @@
     z-index: 1
 
 .cbf-header__logo
-    color: $color-light
     font-size: 40px
+    font-weight: 700
     text-align: center
+    text-shadow: 1px 0px 2px #385d5b
+    transform: skew(-8deg, -8deg)
     width: 160px
+
+    span
+        &:nth-child(1)
+            color: $color-light
+
+        &:nth-child(2)
+            color: $color-primary-lighter
+
+        &:nth-child(3)
+            color: $color-primary-light
 
 .cbf-header__menu
     display: flex
@@ -31,7 +43,9 @@
     transition-property: background-color, box-shadow
     transition-timing-function: $t-easing
 
-.cbf-header__menu-item:hover,
 .cbf-header__menu-item--active
-        background-color: $color-secondary
-        box-shadow: $shadow
+    background-color: $color-secondary
+    box-shadow: $shadow
+
+.cbf-header__login
+    display: flex

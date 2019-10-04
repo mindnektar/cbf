@@ -7,6 +7,7 @@ export default class HeaderModel extends BaseModel {
                 me {
                     id
                     name
+                    isAdmin
                 }
             }
         `,

@@ -15,6 +15,7 @@ const TextField = (props) => {
                 onKeyPress={onKeyPress}
                 type={props.type}
                 value={props.children}
+                maxLength={props.maxLength}
             />
         </div>
     );
@@ -23,6 +24,7 @@ const TextField = (props) => {
 TextField.defaultProps = {
     onSubmit: () => null,
     type: 'text',
+    maxLength: null,
 };
 
 TextField.propTypes = {
@@ -30,6 +32,7 @@ TextField.propTypes = {
     onChange: PropTypes.func.isRequired,
     onSubmit: PropTypes.func,
     type: PropTypes.string,
+    maxLength: PropTypes.number,
 };
 
 export default TextField;

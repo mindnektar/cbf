@@ -5,7 +5,7 @@ type Query {
 
 type Mutation {
     createUser(input: CreateUserInput!): User!
-    confirmUser(input: ConfirmUserInput!): User!
+    confirmUser(input: ConfirmUserInput!): LoginResult!
     login(input: LoginInput!): LoginResult!
 }
 
@@ -14,6 +14,8 @@ type User {
     name: String!
     matches: [Match!]!
     inviteCode: String!
+    active: Boolean!
+    isAdmin: Boolean!
     score: Int
 }
 

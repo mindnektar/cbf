@@ -8,3 +8,22 @@ body
     color: $color-text
     font-family: $font-primary
     margin: 0
+
+.cbf-content
+    bottom: 0
+    box-sizing: border-box
+    left: 0
+    padding: 48px 96px
+    position: absolute
+    right: 0
+    top: $header-height
+    transition: 300ms opacity
+
+.cbf-content--enter
+    opacity: 0
+
+.cbf-content--enter-active
+    opacity: 1
+
+.cbf-content--exit
+    opacity: 0

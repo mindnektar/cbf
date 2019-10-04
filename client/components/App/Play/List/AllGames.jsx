@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import games from 'data/games';
-import PlayModel from 'models/play';
+import ListModel from 'models/play/list';
 import Button from 'atoms/Button';
 import Headline from 'atoms/Headline';
 
@@ -68,4 +68,4 @@ AllGames.propTypes = {
     history: PropTypes.object.isRequired,
 };
 
-export default PlayModel.graphql(withRouter(AllGames));
+export default withRouter(ListModel.graphql(AllGames));

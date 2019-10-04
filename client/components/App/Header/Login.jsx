@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
 import OutsideClickHandler from 'react-outside-click-handler';
 import { setToken, AUTH_TYPE_USER } from 'auth';
 import LoginModel from 'models/login';
@@ -14,7 +13,7 @@ const Login = (props) => {
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
 
-    const changeUsername = (event) => {
+    const changeName = (event) => {
         setName(event.target.value);
     };
 
@@ -27,7 +26,6 @@ const Login = (props) => {
 
         setToken(AUTH_TYPE_USER, data.login.authToken);
 
-        props.history.push('/');
         window.location.reload();
     };
 
@@ -37,16 +35,16 @@ const Login = (props) => {
                 <Collapsible collapsed={!props.isOpen}>
                     <div className="cbf-login__content">
                         <Form>
-                            <FormItem>
+                            <FormItem label="Username">
                                 <TextField
-                                    onChange={changeUsername}
+                                    onChange={changeName}
                                     onSubmit={login}
                                 >
                                     {name}
                                 </TextField>
                             </FormItem>
 
-                            <FormItem>
+                            <FormItem label="Password">
                                 <TextField
                                     onChange={changePassword}
                                     onSubmit={login}
@@ -57,9 +55,7 @@ const Login = (props) => {
                             </FormItem>
 
                             <FormItem>
-                                <Button
-                                    onClick={login}
-                                >
+                                <Button onClick={login}>
                                     Login
                                 </Button>
                             </FormItem>
@@ -75,7 +71,6 @@ Login.propTypes = {
     isOpen: PropTypes.bool.isRequired,
     close: PropTypes.func.isRequired,
     login: PropTypes.func.isRequired,
-    history: PropTypes.object.isRequired,
 };
 
-export default withRouter(LoginModel.graphql(Login));
+export default LoginModel.graphql(Login);
