@@ -2,6 +2,7 @@ import generateStates from '../../shared/helpers/generateStates';
 import transaction from './helpers/transaction';
 import subscription from './helpers/subscription';
 import generateRandomSeed from '../helpers/generateRandomSeed';
+import { IllegalArgumentError } from '../errors';
 import Match from '../models/Match';
 import MatchMessage from '../models/MatchMessage';
 import Action from '../models/Action';
@@ -40,7 +41,7 @@ export default {
                     || match.status !== Match.STATUS.SETTING_UP
                     || match.creatorUserId !== auth.id
                 ) {
-                    return {};
+                    throw new IllegalArgumentError();
                 }
 
                 await match.$query(trx).patch({ status: Match.STATUS.OPEN });
@@ -57,7 +58,7 @@ export default {
                     || match.status !== Match.STATUS.OPEN
                     || match.players.some((player) => player.id === auth.id)
                 ) {
-                    return {};
+                    throw new IllegalArgumentError();
                 }
 
                 await match.$relatedQuery('players', trx).relate(auth.id);
@@ -78,7 +79,7 @@ export default {
                     || match.status !== Match.STATUS.OPEN
                     || match.creatorUserId !== auth.id
                 ) {
-                    return {};
+                    throw new IllegalArgumentError();
                 }
 
                 const setupAction = require(`../../shared/games/${match.handle}/actions/SETUP`);
@@ -108,7 +109,7 @@ export default {
                     || match.status !== Match.STATUS.ACTIVE
                     || !match.players.some(({ id }) => id === auth.id)
                 ) {
-                    return {};
+                    throw new IllegalArgumentError();
                 }
 
                 const actions = require(`../../shared/games/${match.handle}/actions`);
@@ -119,7 +120,7 @@ export default {
                 const { activePlayers } = currentState;
 
                 if (!activePlayers.includes(auth.id)) {
-                    return {};
+                    throw new IllegalArgumentError();
                 }
 
                 let action;
@@ -134,7 +135,7 @@ export default {
                     });
 
                     if (!isValid) {
-                        throw new Error(`Invalid action: ${action.id}`);
+                        throw new IllegalArgumentError(`Invalid action: ${action.id}`);
                     }
 
                     const randomSeed = action.isServerAction ? generateRandomSeed() : null;
@@ -213,7 +214,7 @@ export default {
                     .findById(input.id);
 
                 if (!match || !match.players.some(({ id }) => id === auth.id)) {
-                    return {};
+                    return throw new IllegalArgumentError();
                 }
 
                 await MatchMessage.query(trx).insert({
