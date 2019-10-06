@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import classNames from 'classnames';
 import GameModel from 'models/play/game';
-import gameComponents from 'components/App/games';
 import Table from './Arena/Table';
 import Sidebar from './Arena/Sidebar';
 import Status from './Arena/Status';
@@ -109,9 +108,7 @@ const Arena = (props) => {
                     className="cbf-arena__canvas"
                     style={{ transform: `scale(${zoom}) translate(${-x}px, ${-y}px)` }}
                 >
-                    <Table>
-                        {React.createElement(gameComponents[props.data.match.handle])}
-                    </Table>
+                    <Table />
                 </div>
             </div>
         </>

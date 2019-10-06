@@ -1,22 +1,21 @@
-import React, { useContext } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import MatchContext from 'contexts/MatchContext';
 import PlayerArea from './helpers/PlayerArea';
 import Board from './Azul/Board';
 import Hand from './Azul/Hand';
 import Factory from './Azul/Factory';
 
-const Azul = () => {
-    const { match, me } = useContext(MatchContext);
-    const state = match.states[match.stateIndex];
-    const meInSeatingOrder = state.seatingOrder.indexOf(me.id);
+const Azul = (props) => {
+    const state = props.match.states[props.match.stateIndex];
+    const meInSeatingOrder = state.seatingOrder.indexOf(props.me.id);
     const players = [
         ...state.seatingOrder.slice(meInSeatingOrder),
         ...state.seatingOrder.slice(0, meInSeatingOrder),
     ].map((id) => [id, state.players[id]]);
 
     const renderPlayerArea = ([id, playerData], index) => {
-        const { name } = match.players.find((player) => player.id === id);
+        const { name } = props.match.players.find((player) => player.id === id);
 
         return (
             <PlayerArea
@@ -32,7 +31,7 @@ const Azul = () => {
                     <Board
                         playerIndex={index}
                         player={playerData}
-                        actionsDisabled={!me || id !== me.id}
+                        actionsDisabled={!props.me || id !== props.me.id}
                         name={name}
                     />
 
@@ -62,6 +61,11 @@ const Azul = () => {
             </div>
         </div>
     );
+};
+
+Azul.propTypes = {
+    match: PropTypes.object.isRequired,
+    me: PropTypes.object.isRequired,
 };
 
 export default Azul;

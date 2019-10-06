@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withRouter } from 'react-router-dom';
@@ -7,40 +7,7 @@ import games from 'data/games';
 import GameModel from 'models/play/game';
 
 const Table = (props) => {
-    useEffect(() => {
-        checkAutomaticActions();
-    });
-
     const state = props.data.match.states[props.data.match.stateIndex];
-    const isLatestState = props.data.match.stateIndex === props.data.match.states.length - 1;
-    const isGameActive = props.data.match.status === 'ACTIVE';
-
-    const checkAutomaticActions = () => {
-        if (!isLatestState || !isGameActive) {
-            return;
-        }
-
-        const {
-            performAutomatically,
-            performOnConfirm,
-            params,
-        } = games[props.data.match.handle].states.findById(state.state);
-
-        if (performAutomatically) {
-            props.updateGameState(props.match.params.gameId, performAutomatically());
-        }
-
-        if (performOnConfirm) {
-            const globalParams = {};
-
-            (params || []).forEach((param) => {
-                globalParams[param.name] = param.defaultValue;
-            });
-
-            props.updateGlobalGameParams(globalParams, true);
-        }
-    };
-
     const { activePlayers } = state;
     const awaitsAction = (
         !props.data.match.historyMode
@@ -70,7 +37,10 @@ const Table = (props) => {
 
             <div className="cbf-table__content">
                 <MatchContext.Provider value={matchContextData}>
-                    {props.children}
+                    {React.createElement(games[props.data.match.handle].component, {
+                        match: props.data.match,
+                        me: props.data.me,
+                    })}
                 </MatchContext.Provider>
             </div>
         </div>
@@ -78,7 +48,6 @@ const Table = (props) => {
 };
 
 Table.propTypes = {
-    children: PropTypes.node.isRequired,
     match: PropTypes.object.isRequired,
     data: PropTypes.object.isRequired,
     performAction: PropTypes.func.isRequired,

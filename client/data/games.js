@@ -1,4 +1,5 @@
 import azul from 'shared/games/azul';
+import Azul from 'components/App/games/Azul';
 
 export default {
     azul: {
@@ -9,6 +10,7 @@ export default {
         playTime: '30-45',
         actions: azul.actions,
         states: azul.states,
+        component: Azul,
     },
     // 'five-tribes': {
     //     handle: 'five-tribes',

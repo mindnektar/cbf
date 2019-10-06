@@ -35,19 +35,6 @@ const Status = (props) => {
         return instruction ? instruction(state) : '';
     };
 
-    const continueTurn = () => {
-        const {
-            performOnConfirm,
-            params,
-        } = games[props.data.match.handle].states.findById(state.state);
-
-        props.updateGameState(
-            props.match.params.gameId,
-            performOnConfirm(),
-            params.map((param) => props.data.match.globalParams[param.name]),
-        );
-    };
-
     const endTurn = () => {
         handleAction({
             match: props.data.match,
@@ -65,24 +52,6 @@ const Status = (props) => {
             index: props.data.match.states.length - 1,
             historyMode: false,
         });
-    };
-
-    const mayContinueTurn = () => {
-        const {
-            performOnConfirm,
-            params,
-        } = games[props.data.match.handle].states.findById(state.state);
-
-        return (
-            isLatestState
-            && !props.data.match.historyMode
-            && state.activePlayers.includes(props.data.me.id)
-            && params.every((param) => props.data.match.globalParams[param.name] !== undefined)
-            && performOnConfirm().isValid({
-                state,
-                payload: params.map((param) => props.data.match.globalParams[param.name]),
-            })
-        );
     };
 
     const mayEndTurn = () => (
@@ -111,16 +80,6 @@ const Status = (props) => {
         <div className="cbf-status">
             <div className="cbf-status__text">
                 {getInstruction()}
-
-                {games[props.data.match.handle].states.findById(state.state).performOnConfirm && (
-                    <Button
-                        disabled={!mayContinueTurn()}
-                        onClick={continueTurn}
-                        secondary
-                    >
-                        Continue
-                    </Button>
-                )}
 
                 {props.data.match.historyMode && (
                     <Button
