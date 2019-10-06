@@ -7,13 +7,16 @@ import Table from './Arena/Table';
 import Sidebar from './Arena/Sidebar';
 import Status from './Arena/Status';
 
+let throttling = false;
+let movement;
+
 const Arena = (props) => {
     const [moving, setMoving] = useState(false);
     const [x, setX] = useState(0);
     const [y, setY] = useState(0);
     const [zoom, setZoom] = useState(1);
-    let minimumZoom = 1;
     const arenaRef = useRef();
+    let minimumZoom = 1;
 
     useEffect(() => {
         if (props.data.match.status === 'SETTING_UP') {
@@ -38,6 +41,7 @@ const Arena = (props) => {
     }, []);
 
     const onMouseDown = () => {
+        movement = { x: 0, y: 0 };
         setMoving(true);
     };
 
@@ -47,10 +51,20 @@ const Arena = (props) => {
 
     const onMouseMove = (event) => {
         if (moving) {
-            const movement = { x: event.movementX, y: event.movementY };
+            movement.x += event.movementX / zoom;
+            movement.y += event.movementY / zoom;
 
-            setX(x - (movement.x / zoom));
-            setY(y - (movement.y / zoom));
+            if (!throttling) {
+                setX(x - movement.x);
+                setY(y - movement.y);
+
+                movement = { x: 0, y: 0 };
+                throttling = true;
+
+                window.setTimeout(() => {
+                    throttling = false;
+                }, 20);
+            }
         }
     };
 
