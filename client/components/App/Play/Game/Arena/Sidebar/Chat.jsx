@@ -8,6 +8,7 @@ import TextField from 'atoms/TextField';
 
 const Chat = (props) => {
     const [message, setMessage] = useState('');
+    let prevName;
 
     const changeMessage = (event) => {
         setMessage(event.target.value);
@@ -21,6 +22,39 @@ const Chat = (props) => {
         setMessage('');
     };
 
+    const renderMessage = (item) => {
+        let renderedName = null;
+
+        if (prevName !== item.author.name) {
+            prevName = item.author.name;
+            renderedName = (
+                <div className="cbf-chat__message-author">
+                    {item.author.name}
+                </div>
+            );
+        }
+
+        return (
+            <div
+                className={classNames(
+                    'cbf-chat__message',
+                    { 'cbf-chat__message--mine': item.author.id === props.data.me.id }
+                )}
+                key={item.id}
+            >
+                {renderedName}
+
+                <div className="cbf-chat__message-text">
+                    {item.text}
+
+                    <div className="cbf-chat__message-date">
+                        {moment(item.createdAt).format('LT')}
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     return (
         <div className="cbf-chat">
             <TextField
@@ -31,27 +65,7 @@ const Chat = (props) => {
             </TextField>
 
             <div className="cbf-chat__content">
-                {props.data.match.messages.map((item) => (
-                    <div
-                        className={classNames(
-                            'cbf-chat__message',
-                            { 'cbf-chat__message--mine': item.author.id === props.data.me.id }
-                        )}
-                        key={item.id}
-                    >
-                        <div className="cbf-chat__message-author">
-                            {item.author.name}
-                        </div>
-
-                        <div className="cbf-chat__message-text">
-                            {item.text}
-                        </div>
-
-                        <div className="cbf-chat__message-date">
-                            {moment(item.createdAt).format('L LT')}
-                        </div>
-                    </div>
-                ))}
+                {props.data.match.messages.map(renderMessage)}
             </div>
         </div>
     );
