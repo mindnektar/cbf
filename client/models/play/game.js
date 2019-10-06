@@ -85,6 +85,37 @@ export default class GameModel extends BaseModel {
             }),
         }, {
             subscription: `
+                subscription matchStarted {
+                    matchStarted {
+                        id
+                        status
+                        actions {
+                            randomSeed
+                            type
+                            payload
+                            player {
+                                id
+                                name
+                            }
+                        }
+                        states @client
+                        stateIndex @client
+                        stateCountSinceLastLoad @client
+                    }
+                }
+            `,
+            cacheUpdatePath: ({ item }) => ({
+                match: {
+                    status: {
+                        $set: item.status,
+                    },
+                    actions: {
+                        $set: item.actions,
+                    },
+                },
+            }),
+        }, {
+            subscription: `
                 subscription actionsPushed {
                     actionsPushed {
                         id
@@ -148,9 +179,13 @@ export default class GameModel extends BaseModel {
                 }
             }
         `,
-        optimisticResponse: () => ({
+        optimisticResponse: ({ mutationVariables }) => ({
             __typename: 'Match',
             status: 'OPEN',
+            options: mutationVariables.options.map((option) => ({
+                ...option,
+                __typename: 'MatchOption',
+            })),
         }),
     }, {
         mutation: `

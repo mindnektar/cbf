@@ -13,7 +13,9 @@ type Mutation {
 }
 
 type Subscription {
+    matchOpened: Match!
     playerJoined: Match!
+    matchStarted: Match!
     actionsPushed: Match!
     messageCreated: Match!
 }

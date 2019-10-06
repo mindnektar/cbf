@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import games from 'data/games';
 import ListModel from 'models/play/list';
-import Button from 'atoms/Button';
 import Headline from 'atoms/Headline';
+import GameList from './GameList';
 
 class AllGames extends React.Component {
-    createMatchHandler = (handle) => async () => {
-        const { data } = await this.props.createMatch({ handle });
+    createMatch = async (match) => {
+        const { data } = await this.props.createMatch({ handle: match.handle });
 
         this.props.history.push(`/play/${data.createMatch.id}`);
     }
@@ -18,45 +18,34 @@ class AllGames extends React.Component {
             <div className="cbf-all-games">
                 <Headline>All games</Headline>
 
-                {Object.values(games).map((game) => (
-                    <div
-                        className="cbf-all-games__item"
-                        key={game.handle}
-                    >
-                        <div className="cbf-all-games__item-image">
-                            <img src={`/img/games/${game.handle}/box.jpg`} alt={game.title} />
-                        </div>
+                <GameList
+                    matches={Object.values(games).map((game) => ({
+                        id: game.handle,
+                        handle: game.handle,
+                        game,
+                    }))}
+                    action={{ label: 'Start new game', handler: this.createMatch }}
+                >
+                    {({ game }) => (
+                        <>
+                            <div>{game.author}</div>
 
-                        <div className="cbf-all-games__item-content">
-                            <div className="cbf-all-games__item-details">
-                                <div className="cbf-all-games__item-title">{game.title}</div>
-                                <div>{game.author}</div>
-                                <div>
-                                    {game.playerCount[0]}
-                                    -
-                                    {game.playerCount[game.playerCount.length - 1]}
-                                    &nbsp;
-                                    players
-                                </div>
-                                <div>
-                                    {game.playTime}
-                                    &nbsp;
-                                    minutes
-                                </div>
+                            <div>
+                                {game.playerCount[0]}
+                                -
+                                {game.playerCount[game.playerCount.length - 1]}
+                                &nbsp;
+                                players
                             </div>
 
-                            <div className="cbf-all-games__item-options">
-                                {this.props.data.me && (
-                                    <Button
-                                        onClick={this.createMatchHandler(game.handle)}
-                                    >
-                                        Start new game
-                                    </Button>
-                                )}
+                            <div>
+                                {game.playTime}
+                                &nbsp;
+                                minutes
                             </div>
-                        </div>
-                    </div>
-                ))}
+                        </>
+                    )}
+                </GameList>
             </div>
         );
     }

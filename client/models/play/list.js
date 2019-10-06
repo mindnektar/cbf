@@ -37,6 +37,36 @@ export default class PlayModel extends BaseModel {
                 status: 'OPEN',
             },
         }),
+        subscriptions: [{
+            subscription: `
+                subscription matchOpened {
+                    matchOpened {
+                        id
+                        handle
+                        status
+                        players {
+                            id
+                            name
+                        }
+                        options {
+                            type
+                            values
+                        }
+                    }
+                }
+            `,
+            cacheUpdatePath: ({ item, cacheData }) => {
+                if (cacheData.matches.some(({ id }) => id === item.id)) {
+                    return {};
+                }
+
+                return {
+                    matches: {
+                        $push: [item],
+                    },
+                };
+            },
+        }],
     }
 
     static mutations = [{

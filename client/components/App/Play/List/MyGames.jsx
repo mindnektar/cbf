@@ -1,19 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import games from 'data/games';
 import ListModel from 'models/play/list';
-import Button from 'atoms/Button';
 import Headline from 'atoms/Headline';
+import GameList from './GameList';
 
 class MyGames extends React.Component {
     getMatches() {
-        return this.props.data.me.matches
-            .filter((match) => match.status !== 'FINISHED');
+        return this.props.data.me.matches.filter((match) => match.status !== 'FINISHED');
     }
 
-    openGameHandler = (id) => () => {
-        this.props.history.push(`/play/${id}`);
+    openGame = (match) => {
+        this.props.history.push(`/play/${match.id}`);
     }
 
     render() {
@@ -21,39 +19,18 @@ class MyGames extends React.Component {
             <div className="cbf-my-games">
                 <Headline>My active games</Headline>
 
-                {this.getMatches().map((match) => (
-                    <div
-                        className="cbf-all-games__item"
-                        key={match.id}
-                    >
-                        <div className="cbf-all-games__item-image">
-                            <img
-                                src={`/img/games/${match.handle}/box.jpg`}
-                                alt={games[match.handle].title}
-                            />
-                        </div>
-
-                        <div className="cbf-all-games__item-content">
-                            <div className="cbf-all-games__item-details">
-                                <div className="cbf-all-games__item-title">
-                                    {games[match.handle].title}
-                                </div>
-
-                                {match.players.map((player) => (
-                                    <div key={player.id}>
-                                        {player.name}
-                                    </div>
-                                ))}
+                <GameList
+                    matches={this.getMatches()}
+                    action={{ label: 'Open game', handler: this.openGame }}
+                >
+                    {(match) => (
+                        match.players.map((player) => (
+                            <div key={player.id}>
+                                {player.name}
                             </div>
-
-                            <div className="cbf-all-games__item-options">
-                                <Button onClick={this.openGameHandler(match.id)}>
-                                    Open game
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                ))}
+                        ))
+                    )}
+                </GameList>
             </div>
         );
     }

@@ -19,7 +19,7 @@ const Lobby = (props) => {
         } else if (props.data.match.status === 'ACTIVE') {
             props.history.replace(`/play/${props.data.match.id}`);
         }
-    }, []);
+    }, [props.data.match.status]);
 
     const startMatch = () => {
         props.startMatch(props.data.match.id).then(() => {

@@ -34,7 +34,7 @@ export default {
                 })
             ))
         ),
-        openMatch: (parent, { input }, { auth }, info) => (
+        openMatch: (parent, { input }, { auth, pubsub }, info) => (
             transaction(async (trx) => {
                 const match = await Match.query(trx).findById(input.id);
 
@@ -54,7 +54,11 @@ export default {
                     values: option.values,
                 })));
 
-                return match.$graphqlLoadRelated(trx, info);
+                const result = await match.$graphqlLoadRelated(trx, info);
+
+                pubsub.publish('matchOpened', result);
+
+                return result;
             })
         ),
         joinMatch: (parent, { id }, { auth, pubsub }, info) => (
@@ -86,7 +90,7 @@ export default {
                 return result;
             })
         ),
-        startMatch: (parent, { id }, { auth }, info) => (
+        startMatch: (parent, { id }, { auth, pubsub }, info) => (
             transaction(async (trx) => {
                 const match = await Match.query(trx).eager('[players, options]').findById(id);
 
@@ -115,7 +119,11 @@ export default {
                     type: setupAction.id,
                 });
 
-                return match.$graphqlLoadRelated(trx, info);
+                const result = await match.$graphqlLoadRelated(trx, info);
+
+                pubsub.publish('matchStarted', result);
+
+                return result;
             })
         ),
         pushActions: (parent, { input }, { auth, pubsub }, info) => (
@@ -250,7 +258,17 @@ export default {
         ),
     },
     Subscription: {
+        ...subscription('matchOpened', (payload, variables, context, info) => (
+            Match.fromJson(payload).$graphqlLoadRelated(info)
+        ), async (payload, variables, { auth }) => (
+            payload.authorUserId !== auth.id
+        )),
         ...subscription('playerJoined', (payload, variables, context, info) => (
+            Match.fromJson(payload).$graphqlLoadRelated(info, { players: {} })
+        ), async (payload, variables, { auth }) => (
+            payload.players.some(({ id }) => id === auth.id)
+        )),
+        ...subscription('matchStarted', (payload, variables, context, info) => (
             Match.fromJson(payload).$graphqlLoadRelated(info, { players: {} })
         ), async (payload, variables, { auth }) => (
             payload.players.some(({ id }) => id === auth.id)
