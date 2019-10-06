@@ -6,6 +6,9 @@
     left: 0
     top: 100%
 
+    &.cbf-helper-player-area--player-count-4
+        width: 50%
+
 .cbf-helper-player-area--player-1
     bottom: 100%
     left: 0
@@ -17,6 +20,11 @@
 .cbf-helper-player-area--player-2
     bottom: 100%
     right: 0
+    width: 50%
+
+.cbf-helper-player-area--player-3
+    right: 0
+    top: 100%
     width: 50%
 
 .cbf-helper-player-area__name
@@ -61,8 +69,10 @@
     position: absolute
     width: 100%
 
-    .cbf-helper-player-area--player-0 &
+    .cbf-helper-player-area--player-0 &,
+    .cbf-helper-player-area--player-3 &
         bottom: 100%
 
-    .cbf-helper-player-area--player-1 &
+    .cbf-helper-player-area--player-1 &,
+    .cbf-helper-player-area--player-2 &
         top: 100%
