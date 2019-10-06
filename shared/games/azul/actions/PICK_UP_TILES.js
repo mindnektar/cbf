@@ -1,4 +1,3 @@
-const clone = require('clone');
 const states = require('../states');
 
 module.exports = {
@@ -24,18 +23,17 @@ module.exports = {
     },
 
     perform: ({ state, player, payload: [display, type] }) => {
-        const clonedState = clone(state);
-        let { centerTiles } = clonedState.game;
-        const { factoryTiles } = clonedState.game;
+        let { centerTiles, factoryTiles } = state.game;
         let pickUpCount;
-        const { floorLine } = clonedState.players[player.id];
+        let { floorLine } = state.players[player.id];
 
         if (display === null) {
             pickUpCount = centerTiles.filter((tile) => tile === type).length;
             centerTiles = centerTiles.filter((tile) => tile !== type);
 
             if (centerTiles[0] === 5) {
-                floorLine.push(centerTiles.shift());
+                centerTiles = centerTiles.slice(1);
+                floorLine = [...floorLine, 5];
             }
         } else {
             pickUpCount = factoryTiles[display].filter((tile) => tile === type).length;
@@ -43,20 +41,24 @@ module.exports = {
                 ...centerTiles,
                 ...factoryTiles[display].filter((tile) => tile !== type),
             ];
-            factoryTiles[display] = [];
+            factoryTiles = [
+                ...factoryTiles.slice(0, display),
+                [],
+                ...factoryTiles.slice(display + 1),
+            ];
         }
 
         return {
-            ...clonedState,
+            ...state,
             game: {
-                ...clonedState.game,
+                ...state.game,
                 centerTiles,
                 factoryTiles,
             },
             players: {
-                ...clonedState.players,
+                ...state.players,
                 [player.id]: {
-                    ...clonedState.players[player.id],
+                    ...state.players[player.id],
                     floorLine,
                     hand: Array(pickUpCount).fill(type),
                 },

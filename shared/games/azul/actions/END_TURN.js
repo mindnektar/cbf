@@ -1,4 +1,3 @@
-const clone = require('clone');
 const states = require('../states');
 
 module.exports = {
@@ -14,8 +13,7 @@ module.exports = {
     ),
 
     perform: ({ state, player }) => {
-        const clonedState = clone(state);
-        const { centerTiles, factoryTiles, playerOrder } = clonedState.game;
+        const { centerTiles, factoryTiles, playerOrder } = state.game;
         let nextState;
         let activePlayers;
 
@@ -34,7 +32,7 @@ module.exports = {
         }
 
         return {
-            ...clonedState,
+            ...state,
             activePlayers,
             state: nextState,
         };

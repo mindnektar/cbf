@@ -1,4 +1,3 @@
-const clone = require('clone');
 const states = require('../states');
 
 module.exports = {
@@ -16,12 +15,11 @@ module.exports = {
     ),
 
     perform: ({ state }) => {
-        const clonedState = clone(state);
-        let nextState = clonedState.state;
-        let { activePlayers } = clonedState;
-        const { playerOrder } = clonedState.game;
-        const { wall } = clonedState.players[activePlayers[0]];
-        let { score } = clonedState.players[activePlayers[0]];
+        let nextState = state.state;
+        let { activePlayers } = state;
+        const { playerOrder } = state.game;
+        const { wall } = state.players[activePlayers[0]];
+        let { score } = state.players[activePlayers[0]];
 
         score += wall.filter((line) => !line.includes(null)).length * 2;
         score += wall.filter((_, index) => wall.every((line) => line[index] !== null)).length * 7;
@@ -36,11 +34,11 @@ module.exports = {
         }
 
         return {
-            ...clonedState,
+            ...state,
             players: {
-                ...clonedState.players,
-                [clonedState.activePlayers[0]]: {
-                    ...clonedState.players[clonedState.activePlayers[0]],
+                ...state.players,
+                [state.activePlayers[0]]: {
+                    ...state.players[state.activePlayers[0]],
                     score,
                 },
             },

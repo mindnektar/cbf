@@ -1,4 +1,3 @@
-const clone = require('clone');
 const states = require('../states');
 
 module.exports = {
@@ -32,9 +31,10 @@ module.exports = {
     },
 
     perform: ({ state, player, payload: [lineIndex] }) => {
-        const clonedState = clone(state);
-        const { discardedTiles } = clonedState.game;
-        const { patternLines, floorLine, hand } = clonedState.players[player.id];
+        const { discardedTiles } = state.game;
+        const patternLines = state.players[player.id].patternLines.map((line) => [...line]);
+        const floorLine = [...state.players[player.id].floorLine];
+        const hand = [...state.players[player.id].hand];
 
         if (lineIndex !== null) {
             while (hand.length > 0 && patternLines[lineIndex].length < lineIndex + 1) {
@@ -51,15 +51,15 @@ module.exports = {
         }
 
         return {
-            ...clonedState,
+            ...state,
             game: {
-                ...clonedState.game,
+                ...state.game,
                 discardedTiles,
             },
             players: {
-                ...clonedState.players,
+                ...state.players,
                 [player.id]: {
-                    ...clonedState.players[player.id],
+                    ...state.players[player.id],
                     floorLine,
                     patternLines,
                     hand,
