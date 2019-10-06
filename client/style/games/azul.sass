@@ -136,12 +136,8 @@
     flex-direction: column
     height: 475px
     justify-content: center
-    left: 160px
+    left: calc(50% - 320px)
     position: absolute
-
-    .azul--player-count-3 &,
-    .azul--player-count-4 &
-        left: 360px
 
     .azul__tile
         margin: 4px 0
@@ -173,7 +169,7 @@
 
     .azul__factory-center
         height: 230px
-        margin: 204px 0 0 210px
+        margin: 238px 0 0 210px
         width: 320px
 
 .azul__factory--display-count-9
@@ -227,6 +223,7 @@
             bottom: 50px
 
 .azul__factory-center
+    align-content: center
     align-items: center
     display: flex
     flex-wrap: wrap
@@ -236,7 +233,7 @@
     top: 0
 
     > div
-        margin: 0 4px
+        margin: 4px
 
 .azul__tile
     background-position: center

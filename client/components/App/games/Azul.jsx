@@ -10,19 +10,11 @@ import Factory from './Azul/Factory';
 
 const Azul = (props) => {
     const state = props.data.match.states[props.data.match.stateIndex];
-    const players = Object.entries(state.public.players).sort(([a], [b]) => {
-        if (props.data.me) {
-            if (a === props.data.me.id) {
-                return -1;
-            }
-
-            if (b === props.data.me.id) {
-                return 1;
-            }
-        }
-
-        return a.localeCompare(b);
-    });
+    const meInSeatingOrder = state.seatingOrder.indexOf(props.data.me.id);
+    const players = [
+        ...state.seatingOrder.slice(meInSeatingOrder),
+        ...state.seatingOrder.slice(0, meInSeatingOrder),
+    ].map((id) => [id, state.players[id]]);
 
     const renderPlayerArea = ([id, playerData], index) => {
         const { name } = props.data.match.players.find((player) => player.id === id);
@@ -45,12 +37,10 @@ const Azul = (props) => {
                         name={name}
                     />
 
-                    {props.data.me && id === props.data.me.id && (
-                        <Hand
-                            playerIndex={index}
-                            hand={state.public.game.hand}
-                        />
-                    )}
+                    <Hand
+                        playerIndex={index}
+                        hand={playerData.hand}
+                    />
                 </div>
             </PlayerArea>
         );
@@ -67,8 +57,8 @@ const Azul = (props) => {
                 {players.map(renderPlayerArea)}
 
                 <Factory
-                    centerTiles={state.public.game.centerTiles}
-                    factoryTiles={state.public.game.factoryTiles}
+                    centerTiles={state.game.centerTiles}
+                    factoryTiles={state.game.factoryTiles}
                 />
             </div>
         </div>

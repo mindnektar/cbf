@@ -12,8 +12,7 @@ module.exports = {
     },
 
     isValid: ({ state, player, payload: [lineIndex] }) => {
-        const { hand } = state.public.game;
-        const { patternLines, wall } = state.public.players[player.id];
+        const { patternLines, wall, hand } = state.players[player.id];
 
         if (state.state !== states.SELECT_PATTERN_LINE.id) {
             return false;
@@ -34,8 +33,8 @@ module.exports = {
 
     perform: ({ state, player, payload: [lineIndex] }) => {
         const clonedState = clone(state);
-        const { hand, discardedTiles } = clonedState.public.game;
-        const { patternLines, floorLine } = clonedState.public.players[player.id];
+        const { discardedTiles } = clonedState.game;
+        const { patternLines, floorLine, hand } = clonedState.players[player.id];
 
         if (lineIndex !== null) {
             while (hand.length > 0 && patternLines[lineIndex].length < lineIndex + 1) {
@@ -53,20 +52,17 @@ module.exports = {
 
         return {
             ...clonedState,
-            public: {
-                ...clonedState.public,
-                game: {
-                    ...clonedState.public.game,
-                    discardedTiles,
+            game: {
+                ...clonedState.game,
+                discardedTiles,
+            },
+            players: {
+                ...clonedState.players,
+                [player.id]: {
+                    ...clonedState.players[player.id],
+                    floorLine,
+                    patternLines,
                     hand,
-                },
-                players: {
-                    ...clonedState.public.players,
-                    [player.id]: {
-                        ...clonedState.public.players[player.id],
-                        floorLine,
-                        patternLines,
-                    },
                 },
             },
             state: states.END_TURN.id,

@@ -1,4 +1,5 @@
 import generateStates from '../../shared/helpers/generateStates';
+import randomizer from '../../shared/helpers/randomizer';
 import transaction from './helpers/transaction';
 import subscription from './helpers/subscription';
 import generateRandomSeed from '../helpers/generateRandomSeed';
@@ -145,7 +146,7 @@ export default {
                         payload,
                         player,
                         allPlayers: match.players,
-                        randomSeed,
+                        randomizer: randomSeed ? randomizer(randomSeed) : null,
                     });
 
                     stateIndex += 1;
@@ -176,7 +177,7 @@ export default {
                     currentState = action.perform({
                         state: currentState,
                         allPlayers: match.players,
-                        randomSeed,
+                        randomizer: randomSeed ? randomizer(randomSeed) : null,
                     });
 
                     stateIndex += 1;

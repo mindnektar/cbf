@@ -5,7 +5,7 @@ module.exports = {
     id: 1,
 
     toString: ({ me, state, payload: [, type] }) => {
-        const pickUpCount = state.public.game.hand.length;
+        const pickUpCount = state.players[me.id].hand.length;
         const tileMap = ['light blue', 'yellow', 'blue', 'red', 'black'];
 
         return `${me.name} picks up ${pickUpCount} ${tileMap[type]} tile${pickUpCount > 1 ? 's' : ''}.`;
@@ -17,18 +17,18 @@ module.exports = {
         }
 
         if (display === null) {
-            return type !== 5 && state.public.game.centerTiles.includes(type);
+            return type !== 5 && state.game.centerTiles.includes(type);
         }
 
-        return state.public.game.factoryTiles[display].includes(type);
+        return state.game.factoryTiles[display].includes(type);
     },
 
     perform: ({ state, player, payload: [display, type] }) => {
         const clonedState = clone(state);
-        let { centerTiles } = clonedState.public.game;
-        const { factoryTiles } = clonedState.public.game;
+        let { centerTiles } = clonedState.game;
+        const { factoryTiles } = clonedState.game;
         let pickUpCount;
-        const { floorLine } = clonedState.public.players[player.id];
+        const { floorLine } = clonedState.players[player.id];
 
         if (display === null) {
             pickUpCount = centerTiles.filter((tile) => tile === type).length;
@@ -48,20 +48,17 @@ module.exports = {
 
         return {
             ...clonedState,
-            public: {
-                ...clonedState.public,
-                game: {
-                    ...clonedState.public.game,
-                    centerTiles,
-                    factoryTiles,
+            game: {
+                ...clonedState.game,
+                centerTiles,
+                factoryTiles,
+            },
+            players: {
+                ...clonedState.players,
+                [player.id]: {
+                    ...clonedState.players[player.id],
+                    floorLine,
                     hand: Array(pickUpCount).fill(type),
-                },
-                players: {
-                    ...clonedState.public.players,
-                    [player.id]: {
-                        ...clonedState.public.players[player.id],
-                        floorLine,
-                    },
                 },
             },
             state: states.SELECT_PATTERN_LINE.id,

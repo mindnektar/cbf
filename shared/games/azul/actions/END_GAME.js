@@ -11,7 +11,7 @@ module.exports = {
                 ...result,
                 {
                     id: current.id,
-                    score: state.public.players[current.id].score,
+                    score: state.players[current.id].score,
                 },
             ], [])
             .sort((a, b) => a.score < b.score)

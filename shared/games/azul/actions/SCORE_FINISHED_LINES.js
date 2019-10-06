@@ -1,5 +1,4 @@
 const clone = require('clone');
-const shuffle = require('knuth-shuffle-seeded');
 const states = require('../states');
 const assets = require('../assets');
 
@@ -8,7 +7,7 @@ module.exports = {
     isServerAction: true,
 
     toString: ({ me, state, previousState }) => {
-        const score = state.public.players[me.id].score - previousState.public.players[me.id].score;
+        const score = state.players[me.id].score - previousState.players[me.id].score;
 
         return `${me.name} scores ${score} point${score !== 1 ? 's' : ''}.`;
     },
@@ -17,21 +16,21 @@ module.exports = {
         state.state === states.SCORE_FINISHED_LINES.id
     ),
 
-    perform: ({ state, randomSeed }) => {
+    perform: ({ state, randomizer }) => {
         const clonedState = clone(state);
         let nextState = clonedState.state;
-        const { factoryTiles } = clonedState.public.game;
+        const { factoryTiles } = clonedState.game;
         let {
             centerTiles,
             discardedTiles,
             gameEndTriggered,
             nextStartPlayer,
             playerOrder,
-        } = clonedState.public.game;
+            remainingTiles,
+        } = clonedState.game;
         let { activePlayers } = clonedState;
-        const { patternLines, wall } = clonedState.public.players[activePlayers[0]];
-        let { floorLine, score } = clonedState.public.players[activePlayers[0]];
-        let { remainingTiles } = clonedState.private.game;
+        const { patternLines, wall } = clonedState.players[activePlayers[0]];
+        let { floorLine, score } = clonedState.players[activePlayers[0]];
 
         patternLines.forEach((patternLine, index) => {
             if (patternLine.length === index + 1) {
@@ -88,10 +87,8 @@ module.exports = {
 
         score = Math.max(0, score - negatives);
 
-        const firstPlayerTokenIndex = floorLine.indexOf(5);
-
-        if (firstPlayerTokenIndex >= 0) {
-            centerTiles = floorLine.splice(firstPlayerTokenIndex, 1);
+        if (floorLine.indexOf(5) === 0) {
+            centerTiles = floorLine.splice(0, 1);
             [nextStartPlayer] = activePlayers;
         }
 
@@ -115,7 +112,7 @@ module.exports = {
                 activePlayers = [nextStartPlayer];
 
                 for (let i = 0; i < factoryTiles.length; i += 1) {
-                    let currentTiles = remainingTiles.splice(0, 4);
+                    let currentTiles = randomizer.draw(remainingTiles, 4);
 
                     if (currentTiles.length < 4) {
                         if (discardedTiles.length === 0) {
@@ -123,11 +120,11 @@ module.exports = {
                             break;
                         }
 
-                        remainingTiles = shuffle(discardedTiles, randomSeed);
+                        remainingTiles = discardedTiles;
                         discardedTiles = [];
                         currentTiles = [
                             ...currentTiles,
-                            ...remainingTiles.splice(0, 4 - currentTiles.length),
+                            ...randomizer.draw(remainingTiles, 4 - currentTiles.length),
                         ];
                     }
 
@@ -140,33 +137,24 @@ module.exports = {
 
         return {
             ...clonedState,
-            public: {
-                ...clonedState.public,
-                game: {
-                    ...clonedState.public.game,
-                    centerTiles,
-                    discardedTiles,
-                    factoryTiles,
-                    gameEndTriggered,
-                    nextStartPlayer,
-                    playerOrder,
-                },
-                players: {
-                    ...clonedState.public.players,
-                    [clonedState.activePlayers[0]]: {
-                        ...clonedState.public.players[clonedState.activePlayers[0]],
-                        floorLine,
-                        patternLines,
-                        score,
-                        wall,
-                    },
-                },
+            game: {
+                ...clonedState.game,
+                centerTiles,
+                discardedTiles,
+                factoryTiles,
+                gameEndTriggered,
+                nextStartPlayer,
+                playerOrder,
+                remainingTiles,
             },
-            private: {
-                ...clonedState.private,
-                game: {
-                    ...clonedState.private.game,
-                    remainingTiles,
+            players: {
+                ...clonedState.players,
+                [clonedState.activePlayers[0]]: {
+                    ...clonedState.players[clonedState.activePlayers[0]],
+                    floorLine,
+                    patternLines,
+                    score,
+                    wall,
                 },
             },
             state: nextState,

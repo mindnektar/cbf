@@ -1,3 +1,4 @@
+import randomizer from './randomizer';
 import azul from '../games/azul';
 import fiveTribes from '../games/five-tribes';
 
@@ -21,7 +22,7 @@ export default (match, states = []) => (
                 payload,
                 player,
                 allPlayers: match.players,
-                randomSeed,
+                randomizer: randomSeed ? randomizer(randomSeed) : null,
             }),
         ];
     }, states)

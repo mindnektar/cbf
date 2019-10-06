@@ -15,7 +15,7 @@ module.exports = {
 
     perform: ({ state, player }) => {
         const clonedState = clone(state);
-        const { centerTiles, factoryTiles, playerOrder } = clonedState.public.game;
+        const { centerTiles, factoryTiles, playerOrder } = clonedState.game;
         let nextState;
         let activePlayers;
 
