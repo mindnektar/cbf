@@ -5,7 +5,7 @@ import Action from '../../helpers/Action';
 import Tile from '../Tile';
 
 const PatternLines = (props) => {
-    const isReversedPlayer = props.playerIndex % 2 === 1;
+    const isReversedPlayer = [1, 2].includes(props.playerIndex);
 
     return (
         <div className="azul__pattern-lines">

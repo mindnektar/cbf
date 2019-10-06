@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withRouter } from 'react-router-dom';
+import MatchContext from 'contexts/MatchContext';
 import games from 'data/games';
 import GameModel from 'models/play/game';
 
@@ -46,6 +47,12 @@ const Table = (props) => {
         && props.data.me
         && activePlayers.includes(props.data.me.id)
     );
+    const matchContextData = {
+        match: props.data.match,
+        me: props.data.me,
+        performAction: props.performAction,
+        pushActions: props.pushActions,
+    };
 
     return (
         <div
@@ -62,7 +69,9 @@ const Table = (props) => {
             </div>
 
             <div className="cbf-table__content">
-                {props.children}
+                <MatchContext.Provider value={matchContextData}>
+                    {props.children}
+                </MatchContext.Provider>
             </div>
         </div>
     );
@@ -72,6 +81,10 @@ Table.propTypes = {
     children: PropTypes.node.isRequired,
     match: PropTypes.object.isRequired,
     data: PropTypes.object.isRequired,
+    performAction: PropTypes.func.isRequired,
+    pushActions: PropTypes.func.isRequired,
 };
 
-export default withRouter(GameModel.graphql(Table));
+export default withRouter(GameModel.graphql(React.memo(Table, (prevProps, nextProps) => (
+    prevProps.data.match.stateIndex === nextProps.data.match.stateIndex
+))));

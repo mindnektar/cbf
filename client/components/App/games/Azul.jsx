@@ -1,23 +1,22 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { useContext } from 'react';
 import classNames from 'classnames';
-import { withRouter } from 'react-router-dom';
-import GameModel from 'models/play/game';
+import MatchContext from 'contexts/MatchContext';
 import PlayerArea from './helpers/PlayerArea';
 import Board from './Azul/Board';
 import Hand from './Azul/Hand';
 import Factory from './Azul/Factory';
 
-const Azul = (props) => {
-    const state = props.data.match.states[props.data.match.stateIndex];
-    const meInSeatingOrder = state.seatingOrder.indexOf(props.data.me.id);
+const Azul = () => {
+    const { match, me } = useContext(MatchContext);
+    const state = match.states[match.stateIndex];
+    const meInSeatingOrder = state.seatingOrder.indexOf(me.id);
     const players = [
         ...state.seatingOrder.slice(meInSeatingOrder),
         ...state.seatingOrder.slice(0, meInSeatingOrder),
     ].map((id) => [id, state.players[id]]);
 
     const renderPlayerArea = ([id, playerData], index) => {
-        const { name } = props.data.match.players.find((player) => player.id === id);
+        const { name } = match.players.find((player) => player.id === id);
 
         return (
             <PlayerArea
@@ -33,7 +32,7 @@ const Azul = (props) => {
                     <Board
                         playerIndex={index}
                         player={playerData}
-                        actionsDisabled={!props.data.me || id !== props.data.me.id}
+                        actionsDisabled={!me || id !== me.id}
                         name={name}
                     />
 
@@ -65,10 +64,4 @@ const Azul = (props) => {
     );
 };
 
-Azul.propTypes = {
-    data: PropTypes.object.isRequired,
-};
-
-export default withRouter(GameModel.graphql(React.memo(Azul, (prevProps, nextProps) => (
-    prevProps.data.match.stateIndex === nextProps.data.match.stateIndex
-))));
+export default Azul;

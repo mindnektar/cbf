@@ -1,22 +1,23 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withRouter } from 'react-router-dom';
-import performAction from 'helpers/performAction';
-import GameModel from 'models/play/game';
+import MatchContext from 'contexts/MatchContext';
+import handleAction from 'helpers/handleAction';
 
 const Action = (props) => {
     if (props.disabled) {
         return props.children;
     }
 
+    const { match, me, performAction, pushActions } = useContext(MatchContext);
     const [style, setStyle] = useState(null);
     const childRef = useRef();
-    const state = props.data.match.states[props.data.match.stateIndex];
+    const state = match.states[match.stateIndex];
     const isActive = props.action.isValid({
         state,
-        player: props.data.me,
+        player: me,
         payload: props.payload,
     });
 
@@ -35,17 +36,17 @@ const Action = (props) => {
             width: (childRect.width / scale),
             height: (childRect.height / scale),
         });
-    }, [props.data.match.states.length]);
+    }, [match.states.length]);
 
     const onClick = () => {
         if (isActive) {
-            performAction({
-                match: props.data.match,
+            handleAction({
+                match: match,
                 action: props.action,
                 payload: props.payload,
-                player: props.data.me,
-                pushActions: props.pushActions,
-                performAction: props.performAction,
+                player: me,
+                pushActions,
+                performAction,
             });
         }
     };
@@ -78,10 +79,7 @@ Action.propTypes = {
     action: PropTypes.object.isRequired,
     children: PropTypes.node.isRequired,
     match: PropTypes.object.isRequired,
-    data: PropTypes.object.isRequired,
     payload: PropTypes.array,
-    pushActions: PropTypes.func.isRequired,
-    performAction: PropTypes.func.isRequired,
     disabled: PropTypes.bool,
     offset: PropTypes.shape({
         top: PropTypes.number,
@@ -89,4 +87,4 @@ Action.propTypes = {
     }),
 };
 
-export default withRouter(GameModel.graphql(Action));
+export default withRouter(Action);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import classNames from 'classnames';
@@ -8,134 +8,115 @@ import Table from './Arena/Table';
 import Sidebar from './Arena/Sidebar';
 import Status from './Arena/Status';
 
-class Arena extends React.Component {
-    state = {
-        moving: false,
-        x: 0,
-        y: 0,
-        zoom: 1,
+const Arena = (props) => {
+    const [moving, setMoving] = useState(false);
+    const [x, setX] = useState(0);
+    const [y, setY] = useState(0);
+    const [zoom, setZoom] = useState(1);
+    let minimumZoom = 1;
+    const arenaRef = useRef();
+
+    useEffect(() => {
+        if (props.data.match.status === 'SETTING_UP') {
+            props.history.replace(`/play/${props.data.match.id}/setup`);
+        } else if (props.data.match.status === 'OPEN') {
+            props.history.replace(`/play/${props.data.match.id}/lobby`);
+        }
+
+        if (arenaRef.current) {
+            arenaRef.current.addEventListener('mousewheel', changeZoom);
+            arenaRef.current.addEventListener('DOMMouseScroll', changeZoom);
+
+            initZoom();
+        }
+
+        return () => {
+            if (arenaRef.current) {
+                arenaRef.current.removeEventListener('mousewheel', changeZoom);
+                arenaRef.current.removeEventListener('DOMMouseScroll', changeZoom);
+            }
+        };
+    }, []);
+
+    const onMouseDown = () => {
+        setMoving(true);
     };
 
-    componentWillMount() {
-        if (this.props.data.match.status === 'SETTING_UP') {
-            this.props.history.replace(`/play/${this.props.data.match.id}/setup`);
-        } else if (this.props.data.match.status === 'OPEN') {
-            this.props.history.replace(`/play/${this.props.data.match.id}/lobby`);
-        }
-    }
+    const onMouseLeave = () => {
+        setMoving(false);
+    };
 
-    componentDidMount() {
-        if (!this.arenaRef) {
-            return;
-        }
-
-        this.arenaRef.addEventListener('mousewheel', this.changeZoom);
-        this.arenaRef.addEventListener('DOMMouseScroll', this.changeZoom);
-
-        this.setZoom();
-    }
-
-    componentWillUnmount() {
-        if (!this.arenaRef) {
-            return;
-        }
-
-        this.arenaRef.removeEventListener('mousewheel', this.changeZoom);
-        this.arenaRef.removeEventListener('DOMMouseScroll', this.changeZoom);
-    }
-
-    onMouseDown = () => {
-        this.setState({ moving: true });
-    }
-
-    onMouseLeave = () => {
-        this.setState({ moving: false });
-    }
-
-    onMouseMove = (event) => {
-        if (this.state.moving) {
+    const onMouseMove = (event) => {
+        if (moving) {
             const movement = { x: event.movementX, y: event.movementY };
 
-            this.setState((prevState) => ({
-                x: prevState.x - (movement.x / prevState.zoom),
-                y: prevState.y - (movement.y / prevState.zoom),
-            }));
+            setX(x - (movement.x / zoom));
+            setY(y - (movement.y / zoom));
         }
-    }
+    };
 
-    onMouseUp = () => {
-        this.setState({ moving: false });
-    }
+    const onMouseUp = () => {
+        setMoving(false);
+    };
 
-    setArenaRef = (ref) => {
-        this.arenaRef = ref;
-    }
-
-    setZoom = () => {
+    const initZoom = () => {
         const { offsetHeight, offsetWidth } = document.querySelector('.cbf-table');
         const heightRatio = (window.innerHeight - 300) / offsetHeight;
         const widthRatio = (window.innerWidth - 400) / offsetWidth;
-        const zoom = heightRatio < widthRatio ? heightRatio : widthRatio;
+        const nextZoom = heightRatio < widthRatio ? heightRatio : widthRatio;
 
-        this.setState({
-            zoom,
-            minimumZoom: zoom,
-        });
-    }
+        setZoom(nextZoom);
+        minimumZoom = nextZoom;
+    };
 
-    changeZoom = (event) => {
+    const changeZoom = (event) => {
         event.preventDefault();
 
         const delta = event.deltaY ? event.deltaY / 400 : event.detail / 100;
 
-        this.setState((prevState) => ({
-            zoom: Math.max(
-                prevState.minimumZoom,
+        setZoom((prevZoom) => (
+            Math.max(
+                minimumZoom,
                 Math.min(
-                    prevState.minimumZoom * 5,
-                    prevState.zoom - delta
+                    minimumZoom * 5,
+                    prevZoom - delta
                 )
-            ),
-        }));
-    }
+            )
+        ));
+    };
 
-    render() {
-        return this.props.data.match.status === 'ACTIVE' && (
-            <>
-                <Status />
+    return props.data.match.status === 'ACTIVE' && (
+        <>
+            <Status />
 
-                <Sidebar
-                    isGameFinished={this.props.data.match.status === 'FINISHED'}
-                    players={this.props.data.match.players}
-                />
+            <Sidebar
+                isGameFinished={props.data.match.status === 'FINISHED'}
+                players={props.data.match.players}
+            />
 
+            <div
+                className={classNames(
+                    'cbf-arena',
+                    { 'cbf-arena--moving': moving }
+                )}
+                onMouseDown={onMouseDown}
+                onMouseLeave={onMouseLeave}
+                onMouseMove={onMouseMove}
+                onMouseUp={onMouseUp}
+                ref={arenaRef}
+            >
                 <div
-                    className={classNames(
-                        'cbf-arena',
-                        { 'cbf-arena--moving': this.state.moving }
-                    )}
-                    onMouseDown={this.onMouseDown}
-                    onMouseLeave={this.onMouseLeave}
-                    onMouseMove={this.onMouseMove}
-                    onMouseUp={this.onMouseUp}
-                    onScroll={this.onScroll}
-                    ref={this.setArenaRef}
+                    className="cbf-arena__canvas"
+                    style={{ transform: `scale(${zoom}) translate(${-x}px, ${-y}px)` }}
                 >
-                    <div
-                        className="cbf-arena__canvas"
-                        style={{
-                            transform: `scale(${this.state.zoom}) translate(${-this.state.x}px, ${-this.state.y}px)`,
-                        }}
-                    >
-                        <Table>
-                            {React.createElement(gameComponents[this.props.data.match.handle])}
-                        </Table>
-                    </div>
+                    <Table>
+                        {React.createElement(gameComponents[props.data.match.handle])}
+                    </Table>
                 </div>
-            </>
-        );
-    }
-}
+            </div>
+        </>
+    );
+};
 
 Arena.propTypes = {
     data: PropTypes.object.isRequired,

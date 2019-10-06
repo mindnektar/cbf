@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Tile from '../Tile';
 
 const Wall = (props) => {
-    const isReversedPlayer = props.playerIndex % 2 === 1;
+    const isReversedPlayer = [1, 2].includes(props.playerIndex);
     const alteredWall = isReversedPlayer ? [...props.wall].reverse() : props.wall;
 
     const renderLine = (line, lineIndex) => {

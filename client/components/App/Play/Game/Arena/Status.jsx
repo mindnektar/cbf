@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import performAction from 'helpers/performAction';
+import handleAction from 'helpers/handleAction';
 import games from 'data/games';
 import GameModel from 'models/play/game';
 import Button from 'atoms/Button';
@@ -49,7 +49,7 @@ const Status = (props) => {
     };
 
     const endTurn = () => {
-        performAction({
+        handleAction({
             match: props.data.match,
             action: games[props.data.match.handle].actions.END_TURN,
             player: props.data.me,
