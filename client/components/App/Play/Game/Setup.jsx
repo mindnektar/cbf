@@ -31,7 +31,12 @@ const Setup = (props) => {
     }, []);
 
     const openMatch = async () => {
-        await props.openMatch(props.data.match.id);
+        await props.openMatch({
+            id: props.data.match.id,
+            options: [
+                { type: 'num-players', values: numPlayers },
+            ],
+        });
 
         props.history.replace(`/play/${props.data.match.id}/lobby`);
     };

@@ -30,6 +30,10 @@ export default class GameModel extends BaseModel {
                         name
                         score
                     }
+                    options {
+                        type
+                        values
+                    }
                     actions {
                         randomSeed
                         type
@@ -133,10 +137,14 @@ export default class GameModel extends BaseModel {
 
     static mutations = [{
         mutation: `
-            mutation openMatch($id: ID!) {
-                openMatch(id: $id) {
+            mutation openMatch($input: OpenMatchInput!) {
+                openMatch(input: $input) {
                     id
                     status
+                    options {
+                        type
+                        values
+                    }
                 }
             }
         `,

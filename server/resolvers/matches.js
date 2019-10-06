@@ -6,6 +6,7 @@ import generateRandomSeed from '../helpers/generateRandomSeed';
 import { IllegalArgumentError } from '../errors';
 import Match from '../models/Match';
 import MatchMessage from '../models/MatchMessage';
+import MatchOption from '../models/MatchOption';
 import Action from '../models/Action';
 
 export default {
@@ -33,9 +34,9 @@ export default {
                 })
             ))
         ),
-        openMatch: (parent, { id }, { auth }, info) => (
+        openMatch: (parent, { input }, { auth }, info) => (
             transaction(async (trx) => {
-                const match = await Match.query(trx).findById(id);
+                const match = await Match.query(trx).findById(input.id);
 
                 if (
                     !match
@@ -47,17 +48,31 @@ export default {
 
                 await match.$query(trx).patch({ status: Match.STATUS.OPEN });
 
+                await MatchOption.query(trx).insert(input.options.map((option) => ({
+                    match_id: match.id,
+                    type: option.type,
+                    values: option.values,
+                })));
+
                 return match.$graphqlLoadRelated(trx, info);
             })
         ),
         joinMatch: (parent, { id }, { auth, pubsub }, info) => (
             transaction(async (trx) => {
-                const match = await Match.query(trx).eager('players').findById(id);
+                const match = await Match.query(trx).eager('[players, options]').findById(id);
 
                 if (
                     !match
                     || match.status !== Match.STATUS.OPEN
                     || match.players.some((player) => player.id === auth.id)
+                    || (
+                        match.players.length === match.options
+                            .find(({ type }) => type === 'num-players')
+                            .values
+                            .reduce((result, current) => (
+                                current > result ? current : result
+                            ), 0)
+                    )
                 ) {
                     throw new IllegalArgumentError();
                 }
@@ -73,21 +88,25 @@ export default {
         ),
         startMatch: (parent, { id }, { auth }, info) => (
             transaction(async (trx) => {
-                const match = await Match.query(trx).eager('players').findById(id);
+                const match = await Match.query(trx).eager('[players, options]').findById(id);
 
                 if (
                     !match
                     || match.status !== Match.STATUS.OPEN
                     || match.creatorUserId !== auth.id
+                    || (
+                        !match.options
+                            .find(({ type }) => type === 'num-players')
+                            .values
+                            .includes(match.players.length)
+                    )
                 ) {
                     throw new IllegalArgumentError();
                 }
 
                 const setupAction = require(`../../shared/games/${match.handle}/actions/SETUP`);
 
-                await match.$query(trx).patch({
-                    status: Match.STATUS.ACTIVE,
-                });
+                await match.$query(trx).patch({ status: Match.STATUS.ACTIVE });
 
                 await Action.query(trx).insert({
                     index: 0,

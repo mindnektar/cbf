@@ -8,12 +8,17 @@ import Headline from 'atoms/Headline';
 
 class OpenGames extends React.Component {
     getMatches() {
-        return this.props.data.matches.filter((game) => {
-            const { playerCount } = games[game.handle];
+        return this.props.data.matches.filter((match) => {
+            const maxPlayerCount = match.options
+                .find(({ type }) => type === 'num-players')
+                .values
+                .reduce((result, current) => (
+                    current > result ? current : result
+                ), 0);
 
             return (
-                !game.players.some(({ id }) => id === this.props.data.me.id)
-                && game.players.length < playerCount[playerCount.length - 1]
+                !match.players.some(({ id }) => id === this.props.data.me.id)
+                && match.players.length < maxPlayerCount
             );
         });
     }

@@ -5,7 +5,7 @@ type Query {
 
 type Mutation {
     createMatch(input: CreateMatchInput!): Match!
-    openMatch(id: ID!): Match!
+    openMatch(input: OpenMatchInput!): Match!
     joinMatch(id: ID!): Match!
     startMatch(id: ID!): Match!
     pushActions(input: PushActionsInput!): Match!
@@ -26,6 +26,7 @@ type Match {
     players: [User!]!
     creator: User!
     messages: [MatchMessage!]!
+    options: [MatchOption!]!
 }
 
 type MatchMessage {
@@ -34,6 +35,12 @@ type MatchMessage {
     author: User!
     text: String!
     createdAt: DateTime!
+}
+
+type MatchOption {
+    match: Match!
+    type: String!
+    values: JSON!
 }
 
 type Action {
@@ -58,6 +65,16 @@ input MatchFilter {
 
 input CreateMatchInput {
     handle: String!
+}
+
+input OpenMatchInput {
+    id: ID!
+    options: [MatchOptionInput!]!
+}
+
+input MatchOptionInput {
+    type: String!
+    values: JSON!
 }
 
 input PushActionsInput {

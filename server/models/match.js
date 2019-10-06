@@ -72,6 +72,14 @@ class Match extends BaseModel {
                     to: 'match_message.match_id',
                 },
             },
+            options: {
+                relation: BaseModel.HasManyRelation,
+                modelClass: 'MatchOption',
+                join: {
+                    from: 'match.id',
+                    to: 'match_option.match_id',
+                },
+            },
         };
     }
 

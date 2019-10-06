@@ -2,17 +2,16 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import GameModel from 'models/play/game';
-import games from 'data/games';
 import Button from 'atoms/Button';
 import Headline from 'atoms/Headline';
 
 const Lobby = (props) => {
-    const possiblePlayers = [...games[props.data.match.handle].playerCount];
+    const { players, options } = props.data.match;
+    const possiblePlayers = options.find(({ type }) => type === 'num-players').values;
     const hasValidPlayerCount = possiblePlayers.includes(props.data.match.players.length);
     const maxPlayerCount = possiblePlayers.reduce((result, current) => (
         current > result ? current : result
     ), 0);
-    const { players } = props.data.match;
 
     useEffect(() => {
         if (props.data.match.status === 'SETTING_UP') {

@@ -25,6 +25,10 @@ export default class PlayModel extends BaseModel {
                         id
                         name
                     }
+                    options {
+                        type
+                        values
+                    }
                 }
             }
         `,
