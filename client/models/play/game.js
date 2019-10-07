@@ -119,6 +119,7 @@ export default class GameModel extends BaseModel {
                 subscription actionsPushed {
                     actionsPushed {
                         id
+                        status
                         actions {
                             randomSeed
                             type
@@ -128,14 +129,25 @@ export default class GameModel extends BaseModel {
                                 name
                             }
                         }
+                        players {
+                            id
+                            name
+                            score
+                        }
                         states @client
                     }
                 }
             `,
             cacheUpdatePath: ({ item }) => ({
                 match: {
+                    status: {
+                        $set: item.status,
+                    },
                     actions: {
                         $set: item.actions,
+                    },
+                    players: {
+                        $set: item.players,
                     },
                 },
             }),
@@ -212,6 +224,7 @@ export default class GameModel extends BaseModel {
             mutation pushActions($input: PushActionsInput!) {
                 pushActions(input: $input) {
                     id
+                    status
                     actions {
                         randomSeed
                         type
@@ -220,6 +233,11 @@ export default class GameModel extends BaseModel {
                             id
                             name
                         }
+                    }
+                    players {
+                        id
+                        name
+                        scores
                     }
                     states @client
                     stateIndex @client

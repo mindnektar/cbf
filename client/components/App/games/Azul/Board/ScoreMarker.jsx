@@ -6,8 +6,8 @@ const ScoreMarker = (props) => {
     const style = { left: 25.5, top: tops[0] };
 
     if (props.score !== 0) {
-        style.left = 5 + (20.5 * (props.score % 20));
-        style.top = tops[Math.ceil(props.score / 20)];
+        style.left = 25.5 + (20.5 * ((props.score - 1) % 20));
+        style.top = tops[Math.ceil((props.score - 1) / 20)];
     }
 
     return (

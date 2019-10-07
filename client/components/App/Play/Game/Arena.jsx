@@ -98,7 +98,7 @@ const Arena = (props) => {
         ));
     };
 
-    return props.data.match.status === 'ACTIVE' && (
+    return ['ACTIVE', 'FINISHED'].includes(props.data.match.status) && (
         <>
             <Status />
 

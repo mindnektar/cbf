@@ -122,9 +122,10 @@ module.exports = {
 
                         remainingTiles = discardedTiles;
                         discardedTiles = [];
+                        const a = randomizer.draw(remainingTiles, 4 - currentTiles.length);console.log(a);
                         currentTiles = [
                             ...currentTiles,
-                            ...randomizer.draw(remainingTiles, 4 - currentTiles.length),
+                            ...a,
                         ];
                     }
 

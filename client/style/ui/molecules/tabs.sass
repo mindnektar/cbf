@@ -1,0 +1,34 @@
+.cbf-ui-tabs
+    position: relative
+
+.cbf-ui-tabs--dark
+    .cbf-ui-tabs__bar
+        border-bottom-color: $color-light
+
+    .cbf-ui-tabs__tab
+        color: $color-light
+
+    .cbf-ui-tabs__tab--active
+        background-color: $color-light
+        color: $color-primary-dark
+
+.cbf-ui-tabs__bar
+    border-bottom: 2px solid $color-primary
+    display: flex
+    font-size: .9em
+    margin-bottom: 12px
+    overflow: hidden
+    text-align: center
+
+.cbf-ui-tabs__tab
+    border-bottom: none
+    border-radius: 8px 8px 0 0
+    color: $color-primary
+    cursor: pointer
+    padding: 4px 8px
+    transition-duration: 300ms
+    transition-property: background-color, color
+
+.cbf-ui-tabs__tab--active
+    background-color: $color-primary
+    color: $color-white

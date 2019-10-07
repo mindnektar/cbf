@@ -2,24 +2,33 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ListModel from 'models/play/list';
 import LoadingContainer from 'molecules/LoadingContainer';
+import Tabs from 'molecules/Tabs';
 import AllGames from './List/AllGames';
-import MyGames from './List/MyGames';
-import OpenGames from './List/OpenGames';
-import FinishedGames from './List/FinishedGames';
+import MyMatches from './List/MyMatches';
+import OpenInvitations from './List/OpenInvitations';
 
 const List = (props) => {
-    const renderContent = () => (
-        <>
-            {props.data.me && (
-                <>
-                    <MyGames />
-                    <OpenGames />
-                </>
-            )}
+    const renderContent = () => {
+        let tabs = { 'All games': AllGames };
 
-            <AllGames />
-        </>
-    );
+        if (props.data.me) {
+            tabs = {
+                'My matches': MyMatches,
+                'Open invitations': OpenInvitations,
+                ...tabs,
+            };
+        }
+
+        return (
+            <>
+                <Tabs tabs={Object.keys(tabs)}>
+                    {Object.values(tabs).map((TabContent, index) => (
+                        <TabContent key={index} />
+                    ))}
+                </Tabs>
+            </>
+        );
+    };
 
     return (
         <LoadingContainer>

@@ -1,0 +1,59 @@
+.cbf-game-list--small
+    .cbf-game-list__item
+        padding: 8px
+
+    .cbf-game-list__item-image
+        height: 32px
+        width: 32px
+
+    .cbf-game-list__item-content
+        align-items: center
+        flex-direction: row
+
+    .cbf-game-list__item-details
+        display: flex
+
+        > div
+            font-size: .8em
+            margin-bottom: 0
+            margin-right: 16px
+            vertical-align: baseline
+
+    .cbf-game-list__item-title
+        border: none
+
+.cbf-game-list__item
+    background-color: $color-white
+    border: 2px solid $color-primary
+    border-radius: 8px
+    box-shadow: $shadow
+    display: flex
+    margin-bottom: 12px
+    padding: 12px
+
+.cbf-game-list__item-image
+    flex-shrink: 0
+    height: 200px
+    margin-right: 24px
+    width: 200px
+
+    img
+        width: 100%
+
+.cbf-game-list__item-content
+    display: flex
+    flex-direction: column
+    flex-grow: 1
+    justify-content: space-between
+
+.cbf-game-list__item-details
+    > div
+        margin-bottom: 8px
+
+.cbf-game-list__item-title
+    border-bottom: 1px dotted $color-primary
+    font-size: 2em
+    font-weight: bold
+
+.cbf-game-list__item-options
+    display: flex
