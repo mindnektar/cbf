@@ -6,9 +6,9 @@ import Button from 'atoms/Button';
 import Headline from 'atoms/Headline';
 
 const Lobby = (props) => {
-    const { players, options } = props.data.match;
+    const { participants, options } = props.data.match;
     const possiblePlayers = options.find(({ type }) => type === 'num-players').values;
-    const hasValidPlayerCount = possiblePlayers.includes(props.data.match.players.length);
+    const hasValidPlayerCount = possiblePlayers.includes(participants.length);
     const maxPlayerCount = possiblePlayers.reduce((result, current) => (
         current > result ? current : result
     ), 0);
@@ -28,7 +28,7 @@ const Lobby = (props) => {
     };
 
     const renderPlayerSlot = (_, index) => {
-        const player = players[index] || {
+        const player = participants[index] ? participants[index].player : {
             id: index,
             name: <span className="cbf-game-lobby__player-empty">Waiting for player...</span>,
         };

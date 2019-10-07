@@ -17,7 +17,7 @@ const Status = (props) => {
         }
 
         if (props.data.match.status === 'FINISHED') {
-            const winners = determineRanks(props.data.match.scores).filter(({ rank }) => (
+            const winners = determineRanks(props.data.match.participants).filter(({ rank }) => (
                 rank === 1
             ));
 
@@ -31,9 +31,9 @@ const Status = (props) => {
         }
 
         if (!props.data.me || !state.activePlayers.includes(props.data.me.id)) {
-            const playerList = props.data.match.players
-                .filter(({ id }) => state.activePlayers.includes(id))
-                .map(({ name }) => `${name}'s`)
+            const playerList = props.data.match.participants
+                .filter(({ player }) => state.activePlayers.includes(player.id))
+                .map(({ player }) => `${player.name}'s`)
                 .join(' and ');
 
             return `It's ${playerList} turn.`;

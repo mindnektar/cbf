@@ -150,9 +150,11 @@ export const resolvers = {
                                     name
                                 }
                             }
-                            players {
-                                id
-                                name
+                            participants {
+                                player {
+                                    id
+                                    name
+                                }
                             }
                             states
                         }

@@ -27,25 +27,25 @@ const History = (props) => {
             <div className="cbf-history__scores">
                 Game over!
 
-                {determineRanks(props.scores).map((score) => (
+                {determineRanks(props.participants).map(({ player, rank, scores }) => (
                     <div
                         className="cbf-history__scores-player"
-                        key={score.player.id}
+                        key={player.id}
                     >
                         <span
                             className={classNames(
                                 'cbf-history__scores-player-name',
-                                { 'cbf-history__scores-player-name--winner': score.rank === 1 }
+                                { 'cbf-history__scores-player-name--winner': rank === 1 }
                             )}
                         >
                             #
-                            {score.rank}
+                            {rank}
                             :&nbsp;
-                            {score.player.name}
+                            {player.name}
                         </span>
 
                         &nbsp;(
-                        {games[props.data.match.handle].actions.END_GAME.formatScores(score.values)}
+                        {games[props.data.match.handle].actions.END_GAME.formatScores(scores)}
                         )
                     </div>
                 ))}
@@ -75,14 +75,14 @@ const History = (props) => {
         const actionText = games[props.data.match.handle].actions.findById(type).toString({
             me: (
                 props.data.match.actions[index].player
-                || props.data.match.players.find(({ id }) => (
-                    id === props.data.match.states[index - 1].activePlayers[0]
-                ))
+                || props.participants.find((participant) => (
+                    participant.player.id === props.data.match.states[index - 1].activePlayers[0]
+                )).player
             ),
             payload,
             state: gameState,
             previousState: props.data.match.states[index - 1],
-            players: props.data.match.players,
+            players: props.participants.map((participant) => participant.player),
         });
 
         if (!actionText) {
@@ -134,8 +134,7 @@ const History = (props) => {
 History.propTypes = {
     data: PropTypes.object.isRequired,
     isGameFinished: PropTypes.bool.isRequired,
-    players: PropTypes.array.isRequired,
-    scores: PropTypes.array.isRequired,
+    participants: PropTypes.array.isRequired,
     goToAction: PropTypes.func.isRequired,
 };
 

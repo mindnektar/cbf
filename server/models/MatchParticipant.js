@@ -1,8 +1,8 @@
 import BaseModel from './_base';
 
-class MatchScore extends BaseModel {
+class MatchParticipant extends BaseModel {
     static get tableName() {
-        return 'match_score';
+        return 'match_participant';
     }
 
     static get idColumn() {
@@ -13,7 +13,8 @@ class MatchScore extends BaseModel {
         return {
             type: 'object',
             properties: {
-                values: { type: 'array' },
+                confirmed: { type: 'boolean' },
+                scores: { type: ['array', 'null'] },
                 createdAt: { type: 'string' },
                 updatedAt: { type: 'string' },
             },
@@ -26,7 +27,7 @@ class MatchScore extends BaseModel {
                 relation: BaseModel.BelongsToOneRelation,
                 modelClass: 'Match',
                 join: {
-                    from: 'match_score.match_id',
+                    from: 'match_participant.match_id',
                     to: 'match.id',
                 },
             },
@@ -34,7 +35,7 @@ class MatchScore extends BaseModel {
                 relation: BaseModel.BelongsToOneRelation,
                 modelClass: 'User',
                 join: {
-                    from: 'match_score.user_id',
+                    from: 'match_participant.user_id',
                     to: 'user.id',
                 },
             },
@@ -42,4 +43,4 @@ class MatchScore extends BaseModel {
     }
 }
 
-export default MatchScore;
+export default MatchParticipant;

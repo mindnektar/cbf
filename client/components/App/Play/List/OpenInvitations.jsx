@@ -18,7 +18,7 @@ const OpenInvitations = (props) => {
                 action={{ label: 'Join game', handler: joinMatch }}
             >
                 {(match) => (
-                    match.players.map((player) => (
+                    match.participants.map(({ player }) => (
                         <div key={player.id}>
                             {player.name}
                         </div>

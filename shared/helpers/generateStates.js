@@ -24,7 +24,7 @@ export default (match, states = []) => (
                 state: prevState ? clone(prevState) : null,
                 payload,
                 player,
-                allPlayers: match.players,
+                allPlayers: match.participants.map((participant) => participant.player),
                 randomizer: randomSeed ? randomizer(randomSeed) : null,
             }),
         ];

@@ -1,8 +1,8 @@
-export default (scores) => {
-    const sortedScores = [...scores].sort((a, b) => {
-        for (let i = 0; i < a.values.length; i += 1) {
-            if (a.values[i] !== b.values[i]) {
-                return b.values[i] - a.values[i];
+export default (participants) => {
+    const sortedParticipants = [...participants].sort((a, b) => {
+        for (let i = 0; i < a.scores.length; i += 1) {
+            if (a.scores[i] !== b.scores[i]) {
+                return b.scores[i] - a.scores[i];
             }
         }
 
@@ -11,16 +11,16 @@ export default (scores) => {
 
     let lastRank;
 
-    return sortedScores.map((score, index) => {
+    return sortedParticipants.map((participant, index) => {
         lastRank = (
-            !sortedScores[index - 1]
-            || !sortedScores[index - 1].values.every((value, valueIndex) => (
-                score.values[valueIndex] >= value
+            !sortedParticipants[index - 1]
+            || !sortedParticipants[index - 1].scores.every((value, valueIndex) => (
+                participant.scores[valueIndex] >= value
             ))
         ) ? index + 1 : lastRank;
 
         return {
-            ...score,
+            ...participant,
             rank: lastRank,
         };
     });

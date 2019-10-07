@@ -28,8 +28,8 @@ const List = (props) => {
                     ), 0);
 
                 return (
-                    !match.players.some(({ id }) => id === props.data.me.id)
-                    && match.players.length < maxPlayerCount
+                    !match.participants.some(({ player }) => player.id === props.data.me.id)
+                    && match.participants.length < maxPlayerCount
                 );
             });
 

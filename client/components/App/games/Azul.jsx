@@ -15,7 +15,7 @@ const Azul = (props) => {
     ].map((id) => [id, state.players[id]]);
 
     const renderPlayerArea = ([id, playerData], index) => {
-        const { name } = props.match.players.find((player) => player.id === id);
+        const { name } = props.match.participants.find(({ player }) => player.id === id).player;
 
         return (
             <PlayerArea
@@ -24,6 +24,7 @@ const Azul = (props) => {
                 playerCount={players.length}
                 data={[
                     { label: 'Score', value: playerData.score },
+                    { label: 'Rows', value: playerData.wall.filter((line) => !line.includes(null)).length },
                 ]}
                 key={id}
             >

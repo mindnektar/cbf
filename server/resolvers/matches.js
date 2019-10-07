@@ -8,7 +8,7 @@ import { IllegalArgumentError } from '../errors';
 import Match from '../models/Match';
 import MatchMessage from '../models/MatchMessage';
 import MatchOption from '../models/MatchOption';
-import MatchScore from '../models/MatchScore';
+import MatchParticipant from '../models/MatchParticipant';
 import Action from '../models/Action';
 
 export default {
@@ -22,19 +22,23 @@ export default {
     },
     Mutation: {
         createMatch: (parent, { input }, { auth }, info) => (
-            transaction((trx) => (
-                Match.query(trx).graphqlEager(info).insertGraph({
-                    handle: input.handle,
-                    creator: {
-                        id: auth.id,
-                    },
-                    players: [{
-                        id: auth.id,
-                    }],
-                }, {
-                    relate: true,
-                })
-            ))
+            transaction(async (trx) => {
+                const match = await Match.query(trx)
+                    .returning('*')
+                    .insert({
+                        handle: input.handle,
+                        creator_user_id: auth.id,
+                    })
+                    .first();
+
+                await MatchParticipant.query(trx).insert({
+                    match_id: match.id,
+                    user_id: auth.id,
+                    confirmed: true,
+                });
+
+                return match.$graphqlLoadRelated(trx, info);
+            })
         ),
         openMatch: (parent, { input }, { auth, pubsub }, info) => (
             transaction(async (trx) => {
@@ -65,14 +69,14 @@ export default {
         ),
         joinMatch: (parent, { id }, { auth, pubsub }, info) => (
             transaction(async (trx) => {
-                const match = await Match.query(trx).eager('[players, options]').findById(id);
+                const match = await Match.query(trx).eager('[participants, options]').findById(id);
 
                 if (
                     !match
                     || match.status !== Match.STATUS.OPEN
-                    || match.players.some((player) => player.id === auth.id)
+                    || match.participants.some(({ userId }) => userId === auth.id)
                     || (
-                        match.players.length === match.options
+                        match.participants.length === match.options
                             .find(({ type }) => type === 'num-players')
                             .values
                             .reduce((result, current) => (
@@ -83,7 +87,11 @@ export default {
                     throw new IllegalArgumentError();
                 }
 
-                await match.$relatedQuery('players', trx).relate(auth.id);
+                await MatchParticipant.query(trx).insert({
+                    match_id: match.id,
+                    user_id: auth.id,
+                    confirmed: true,
+                });
 
                 const result = await match.$graphqlLoadRelated(trx, info);
 
@@ -94,7 +102,7 @@ export default {
         ),
         startMatch: (parent, { id }, { auth, pubsub }, info) => (
             transaction(async (trx) => {
-                const match = await Match.query(trx).eager('[players, options]').findById(id);
+                const match = await Match.query(trx).eager('[participants, options]').findById(id);
 
                 if (
                     !match
@@ -104,7 +112,7 @@ export default {
                         !match.options
                             .find(({ type }) => type === 'num-players')
                             .values
-                            .includes(match.players.length)
+                            .includes(match.participants.length)
                     )
                 ) {
                     throw new IllegalArgumentError();
@@ -131,13 +139,13 @@ export default {
         pushActions: (parent, { input }, { auth, pubsub }, info) => (
             transaction(async (trx) => {
                 const match = await Match.query(trx)
-                    .eager('[players, actions.player]')
+                    .eager('[participants.player, actions.player]')
                     .findById(input.id);
 
                 if (
                     !match
                     || match.status !== Match.STATUS.ACTIVE
-                    || !match.players.some(({ id }) => id === auth.id)
+                    || !match.participants.some(({ player }) => player.id === auth.id)
                 ) {
                     throw new IllegalArgumentError();
                 }
@@ -157,7 +165,9 @@ export default {
 
                 const newActions = input.actions.map(({ type, payload }) => {
                     action = actions.findById(type);
-                    const player = match.players.find(({ id }) => id === auth.id);
+                    const { player } = match.participants.find((participant) => (
+                        participant.player.id === auth.id
+                    ));
                     const isValid = action.isValid({
                         state: currentState,
                         player,
@@ -174,7 +184,7 @@ export default {
                         state: clone(currentState),
                         payload,
                         player,
-                        allPlayers: match.players,
+                        allPlayers: match.participants.map((participant) => participant.player),
                         randomizer: randomSeed ? randomizer(randomSeed) : null,
                     });
 
@@ -205,7 +215,7 @@ export default {
 
                     currentState = action.perform({
                         state: clone(currentState),
-                        allPlayers: match.players,
+                        allPlayers: match.participants.map((participant) => participant.player),
                         randomizer: randomSeed ? randomizer(randomSeed) : null,
                     });
 
@@ -220,12 +230,14 @@ export default {
                 }
 
                 if (action.isEndGameAction) {
-                    await MatchScore.query(trx).insert((
-                        action.getScores({ state: currentState }).map((player) => ({
-                            match_id: match.id,
-                            user_id: player.id,
-                            values: player.scores,
-                        }))
+                    await Promise.all((
+                        action.getScores({ state: currentState }).map(async (player) => {
+                            await MatchParticipant.query(trx)
+                                .findById([match.id, player.id])
+                                .patch({
+                                    values: player.scores,
+                                });
+                        })
                     ));
                     await match.$query(trx).patch({ status: 'FINISHED' });
                 }
@@ -240,10 +252,10 @@ export default {
         createMessage: (parent, { input }, { auth, pubsub }, info) => (
             transaction(async (trx) => {
                 const match = await Match.query(trx)
-                    .eager('[players]')
+                    .eager('[participants]')
                     .findById(input.id);
 
-                if (!match || !match.players.some(({ id }) => id === auth.id)) {
+                if (!match || !match.participants.some(({ player }) => player.id === auth.id)) {
                     throw new IllegalArgumentError();
                 }
 
@@ -262,32 +274,28 @@ export default {
     Subscription: {
         ...subscription('matchOpened', (payload, variables, context, info) => (
             Match.fromJson(payload).$graphqlLoadRelated(info)
-        ), async (payload, variables, { auth }) => (
-            payload.authorUserId !== auth.id
         )),
         ...subscription('playerJoined', (payload, variables, context, info) => (
-            Match.fromJson(payload).$graphqlLoadRelated(info, { players: {} })
-        ), async (payload, variables, { auth }) => (
-            payload.players.some(({ id }) => id === auth.id)
+            Match.fromJson(payload).$graphqlLoadRelated(info)
         )),
         ...subscription('matchStarted', (payload, variables, context, info) => (
-            Match.fromJson(payload).$graphqlLoadRelated(info, { players: {} })
+            Match.fromJson(payload).$graphqlLoadRelated(info, { participants: {} })
         ), async (payload, variables, { auth }) => (
-            payload.players.some(({ id }) => id === auth.id)
+            payload.participants.some(({ userId }) => userId === auth.id)
         )),
         ...subscription('actionsPushed', (payload, variables, context, info) => (
             Match.query().findById(payload.id).graphqlEager(info)
         ), async (payload, variables, { auth }) => {
-            const match = await Match.query().findById(payload.id).eager('players');
+            const match = await Match.query().findById(payload.id).eager('participants');
 
-            return match.players.some(({ id }) => id === auth.id);
+            return match.participants.some(({ userId }) => userId === auth.id);
         }),
         ...subscription('messageCreated', (payload, variables, context, info) => (
             Match.query().findById(payload.id).graphqlEager(info)
         ), async (payload, variables, { auth }) => {
-            const match = await Match.query().findById(payload.id).eager('players');
+            const match = await Match.query().findById(payload.id).eager('participants');
 
-            return match.players.some(({ id }) => id === auth.id);
+            return match.participants.some(({ userId }) => userId === auth.id);
         }),
     },
 };

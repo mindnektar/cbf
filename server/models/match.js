@@ -41,16 +41,12 @@ class Match extends BaseModel {
                     to: 'user.id',
                 },
             },
-            players: {
-                relation: BaseModel.ManyToManyRelation,
-                modelClass: 'User',
+            participants: {
+                relation: BaseModel.HasManyRelation,
+                modelClass: 'MatchParticipant',
                 join: {
                     from: 'match.id',
-                    through: {
-                        from: 'match_participant.match_id',
-                        to: 'match_participant.user_id',
-                    },
-                    to: 'user.id',
+                    to: 'match_participant.match_id',
                 },
             },
             actions: {
@@ -77,14 +73,6 @@ class Match extends BaseModel {
                 join: {
                     from: 'match.id',
                     to: 'match_option.match_id',
-                },
-            },
-            scores: {
-                relation: BaseModel.HasManyRelation,
-                modelClass: 'MatchScore',
-                join: {
-                    from: 'match.id',
-                    to: 'match_score.match_id',
                 },
             },
         };

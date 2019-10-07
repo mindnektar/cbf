@@ -12,9 +12,13 @@ export default class GameModel extends BaseModel {
                         id
                         handle
                         status
-                        players {
-                            id
-                            name
+                        participants {
+                            player {
+                                id
+                                name
+                            }
+                            confirmed
+                            scores
                         }
                     }
                 }
@@ -25,16 +29,13 @@ export default class GameModel extends BaseModel {
                     creator {
                         id
                     }
-                    players {
-                        id
-                        name
-                    }
-                    scores {
-                        values
+                    participants {
                         player {
                             id
                             name
                         }
+                        confirmed
+                        scores
                     }
                     options {
                         type
@@ -74,17 +75,21 @@ export default class GameModel extends BaseModel {
                 subscription playerJoined {
                     playerJoined {
                         id
-                        players {
-                            id
-                            name
+                        participants {
+                            player {
+                                id
+                                name
+                            }
+                            confirmed
+                            scores
                         }
                     }
                 }
             `,
             cacheUpdatePath: ({ item }) => ({
                 match: {
-                    players: {
-                        $set: item.players,
+                    participants: {
+                        $set: item.participants,
                     },
                 },
             }),
@@ -134,16 +139,13 @@ export default class GameModel extends BaseModel {
                                 name
                             }
                         }
-                        players {
-                            id
-                            name
-                        }
-                        scores {
-                            values
+                        participants {
                             player {
                                 id
                                 name
                             }
+                            confirmed
+                            scores
                         }
                         states @client
                     }
@@ -157,8 +159,8 @@ export default class GameModel extends BaseModel {
                     actions: {
                         $set: item.actions,
                     },
-                    players: {
-                        $set: item.players,
+                    participants: {
+                        $set: item.participants,
                     },
                 },
             }),
@@ -245,16 +247,13 @@ export default class GameModel extends BaseModel {
                             name
                         }
                     }
-                    players {
-                        id
-                        name
-                    }
-                    scores {
-                        values
+                    participants {
                         player {
                             id
                             name
                         }
+                        confirmed
+                        scores
                     }
                     states @client
                     stateIndex @client

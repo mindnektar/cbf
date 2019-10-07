@@ -25,11 +25,18 @@ type Match {
     status: MatchStatus!
     handle: String!
     actions: [Action!]!
+    participants: [MatchParticipant!]!
     players: [User!]!
     creator: User!
     messages: [MatchMessage!]!
     options: [MatchOption!]!
-    scores: [MatchScore!]!
+}
+
+type MatchParticipant {
+    match: Match!
+    player: User!
+    confirmed: Boolean!
+    scores: JSON
 }
 
 type MatchMessage {
@@ -43,12 +50,6 @@ type MatchMessage {
 type MatchOption {
     match: Match!
     type: String!
-    values: JSON!
-}
-
-type MatchScore {
-    match: Match!
-    player: User!
     values: JSON!
 }
 

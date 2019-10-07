@@ -11,16 +11,13 @@ export default class PlayModel extends BaseModel {
                         id
                         handle
                         status
-                        players {
-                            id
-                            name
-                        }
-                        scores {
-                            values
+                        participants {
                             player {
                                 id
                                 name
                             }
+                            confirmed
+                            scores
                         }
                     }
                 }
@@ -28,9 +25,13 @@ export default class PlayModel extends BaseModel {
                     id
                     handle
                     status
-                    players {
-                        id
-                        name
+                    participants {
+                        player {
+                            id
+                            name
+                        }
+                        confirmed
+                        scores
                     }
                     options {
                         type
@@ -51,9 +52,13 @@ export default class PlayModel extends BaseModel {
                         id
                         handle
                         status
-                        players {
-                            id
-                            name
+                        participants {
+                            player {
+                                id
+                                name
+                            }
+                            confirmed
+                            scores
                         }
                         options {
                             type
@@ -73,6 +78,37 @@ export default class PlayModel extends BaseModel {
                     },
                 };
             },
+        }, {
+            subscription: `
+                subscription playerJoined {
+                    playerJoined {
+                        id
+                        participants {
+                            player {
+                                id
+                                name
+                            }
+                            confirmed
+                            scores
+                        }
+                    }
+                }
+            `,
+            cacheUpdatePath: ({ item, cacheData }) => {
+                if (cacheData.matches.some(({ id }) => id === item.id)) {
+                    return {};
+                }
+
+                return {
+                    matches: {
+                        [cacheData.matches.findIndex(({ id }) => id === item.id)]: {
+                            participants: {
+                                $set: item.participants,
+                            },
+                        },
+                    },
+                };
+            },
         }],
     }
 
@@ -81,18 +117,22 @@ export default class PlayModel extends BaseModel {
             mutation joinMatch($id: ID!) {
                 joinMatch(id: $id) {
                     id
-                    players {
-                        id
-                        name
+                    participants {
+                        player {
+                            id
+                            name
+                        }
+                        confirmed
+                        scores
                     }
                 }
             }
         `,
         optimisticResponse: ({ props, mutationVariables }) => ({
             __typename: 'Match',
-            players: [
-                ...props.data.matches.find(({ id }) => id === mutationVariables.id).players,
-                props.data.me,
+            participants: [
+                ...props.data.matches.find(({ id }) => id === mutationVariables.id).participants,
+                { player: props.data.me, confirmed: true, scores: null },
             ],
         }),
     }, {
@@ -102,9 +142,13 @@ export default class PlayModel extends BaseModel {
                     id
                     handle
                     status
-                    players {
-                        id
-                        name
+                    participants {
+                        player {
+                            id
+                            name
+                        }
+                        confirmed
+                        scores
                     }
                 }
             }
@@ -113,7 +157,7 @@ export default class PlayModel extends BaseModel {
             __typename: 'Match',
             id: null,
             status: 'SETTING_UP',
-            players: [props.data.me],
+            participants: [{ player: props.data.me, confirmed: true, scores: null }],
         }),
         cacheUpdatePath: ({ item }) => ({
             me: {

@@ -104,8 +104,7 @@ const Arena = (props) => {
 
             <Sidebar
                 isGameFinished={props.data.match.status === 'FINISHED'}
-                players={props.data.match.players}
-                scores={props.data.match.scores}
+                participants={props.data.match.participants}
             />
 
             <div

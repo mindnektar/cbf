@@ -25,7 +25,7 @@ const MyMatches = (props) => {
                 action={{ label: 'Open game', handler: openMatch }}
             >
                 {(match) => (
-                    match.players.map((player) => (
+                    match.participants.map(({ player }) => (
                         <div key={player.id}>
                             {player.name}
                         </div>
@@ -41,23 +41,23 @@ const MyMatches = (props) => {
                 small
             >
                 {(match) => (
-                    determineRanks(match.scores).map((score) => (
-                        <div key={score.player.id}>
+                    determineRanks(match.participants).map(({ player, rank, scores }) => (
+                        <div key={player.id}>
                             <div
                                 className={classNames(
                                     'cbf-my-matches__finished-name',
-                                    { 'cbf-my-matches__finished-name--winner': score.rank === 1 }
+                                    { 'cbf-my-matches__finished-name--winner': rank === 1 }
                                 )}
                             >
                                 #
-                                {score.rank}
+                                {rank}
                                 :&nbsp;
-                                {score.player.name}
+                                {player.name}
                             </div>
 
                             <div className="cbf-my-matches__finished-score">
                                 (
-                                {games[match.handle].actions.END_GAME.formatScores(score.values)}
+                                {games[match.handle].actions.END_GAME.formatScores(scores)}
                                 )
                             </div>
                         </div>
