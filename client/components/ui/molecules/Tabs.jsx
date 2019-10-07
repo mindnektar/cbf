@@ -24,7 +24,7 @@ const Tabs = (props) => {
                             { 'cbf-ui-tabs__tab--active': index === activeTab }
                         )}
                         onClick={changeTabHandler(index)}
-                        key={label}
+                        key={index}
                     >
                         {label}
                     </div>
@@ -43,7 +43,7 @@ Tabs.defaultProps = {
 };
 
 Tabs.propTypes = {
-    tabs: PropTypes.arrayOf(PropTypes.string).isRequired,
+    tabs: PropTypes.arrayOf(PropTypes.node).isRequired,
     children: PropTypes.node.isRequired,
     dark: PropTypes.bool,
 };

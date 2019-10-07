@@ -25,6 +25,7 @@ export default class PlayModel extends BaseModel {
                     players {
                         id
                         name
+                        score
                     }
                     options {
                         type

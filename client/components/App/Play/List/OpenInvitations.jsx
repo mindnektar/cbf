@@ -5,20 +5,6 @@ import ListModel from 'models/play/list';
 import GameList from './GameList';
 
 const OpenInvitations = (props) => {
-    const matches = props.data.matches.filter((match) => {
-        const maxPlayerCount = match.options
-            .find(({ type }) => type === 'num-players')
-            .values
-            .reduce((result, current) => (
-                current > result ? current : result
-            ), 0);
-
-        return (
-            !match.players.some(({ id }) => id === props.data.me.id)
-            && match.players.length < maxPlayerCount
-        );
-    });
-
     const joinMatch = async (match) => {
         await props.joinMatch(match.id);
 
@@ -27,7 +13,7 @@ const OpenInvitations = (props) => {
 
     return (
         <GameList
-            matches={matches}
+            matches={props.matches}
             action={{ label: 'Join game', handler: joinMatch }}
         >
             {(match) => (
@@ -42,7 +28,7 @@ const OpenInvitations = (props) => {
 };
 
 OpenInvitations.propTypes = {
-    data: PropTypes.object.isRequired,
+    matches: PropTypes.array.isRequired,
     joinMatch: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
 };
