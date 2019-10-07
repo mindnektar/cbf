@@ -6,7 +6,7 @@ module.exports = {
     isEndGameAction: true,
 
     formatScores: (values) => (
-        [`${values[0]} points`, `${values[1]} rows`]
+        `${values[0]} point${values[0] !== 1 ? 's' : ''}, ${values[1]} row${values[1] !== 1 ? 's' : ''}`
     ),
 
     getScores: ({ state }) => (

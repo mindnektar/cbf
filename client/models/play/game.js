@@ -138,6 +138,13 @@ export default class GameModel extends BaseModel {
                             id
                             name
                         }
+                        scores {
+                            values
+                            player {
+                                id
+                                name
+                            }
+                        }
                         states @client
                     }
                 }

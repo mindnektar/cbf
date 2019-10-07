@@ -12,18 +12,20 @@ const OpenInvitations = (props) => {
     };
 
     return (
-        <GameList
-            matches={props.matches}
-            action={{ label: 'Join game', handler: joinMatch }}
-        >
-            {(match) => (
-                match.players.map((player) => (
-                    <div key={player.id}>
-                        {player.name}
-                    </div>
-                ))
-            )}
-        </GameList>
+        <div className="cbf-open-invitations">
+            <GameList
+                matches={props.matches}
+                action={{ label: 'Join game', handler: joinMatch }}
+            >
+                {(match) => (
+                    match.players.map((player) => (
+                        <div key={player.id}>
+                            {player.name}
+                        </div>
+                    ))
+                )}
+            </GameList>
+        </div>
     );
 };
 

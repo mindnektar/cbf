@@ -1,3 +1,5 @@
+import clone from 'clone';
+
 export default async ({ match, action, player, payload, pushActions, performAction }) => {
     if (action.isServerAction) {
         return pushActions({
@@ -16,7 +18,7 @@ export default async ({ match, action, player, payload, pushActions, performActi
     }
 
     const nextState = action.perform({
-        state: match.states[match.stateIndex],
+        state: clone(match.states[match.stateIndex]),
         payload,
         player,
         allPlayers: match.players,

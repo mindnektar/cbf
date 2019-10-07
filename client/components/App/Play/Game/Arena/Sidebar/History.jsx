@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withRouter } from 'react-router-dom';
+import determineRanks from 'helpers/determineRanks';
 import games from 'data/games';
 import GameModel from 'models/play/game';
 
@@ -15,6 +16,41 @@ const History = (props) => {
             index,
             historyMode: true,
         });
+    };
+
+    const renderResults = () => {
+        if (!props.isGameFinished) {
+            return null;
+        }
+
+        return (
+            <div className="cbf-history__scores">
+                Game over!
+
+                {determineRanks(props.scores).map((score) => (
+                    <div
+                        className="cbf-history__scores-player"
+                        key={score.player.id}
+                    >
+                        <span
+                            className={classNames(
+                                'cbf-history__scores-player-name',
+                                { 'cbf-history__scores-player-name--winner': score.rank === 1 }
+                            )}
+                        >
+                            #
+                            {score.rank}
+                            :&nbsp;
+                            {score.player.name}
+                        </span>
+
+                        &nbsp;(
+                        {games[props.data.match.handle].actions.END_GAME.formatScores(score.values)}
+                        )
+                    </div>
+                ))}
+            </div>
+        );
     };
 
     const renderMessage = (gameState, index) => {
@@ -84,29 +120,7 @@ const History = (props) => {
 
     return (
         <div className="cbf-history">
-            {props.isGameFinished && (
-                <div className="cbf-history__scores">
-                    Game over!
-
-                    {props.scores.sort((a, b) => b.values[0] - a.values[0]).map((score, index) => (
-                        <div
-                            className="cbf-history__scores-player"
-                            key={score.player.id}
-                        >
-                            <span>
-                                #
-                                {index + 1}
-                                :&nbsp;
-                            </span>
-
-                            {score.player.name}
-                            ,&nbsp;
-                            {score.values[0]}
-                            &nbsp;points
-                        </div>
-                    ))}
-                </div>
-            )}
+            {renderResults()}
 
             <div className="cbf-history__content">
                 {props.data.match.states.map((gameState, index) => (

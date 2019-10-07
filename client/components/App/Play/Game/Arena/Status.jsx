@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import handleAction from 'helpers/handleAction';
+import determineRanks from 'helpers/determineRanks';
 import games from 'data/games';
 import GameModel from 'models/play/game';
 import Button from 'atoms/Button';
@@ -16,9 +17,17 @@ const Status = (props) => {
         }
 
         if (props.data.match.status === 'FINISHED') {
-            const winner = props.data.match.players.sort((a, b) => b.score - a.score)[0];
+            const winners = determineRanks(props.data.match.scores).filter(({ rank }) => (
+                rank === 1
+            ));
 
-            return `${winner.name} won the game!`;
+            if (winners.length === 1) {
+                return `${winners[0].player.name} won the game!`;
+            }
+
+            const winnerNames = winners.map(({ player }) => player.name);
+
+            return `It's a tie between ${winnerNames.slice(0, -1).join(', ')} and ${winnerNames.pop()}!`;
         }
 
         if (!props.data.me || !state.activePlayers.includes(props.data.me.id)) {

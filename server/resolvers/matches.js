@@ -1,3 +1,4 @@
+import clone from 'clone';
 import generateStates from '../../shared/helpers/generateStates';
 import randomizer from '../../shared/helpers/randomizer';
 import transaction from './helpers/transaction';
@@ -170,7 +171,7 @@ export default {
                     const randomSeed = action.isServerAction ? generateRandomSeed() : null;
 
                     currentState = action.perform({
-                        state: currentState,
+                        state: clone(currentState),
                         payload,
                         player,
                         allPlayers: match.players,
@@ -203,7 +204,7 @@ export default {
                     const randomSeed = action.isServerAction ? generateRandomSeed() : null;
 
                     currentState = action.perform({
-                        state: currentState,
+                        state: clone(currentState),
                         allPlayers: match.players,
                         randomizer: randomSeed ? randomizer(randomSeed) : null,
                     });
