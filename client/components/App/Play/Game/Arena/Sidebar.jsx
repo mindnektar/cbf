@@ -16,6 +16,7 @@ const Sidebar = (props) => (
             <History
                 isGameFinished={props.isGameFinished}
                 players={props.players}
+                scores={props.scores}
             />
 
             <Chat />
@@ -26,6 +27,7 @@ const Sidebar = (props) => (
 Sidebar.propTypes = {
     isGameFinished: PropTypes.bool.isRequired,
     players: PropTypes.array.isRequired,
+    scores: PropTypes.array.isRequired,
 };
 
 export default Sidebar;

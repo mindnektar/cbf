@@ -17,7 +17,6 @@ type User {
     inviteCode: String!
     active: Boolean!
     isAdmin: Boolean!
-    score: Int
 }
 
 type LoginResult {

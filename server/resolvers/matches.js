@@ -7,6 +7,7 @@ import { IllegalArgumentError } from '../errors';
 import Match from '../models/Match';
 import MatchMessage from '../models/MatchMessage';
 import MatchOption from '../models/MatchOption';
+import MatchScore from '../models/MatchScore';
 import Action from '../models/Action';
 
 export default {
@@ -218,14 +219,14 @@ export default {
                 }
 
                 if (action.isEndGameAction) {
-                    await Match.query(trx).upsertGraph({
-                        id: match.id,
-                        status: 'FINISHED',
-                        players: action.getScores({
-                            state: currentState,
-                            players: match.players,
-                        }),
-                    }, { relate: true });
+                    await MatchScore.query(trx).insert((
+                        action.getScores({ state: currentState }).map((player) => ({
+                            match_id: match.id,
+                            user_id: player.id,
+                            values: player.scores,
+                        }))
+                    ));
+                    await match.$query(trx).patch({ status: 'FINISHED' });
                 }
 
                 await Action.query(trx).insert(newActions);

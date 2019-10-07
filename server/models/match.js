@@ -49,7 +49,6 @@ class Match extends BaseModel {
                     through: {
                         from: 'match_participant.match_id',
                         to: 'match_participant.user_id',
-                        extra: ['score'],
                     },
                     to: 'user.id',
                 },
@@ -78,6 +77,14 @@ class Match extends BaseModel {
                 join: {
                     from: 'match.id',
                     to: 'match_option.match_id',
+                },
+            },
+            scores: {
+                relation: BaseModel.HasManyRelation,
+                modelClass: 'MatchScore',
+                join: {
+                    from: 'match.id',
+                    to: 'match_score.match_id',
                 },
             },
         };

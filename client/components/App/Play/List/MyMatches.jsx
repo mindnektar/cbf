@@ -38,15 +38,15 @@ const MyMatches = (props) => {
                 small
             >
                 {(match) => (
-                    match.players.sort((a, b) => b.score - a.score).map((player, index) => (
-                        <div key={player.id}>
+                    match.scores.sort((a, b) => b.values[0] - a.values[0]).map((score, index) => (
+                        <div key={score.player.id}>
                             #
                             {index + 1}
                             :&nbsp;
-                            {player.name}
+                            {score.player.name}
                             &nbsp;
                             (
-                            {player.score}
+                            {score.values[0]}
                             &nbsp;points)
                         </div>
                     ))

@@ -32,9 +32,7 @@ module.exports = {
 
     perform: ({ state, player, payload: [lineIndex] }) => {
         const { discardedTiles } = state.game;
-        const patternLines = state.players[player.id].patternLines.map((line) => [...line]);
-        const floorLine = [...state.players[player.id].floorLine];
-        const hand = [...state.players[player.id].hand];
+        const { patternLines, floorLine, hand } = state.players[player.id];
 
         if (lineIndex !== null) {
             while (hand.length > 0 && patternLines[lineIndex].length < lineIndex + 1) {

@@ -29,6 +29,7 @@ type Match {
     creator: User!
     messages: [MatchMessage!]!
     options: [MatchOption!]!
+    scores: [MatchScore!]!
 }
 
 type MatchMessage {
@@ -42,6 +43,12 @@ type MatchMessage {
 type MatchOption {
     match: Match!
     type: String!
+    values: JSON!
+}
+
+type MatchScore {
+    match: Match!
+    player: User!
     values: JSON!
 }
 

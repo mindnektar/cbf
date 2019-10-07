@@ -1,3 +1,4 @@
+import clone from 'clone';
 import randomizer from './randomizer';
 import azul from '../games/azul';
 import fiveTribes from '../games/five-tribes';
@@ -15,10 +16,12 @@ export default (match, states = []) => (
             return result;
         }
 
+        const prevState = result[(states.length + index) - 1];
+
         return [
             ...result,
             action.perform({
-                state: result[(states.length + index) - 1] || null,
+                state: prevState ? clone(prevState) : null,
                 payload,
                 player,
                 allPlayers: match.players,

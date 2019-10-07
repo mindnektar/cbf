@@ -14,7 +14,13 @@ export default class PlayModel extends BaseModel {
                         players {
                             id
                             name
-                            score
+                        }
+                        scores {
+                            values
+                            player {
+                                id
+                                name
+                            }
                         }
                     }
                 }
@@ -25,7 +31,6 @@ export default class PlayModel extends BaseModel {
                     players {
                         id
                         name
-                        score
                     }
                     options {
                         type

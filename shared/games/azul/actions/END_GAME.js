@@ -5,16 +5,18 @@ module.exports = {
     isServerAction: true,
     isEndGameAction: true,
 
-    getScores: ({ state, players }) => (
-        players
-            .reduce((result, current) => [
-                ...result,
-                {
-                    id: current.id,
-                    score: state.players[current.id].score,
-                },
-            ], [])
-            .sort((a, b) => a.score < b.score)
+    formatScores: (values) => (
+        [`${values[0]} points`, `${values[1]} rows`]
+    ),
+
+    getScores: ({ state }) => (
+        Object.entries(state.players).map(([id, player]) => ({
+            id,
+            scores: [
+                player.score,
+                player.wall.filter((line) => !line.includes(null)).length,
+            ],
+        }))
     ),
 
     toString: () => (

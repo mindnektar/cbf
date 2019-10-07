@@ -28,7 +28,13 @@ export default class GameModel extends BaseModel {
                     players {
                         id
                         name
-                        score
+                    }
+                    scores {
+                        values
+                        player {
+                            id
+                            name
+                        }
                     }
                     options {
                         type
@@ -71,7 +77,6 @@ export default class GameModel extends BaseModel {
                         players {
                             id
                             name
-                            score
                         }
                     }
                 }
@@ -132,7 +137,6 @@ export default class GameModel extends BaseModel {
                         players {
                             id
                             name
-                            score
                         }
                         states @client
                     }
@@ -237,7 +241,13 @@ export default class GameModel extends BaseModel {
                     players {
                         id
                         name
-                        scores
+                    }
+                    scores {
+                        values
+                        player {
+                            id
+                            name
+                        }
                     }
                     states @client
                     stateIndex @client

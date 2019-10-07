@@ -8,7 +8,6 @@ import GameModel from 'models/play/game';
 const History = (props) => {
     let messageIndex = 0;
     let actionOwner = null;
-    const players = props.players.sort((a, b) => b.score - a.score);
 
     const switchGameStateHandler = (index) => () => {
         props.goToAction({
@@ -89,10 +88,10 @@ const History = (props) => {
                 <div className="cbf-history__scores">
                     Game over!
 
-                    {players.map((player, index) => (
+                    {props.scores.sort((a, b) => b.values[0] - a.values[0]).map((score, index) => (
                         <div
                             className="cbf-history__scores-player"
-                            key={player.id}
+                            key={score.player.id}
                         >
                             <span>
                                 #
@@ -100,9 +99,9 @@ const History = (props) => {
                                 :&nbsp;
                             </span>
 
-                            {player.name}
+                            {score.player.name}
                             ,&nbsp;
-                            {player.score}
+                            {score.values[0]}
                             &nbsp;points
                         </div>
                     ))}
@@ -122,6 +121,7 @@ History.propTypes = {
     data: PropTypes.object.isRequired,
     isGameFinished: PropTypes.bool.isRequired,
     players: PropTypes.array.isRequired,
+    scores: PropTypes.array.isRequired,
     goToAction: PropTypes.func.isRequired,
 };
 
