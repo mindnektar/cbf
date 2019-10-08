@@ -11,14 +11,16 @@ import Headline from 'atoms/Headline';
 import GameList from './GameList';
 
 const MyMatches = (props) => {
-    const invitations = props.data.me.matches.filter((match) => (
-        match.status === 'OPEN'
-        && !match.participants.find(({ player }) => player.id === props.data.me.id).confirmed
-    ));
-    const activeMatches = props.data.me.matches.filter((match) => (
-        match.status !== 'FINISHED'
-        && match.participants.find(({ player }) => player.id === props.data.me.id).confirmed
-    ));
+    const invitations = props.data.me.matches.filter((match) => {
+        const participant = match.participants.find(({ player }) => player.id === props.data.me.id);
+
+        return match.status === 'OPEN' && participant && !participant.confirmed;
+    });
+    const activeMatches = props.data.me.matches.filter((match) => {
+        const participant = match.participants.find(({ player }) => player.id === props.data.me.id);
+
+        return match.status !== 'FINISHED' && participant && participant.confirmed;
+    });
     const finishedMatches = props.data.me.matches.filter((match) => match.status === 'FINISHED');
 
     const openMatch = (match) => {

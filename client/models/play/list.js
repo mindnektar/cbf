@@ -205,7 +205,7 @@ export default class PlayModel extends BaseModel {
                 }
             `,
             cacheUpdatePath: ({ item, cacheData }) => {
-                if (cacheData.matches.some(({ id }) => id === item.id)) {
+                if (!cacheData.matches.some(({ id }) => id === item.id)) {
                     return {};
                 }
 
@@ -215,6 +215,11 @@ export default class PlayModel extends BaseModel {
                             participants: {
                                 $set: item.participants,
                             },
+                        },
+                    },
+                    me: {
+                        matches: {
+                            $removeById: item.id,
                         },
                     },
                 };

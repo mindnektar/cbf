@@ -172,7 +172,7 @@ export default {
 
                 const result = await match.$graphqlLoadRelated(trx, info);
 
-                pubsub.publish('matchStarted', result);
+                pubsub.publish('removedPlayerFromMatch', result);
 
                 return result;
             })
