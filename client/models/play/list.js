@@ -297,7 +297,7 @@ export default class PlayModel extends BaseModel {
                     __typename: 'MatchParticipant',
                     ...participant,
                 }))
-                .filter(({ player }) => player.id !== mutationVariables),
+                .filter(({ player }) => player.id !== mutationVariables.id),
         }),
         cacheUpdatePath: ({ item }) => ({
             me: {

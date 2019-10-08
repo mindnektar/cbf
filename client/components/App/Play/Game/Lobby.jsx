@@ -34,6 +34,13 @@ const Lobby = (props) => {
         });
     };
 
+    const removePlayerFromMatchHandler = (userId) => () => {
+        props.removePlayerFromMatch({
+            id: props.data.match.id,
+            userId,
+        })
+    }
+
     const renderPlayerSlot = (_, index) => {
         const participant = participants[index] || {
             player: {
@@ -41,6 +48,7 @@ const Lobby = (props) => {
                 name: <span className="cbf-game-lobby__player-empty">Waiting for player...</span>,
             },
             confirmed: false,
+            dummy: true,
         };
 
         return (
@@ -61,6 +69,15 @@ const Lobby = (props) => {
                     <div className="cbf-game-lobby__player-admin">
                         {participant.player.id === props.data.match.creator.id && 'Admin'}
                     </div>
+
+                    {!participant.confirmed && !participant.dummy && (
+                        <div
+                            className="cbf-game-lobby__player-remove"
+                            onClick={removePlayerFromMatchHandler(participant.player.id)}
+                        >
+                            Remove player
+                        </div>
+                    )}
                 </div>
             </div>
         );

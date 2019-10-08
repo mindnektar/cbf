@@ -307,6 +307,31 @@ export default class GameModel extends BaseModel {
         }),
     }, {
         mutation: `
+            mutation removePlayerFromMatch($input: RemovePlayerFromMatchInput!) {
+                removePlayerFromMatch(input: $input) {
+                    id
+                    participants {
+                        player {
+                            id
+                            name
+                        }
+                        confirmed
+                        scores
+                    }
+                }
+            }
+        `,
+        optimisticResponse: ({ props, mutationVariables }) => ({
+            __typename: 'Match',
+            participants: props.data.match.participants
+                .map((participant) => ({
+                    __typename: 'MatchParticipant',
+                    ...participant,
+                }))
+                .filter(({ player }) => player.id !== mutationVariables.id),
+        }),
+    }, {
+        mutation: `
             mutation startMatch($id: ID!) {
                 startMatch(id: $id) {
                     id
