@@ -54,6 +54,11 @@ export default {
 
                 await match.$query(trx).patch({ status: Match.STATUS.OPEN });
 
+                await MatchParticipant.query(trx).insert(input.players.map((id) => ({
+                    match_id: match.id,
+                    user_id: id,
+                })));
+
                 await MatchOption.query(trx).insert(input.options.map((option) => ({
                     match_id: match.id,
                     type: option.type,
@@ -96,6 +101,78 @@ export default {
                 const result = await match.$graphqlLoadRelated(trx, info);
 
                 pubsub.publish('playerJoined', result);
+
+                return result;
+            })
+        ),
+        confirmInvitation: (parent, { id }, { auth, pubsub }, info) => (
+            transaction(async (trx) => {
+                const match = await Match.query(trx)
+                    .eager('[participants.player]')
+                    .findById(id);
+
+                if (
+                    !match
+                    || match.status !== Match.STATUS.OPEN
+                    || !match.participants.some(({ player }) => player.id === auth.id)
+                ) {
+                    throw new IllegalArgumentError();
+                }
+
+                await MatchParticipant.query(trx)
+                    .findById([match.id, auth.id])
+                    .patch({ confirmed: true });
+
+                const result = await match.$graphqlLoadRelated(trx, info);
+
+                pubsub.publish('invitationConfirmed', result);
+
+                return result;
+            })
+        ),
+        declineInvitation: (parent, { id }, { auth, pubsub }, info) => (
+            transaction(async (trx) => {
+                const match = await Match.query(trx)
+                    .eager('[participants.player]')
+                    .findById(id);
+
+                if (
+                    !match
+                    || match.status !== Match.STATUS.OPEN
+                    || !match.participants.some(({ player }) => player.id === auth.id)
+                ) {
+                    throw new IllegalArgumentError();
+                }
+
+                await MatchParticipant.query(trx).deleteById([match.id, auth.id]);
+
+                const result = await match.$graphqlLoadRelated(trx, info);
+
+                pubsub.publish('invitationDeclined', result);
+
+                return result;
+            })
+        ),
+        removePlayerFromMatch: (parent, { input }, { auth, pubsub }, info) => (
+            transaction(async (trx) => {
+                const match = await Match.query(trx)
+                    .eager('[participants.player]')
+                    .findById(input.id);
+
+                if (
+                    !match
+                    || match.status !== Match.STATUS.OPEN
+                    || match.creatorUserId !== auth.id
+                    || !match.participants.some(({ player }) => player.id === input.userId)
+                ) {
+                    throw new IllegalArgumentError();
+                }
+
+                await MatchParticipant.query(trx).deleteById([match.id, input.userId]);
+
+                const result = await match.$graphqlLoadRelated(trx, info);
+
+                pubsub.publish('matchStarted', result);
 
                 return result;
             })
@@ -276,6 +353,15 @@ export default {
             Match.fromJson(payload).$graphqlLoadRelated(info)
         )),
         ...subscription('playerJoined', (payload, variables, context, info) => (
+            Match.fromJson(payload).$graphqlLoadRelated(info)
+        )),
+        ...subscription('invitationConfirmed', (payload, variables, context, info) => (
+            Match.fromJson(payload).$graphqlLoadRelated(info)
+        )),
+        ...subscription('invitationDeclined', (payload, variables, context, info) => (
+            Match.fromJson(payload).$graphqlLoadRelated(info)
+        )),
+        ...subscription('removedPlayerFromMatch', (payload, variables, context, info) => (
             Match.fromJson(payload).$graphqlLoadRelated(info)
         )),
         ...subscription('matchStarted', (payload, variables, context, info) => (

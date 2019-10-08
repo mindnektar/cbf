@@ -22,6 +22,10 @@
 
     .cbf-game-list__item-title
         border: none
+        display: block
+
+        div
+            margin-bottom: 0
 
 .cbf-game-list__item
     background-color: $color-white
@@ -52,9 +56,17 @@
         margin-bottom: 8px
 
 .cbf-game-list__item-title
+    align-items: flex-end
     border-bottom: 1px dotted $color-primary
+    display: flex
     font-size: 2em
     font-weight: bold
+    justify-content: space-between
+
+    div
+        font-size: .35em
+        font-weight: 400
+        margin-bottom: 4px
 
 .cbf-game-list__item-options
     display: flex

@@ -7,6 +7,9 @@ type Mutation {
     createMatch(input: CreateMatchInput!): Match!
     openMatch(input: OpenMatchInput!): Match!
     joinMatch(id: ID!): Match!
+    confirmInvitation(id: ID!): Match!
+    declineInvitation(id: ID!): Match!
+    removePlayerFromMatch(input: RemovePlayerFromMatchInput!): Match!
     startMatch(id: ID!): Match!
     pushActions(input: PushActionsInput!): Match!
     createMessage(input: CreateMessageInput!): Match!
@@ -15,6 +18,9 @@ type Mutation {
 type Subscription {
     matchOpened: Match!
     playerJoined: Match!
+    invitationConfirmed: Match!
+    invitationDeclined: Match!
+    removedPlayerFromMatch: Match!
     matchStarted: Match!
     actionsPushed: Match!
     messageCreated: Match!
@@ -24,6 +30,7 @@ type Match {
     id: ID!
     status: MatchStatus!
     handle: String!
+    createdAt: DateTime!
     actions: [Action!]!
     participants: [MatchParticipant!]!
     players: [User!]!
@@ -79,12 +86,18 @@ input CreateMatchInput {
 
 input OpenMatchInput {
     id: ID!
+    players: [ID!]!
     options: [MatchOptionInput!]!
 }
 
 input MatchOptionInput {
     type: String!
     values: JSON!
+}
+
+input RemovePlayerFromMatchInput {
+    id: ID!
+    userId: ID!
 }
 
 input PushActionsInput {

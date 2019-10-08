@@ -4,18 +4,40 @@
     border-radius: 8px
     color: $color-primary-dark
     margin-bottom: 16px
+    overflow: hidden
 
 .cbf-game-lobby__player
     align-items: center
     border-bottom: 2px solid $color-primary
     display: flex
-    padding: 12px
 
     &:last-child
         border-bottom: none
 
+.cbf-game-lobby__player--confirmed
+    background-color: $color-primary-lighter
+    color: $color-primary-darker
+
+    .cbf-game-lobby__player-confirmation
+        background-color: $color-primary
+        color: $color-white
+
+.cbf-game-lobby__player-confirmation
+    align-items: center
+    border-right: 2px solid $color-primary
+    color: $color-primary-lighter
+    display: flex
+    height: 44px
+    justify-content: center
+    width: 44px
+
+.cbf-game-lobby__player-info
+    align-items: center
+    display: flex
+    padding: 12px
+
 .cbf-game-lobby__player-empty
-    color: $color-primary
+    color: $color-primary-lighter
     font-style: italic
 
 .cbf-game-lobby__player-admin

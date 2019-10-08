@@ -20,7 +20,7 @@ const AllGames = (props) => {
                     handle: game.handle,
                     game,
                 }))}
-                action={{ label: 'Start new game', handler: createMatch }}
+                actions={[{ label: 'Start new game', handler: createMatch }]}
             >
                 {({ game }) => (
                     <>

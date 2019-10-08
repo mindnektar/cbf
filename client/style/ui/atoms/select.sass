@@ -1,0 +1,70 @@
+.cbf-ui-select
+    height: 32px
+    position: relative
+    width: 220px
+
+.cbf-ui-select--opened
+    .cbf-ui-select__options-wrapper
+        box-shadow: 0 5px 6px 0 rgba(black, .05)
+
+    .cbf-ui-select__current
+        background-color: $color-white
+
+.cbf-ui-select__current
+    align-items: center
+    background-color: $color-light
+    border-radius: 16px
+    box-sizing: border-box
+    cursor: pointer
+    display: flex
+    height: 32px
+    padding: 0 2px
+    position: relative
+    transition: 300ms background-color
+    z-index: 2
+
+    .cbf-ui-select__label
+        border-bottom: 0
+
+.cbf-ui-select__options-wrapper
+    background-color: $color-white
+    left: 0
+    overflow: hidden
+    position: fixed
+    transition: height 300ms
+    width: 100%
+    z-index: 1
+
+.cbf-ui-select__options
+    display: flex
+    flex-direction: column
+    justify-content: flex-end
+    padding-top: 16px
+
+.cbf-ui-select__option
+    align-items: center
+    cursor: pointer
+    display: flex
+    flex-shrink: 0
+    height: 32px
+    padding: 0 2px
+
+.cbf-ui-select__option:last-child
+    .cbf-ui-select__label
+        border-bottom: 0
+
+.cbf-ui-select__option:first-child
+    .cbf-ui-select__label
+        border-top: 1px solid #d8d8d8
+
+.cbf-ui-select__label
+    align-items: center
+    border-bottom: 1px solid #d8d8d8
+    box-sizing: border-box
+    display: flex
+    height: 100%
+    overflow: hidden
+    padding: 0 32px 0 8px
+    text-overflow: ellipsis
+    white-space: nowrap
+    width: 100%

@@ -12,6 +12,7 @@ export default class GameModel extends BaseModel {
                         id
                         handle
                         status
+                        createdAt
                         participants {
                             player {
                                 id
@@ -26,6 +27,7 @@ export default class GameModel extends BaseModel {
                     id
                     handle
                     status
+                    createdAt
                     creator {
                         id
                     }
@@ -65,6 +67,10 @@ export default class GameModel extends BaseModel {
                     globalParams @client
                     historyMode @client
                 }
+                users {
+                    id
+                    name
+                }
             }
         `,
         variables: (props) => ({
@@ -74,6 +80,75 @@ export default class GameModel extends BaseModel {
             subscription: `
                 subscription playerJoined {
                     playerJoined {
+                        id
+                        participants {
+                            player {
+                                id
+                                name
+                            }
+                            confirmed
+                            scores
+                        }
+                    }
+                }
+            `,
+            cacheUpdatePath: ({ item }) => ({
+                match: {
+                    participants: {
+                        $set: item.participants,
+                    },
+                },
+            }),
+        }, {
+            subscription: `
+                subscription invitationConfirmed {
+                    invitationConfirmed {
+                        id
+                        participants {
+                            player {
+                                id
+                                name
+                            }
+                            confirmed
+                            scores
+                        }
+                    }
+                }
+            `,
+            cacheUpdatePath: ({ item }) => ({
+                match: {
+                    participants: {
+                        $set: item.participants,
+                    },
+                },
+            }),
+        }, {
+            subscription: `
+                subscription invitationDeclined {
+                    invitationDeclined {
+                        id
+                        participants {
+                            player {
+                                id
+                                name
+                            }
+                            confirmed
+                            scores
+                        }
+                    }
+                }
+            `,
+            cacheUpdatePath: ({ item }) => ({
+                match: {
+                    participants: {
+                        $set: item.participants,
+                    },
+                },
+            }),
+        }, {
+            subscription: `
+                subscription removedPlayerFromMatch {
+                    removedPlayerFromMatch {
                         id
                         participants {
                             player {
@@ -197,6 +272,14 @@ export default class GameModel extends BaseModel {
                 openMatch(input: $input) {
                     id
                     status
+                    participants {
+                        player {
+                            id
+                            name
+                        }
+                        confirmed
+                        scores
+                    }
                     options {
                         type
                         values
@@ -207,9 +290,19 @@ export default class GameModel extends BaseModel {
         optimisticResponse: ({ mutationVariables }) => ({
             __typename: 'Match',
             status: 'OPEN',
+            participants: mutationVariables.players.map((id) => ({
+                __typename: 'MatchParticipant',
+                player: {
+                    __typename: 'User',
+                    id,
+                    name: null,
+                },
+                confirmed: false,
+                scores: null,
+            })),
             options: mutationVariables.options.map((option) => ({
-                ...option,
                 __typename: 'MatchOption',
+                ...option,
             })),
         }),
     }, {
