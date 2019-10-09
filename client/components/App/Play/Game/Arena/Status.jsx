@@ -53,7 +53,7 @@ const Status = (props) => {
             ));
 
             if (winners.length === 1) {
-                return `${winners[0].player.name} won the game!`;
+                return `${winners[0].player.name} won the match!`;
             }
 
             const winnerNames = winners.map(({ player }) => player.name);
@@ -88,7 +88,7 @@ const Status = (props) => {
         if (nextMatchAwaitingAction && nextMatchAwaitingAction.id !== props.data.match.id) {
             return (
                 <>
-                    It is your turn, but you&apos;ll have to make your move in another game first.
+                    It is your turn, but you&apos;ll have to make your move in another match first.
 
                     <Button
                         onClick={() => props.history.push(`/play/${nextMatchAwaitingAction.id}`)}
