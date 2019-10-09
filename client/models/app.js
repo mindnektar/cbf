@@ -274,6 +274,7 @@ export default class AppModel extends BaseModel {
                 subscription actionsPushed {
                     actionsPushed {
                         id
+                        handle
                         status
                         actions {
                             randomSeed

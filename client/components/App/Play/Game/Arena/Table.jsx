@@ -7,12 +7,30 @@ import games from 'data/games';
 import GameModel from 'models/play/game';
 
 const Table = (props) => {
-    const state = props.data.match.states[props.data.match.stateIndex];
-    const { activePlayers } = state;
+    const nextMatchAwaitingAction = props.data.me
+        ? props.data.me.matches
+            .filter(({ status, participants }) => {
+                const participant = participants.find(({ player }) => (
+                    player.id === props.data.me.id
+                ));
+
+                return status === 'ACTIVE' && participant.awaitsAction;
+            })
+            .sort((a, b) => {
+                const aParticipant = a.participants.find(({ player }) => (
+                    player.id === props.data.me.id
+                ));
+                const bParticipant = b.participants.find(({ player }) => (
+                    player.id === props.data.me.id
+                ));
+
+                return aParticipant.updatedAt - bParticipant.updatedAt;
+            })[0]
+        : null;
     const awaitsAction = (
         !props.data.match.historyMode
-        && props.data.me
-        && activePlayers.includes(props.data.me.id)
+        && nextMatchAwaitingAction
+        && nextMatchAwaitingAction.id === props.data.match.id
     );
     const matchContextData = {
         match: props.data.match,

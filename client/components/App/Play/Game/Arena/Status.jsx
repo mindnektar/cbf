@@ -10,10 +10,41 @@ import Button from 'atoms/Button';
 const Status = (props) => {
     const state = props.data.match.states[props.data.match.stateIndex];
     const isLatestState = props.data.match.stateIndex === props.data.match.states.length - 1;
+    const nextMatchAwaitingAction = props.data.me
+        ? props.data.me.matches
+            .filter(({ status, participants }) => {
+                const participant = participants.find(({ player }) => (
+                    player.id === props.data.me.id
+                ));
+
+                return status === 'ACTIVE' && participant.awaitsAction;
+            })
+            .sort((a, b) => {
+                const aParticipant = a.participants.find(({ player }) => (
+                    player.id === props.data.me.id
+                ));
+                const bParticipant = b.participants.find(({ player }) => (
+                    player.id === props.data.me.id
+                ));
+
+                return aParticipant.updatedAt - bParticipant.updatedAt;
+            })[0]
+        : null;
 
     const getInstruction = () => {
         if (props.data.match.historyMode) {
-            return '- HISTORY MODE -';
+            return (
+                <>
+                    - HISTORY MODE -
+
+                    <Button
+                        onClick={exitHistoryMode}
+                        secondary
+                    >
+                        Exit
+                    </Button>
+                </>
+            );
         }
 
         if (props.data.match.status === 'FINISHED') {
@@ -36,7 +67,37 @@ const Status = (props) => {
                 .map(({ player }) => `${player.name}'s`)
                 .join(' and ');
 
-            return `It's ${playerList} turn.`;
+            return (
+                <>
+                    It&apos;s&nbsp;
+                    {playerList}
+                    &nbsp;turn.
+
+                    {nextMatchAwaitingAction && (
+                        <Button
+                            onClick={() => props.history.push(`/play/${nextMatchAwaitingAction.id}`)}
+                            secondary
+                        >
+                            Go to my next match!
+                        </Button>
+                    )}
+                </>
+            );
+        }
+
+        if (nextMatchAwaitingAction && nextMatchAwaitingAction.id !== props.data.match.id) {
+            return (
+                <>
+                    It is your turn, but you&apos;ll have to make your move in another game first.
+
+                    <Button
+                        onClick={() => props.history.push(`/play/${nextMatchAwaitingAction.id}`)}
+                        secondary
+                    >
+                        Go there
+                    </Button>
+                </>
+            );
         }
 
         const { instruction } = games[props.data.match.handle].states.findById(state.state);
@@ -89,15 +150,6 @@ const Status = (props) => {
         <div className="cbf-status">
             <div className="cbf-status__text">
                 {getInstruction()}
-
-                {props.data.match.historyMode && (
-                    <Button
-                        onClick={exitHistoryMode}
-                        secondary
-                    >
-                        Exit
-                    </Button>
-                )}
             </div>
 
             <div className="cbf-status__options">
@@ -144,6 +196,7 @@ Status.propTypes = {
     pushActions: PropTypes.func.isRequired,
     performAction: PropTypes.func.isRequired,
     goToAction: PropTypes.func.isRequired,
+    history: PropTypes.object.isRequired,
 };
 
 export default withRouter(GameModel.graphql(Status));

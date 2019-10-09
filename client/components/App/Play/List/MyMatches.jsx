@@ -8,6 +8,7 @@ import games from 'data/games';
 import ListModel from 'models/play/list';
 import Collapsible from 'molecules/Collapsible';
 import Headline from 'atoms/Headline';
+import Button from 'atoms/Button';
 import GameList from './GameList';
 
 const MyMatches = (props) => {
@@ -39,6 +40,10 @@ const MyMatches = (props) => {
         props.history.push(`/play/${match.id}`);
     };
 
+    const goToNextMatch = () => {
+        props.history.push(`/play/${activeMatches[0].id}`);
+    };
+
     return (
         <div className="cbf-my-matches">
             <TransitionGroup component={React.Fragment}>
@@ -56,6 +61,20 @@ const MyMatches = (props) => {
                     </Transition>
                 )}
             </TransitionGroup>
+
+            {
+                activeMatches.length > 0
+                && activeMatches[0].participants.find(({ player }) => (
+                    player.id === props.data.me.id
+                )).awaitsAction
+                && (
+                    <div className="cbf-my-matches__go-to-next">
+                        <Button onClick={goToNextMatch}>
+                            Go to my next match!
+                        </Button>
+                    </div>
+                )
+            }
 
             <GameList
                 matches={activeMatches}
