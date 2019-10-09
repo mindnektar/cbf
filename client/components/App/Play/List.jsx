@@ -6,7 +6,7 @@ import LoadingContainer from 'molecules/LoadingContainer';
 import Tabs from 'molecules/Tabs';
 import AllGames from './List/AllGames';
 import MyMatches from './List/MyMatches';
-import OpenInvitations from './List/OpenInvitations';
+import Invitations from './List/Invitations';
 
 const List = (props) => {
     const renderContent = () => {
@@ -53,11 +53,11 @@ const List = (props) => {
                 {
                     label: (
                         <>
-                            Open invitations
+                            Invitations
                             <Notification count={myInvitationCount} />
                         </>
                     ),
-                    Content: OpenInvitations,
+                    Content: Invitations,
                 },
                 ...tabs,
             ];

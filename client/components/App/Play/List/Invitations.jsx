@@ -42,7 +42,7 @@ const OpenInvitations = (props) => {
     };
 
     return (
-        <div className="cbf-open-invitations">
+        <div className="cbf-invitations">
             <TransitionGroup component={React.Fragment}>
                 {myInvitations.length > 0 && (
                     <Transition
