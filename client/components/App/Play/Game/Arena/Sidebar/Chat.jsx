@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import moment from 'moment';
@@ -9,6 +9,10 @@ import TextField from 'atoms/TextField';
 const Chat = (props) => {
     const [message, setMessage] = useState('');
     let prevName;
+
+    useEffect(() => {
+        props.markMessagesRead(props.data.match.id);
+    }, [props.data.match.messages.length]);
 
     const changeMessage = (event) => {
         setMessage(event.target.value);
@@ -74,6 +78,7 @@ const Chat = (props) => {
 Chat.propTypes = {
     data: PropTypes.object.isRequired,
     createMessage: PropTypes.func.isRequired,
+    markMessagesRead: PropTypes.func.isRequired,
 };
 
 export default withRouter(GameModel.graphql(Chat));

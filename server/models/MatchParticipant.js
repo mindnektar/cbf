@@ -15,6 +15,7 @@ class MatchParticipant extends BaseModel {
             properties: {
                 confirmed: { type: 'boolean' },
                 scores: { type: ['array', 'null'] },
+                awaitsAction: { type: 'boolean' },
                 createdAt: { type: 'string' },
                 updatedAt: { type: 'string' },
             },
@@ -37,6 +38,14 @@ class MatchParticipant extends BaseModel {
                 join: {
                     from: 'match_participant.user_id',
                     to: 'user.id',
+                },
+            },
+            lastReadMessage: {
+                relation: BaseModel.BelongsToOneRelation,
+                modelClass: 'MatchMessage',
+                join: {
+                    from: 'match_participant.last_read_message_id',
+                    to: 'match_message.id',
                 },
             },
         };

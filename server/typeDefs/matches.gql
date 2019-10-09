@@ -13,6 +13,7 @@ type Mutation {
     startMatch(id: ID!): Match!
     pushActions(input: PushActionsInput!): Match!
     createMessage(input: CreateMessageInput!): Match!
+    markMessagesRead(id: ID!): Match!
 }
 
 type Subscription {
@@ -44,6 +45,8 @@ type MatchParticipant {
     player: User!
     confirmed: Boolean!
     scores: JSON
+    awaitsAction: Boolean!
+    lastReadMessage: MatchMessage
 }
 
 type MatchMessage {

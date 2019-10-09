@@ -1,5 +1,6 @@
 import moment from 'moment';
 import BaseModel from 'react-apollo-models';
+import { FIELDS_PARTICIPANT } from '../app';
 
 export default class GameModel extends BaseModel {
     static query = {
@@ -14,12 +15,7 @@ export default class GameModel extends BaseModel {
                         status
                         createdAt
                         participants {
-                            player {
-                                id
-                                name
-                            }
-                            confirmed
-                            scores
+                            ${FIELDS_PARTICIPANT}
                         }
                     }
                 }
@@ -32,12 +28,7 @@ export default class GameModel extends BaseModel {
                         id
                     }
                     participants {
-                        player {
-                            id
-                            name
-                        }
-                        confirmed
-                        scores
+                        ${FIELDS_PARTICIPANT}
                     }
                     options {
                         type
@@ -85,12 +76,7 @@ export default class GameModel extends BaseModel {
                     id
                     status
                     participants {
-                        player {
-                            id
-                            name
-                        }
-                        confirmed
-                        scores
+                        ${FIELDS_PARTICIPANT}
                     }
                     options {
                         type
@@ -111,6 +97,8 @@ export default class GameModel extends BaseModel {
                 },
                 confirmed: false,
                 scores: null,
+                awaitsAction: false,
+                lastReadMessage: null,
             })),
             options: mutationVariables.options.map((option) => ({
                 __typename: 'MatchOption',
@@ -123,12 +111,7 @@ export default class GameModel extends BaseModel {
                 removePlayerFromMatch(input: $input) {
                     id
                     participants {
-                        player {
-                            id
-                            name
-                        }
-                        confirmed
-                        scores
+                        ${FIELDS_PARTICIPANT}
                     }
                 }
             }
@@ -178,12 +161,7 @@ export default class GameModel extends BaseModel {
                         }
                     }
                     participants {
-                        player {
-                            id
-                            name
-                        }
-                        confirmed
-                        scores
+                        ${FIELDS_PARTICIPANT}
                     }
                     states @client
                     stateIndex @client
@@ -240,21 +218,62 @@ export default class GameModel extends BaseModel {
                             name
                         }
                     }
+                    participants {
+                        ${FIELDS_PARTICIPANT}
+                    }
                 }
             }
         `,
-        optimisticResponse: ({ props, mutationVariables }) => ({
+        optimisticResponse: ({ props, mutationVariables }) => {
+            const tempId = 'temp-id';
+
+            return {
+                __typename: 'Match',
+                messages: [
+                    {
+                        __typename: 'MatchMessage',
+                        id: tempId,
+                        text: mutationVariables.text,
+                        createdAt: moment().toISOString(),
+                        author: props.data.me,
+                    },
+                    ...props.data.match.messages,
+                ],
+                participants: props.data.match.participants.map((participant) => ({
+                    __typename: 'MatchParticipant',
+                    ...participant,
+                    lastReadMessage: participant.player.id === props.data.me.id
+                        ? {
+                            __typename: 'MatchMessage',
+                            id: tempId,
+                        }
+                        : participant.lastReadMessage,
+                })),
+            };
+        },
+    }, {
+        mutation: `
+            mutation markMessagesRead($id: ID!) {
+                markMessagesRead(id: $id) {
+                    id
+                    participants {
+                        ${FIELDS_PARTICIPANT}
+                    }
+                }
+            }
+        `,
+        optimisticResponse: ({ props }) => ({
             __typename: 'Match',
-            messages: [
-                {
-                    __typename: 'MatchMessage',
-                    id: null,
-                    text: mutationVariables.text,
-                    createdAt: moment().toISOString(),
-                    author: props.data.me,
-                },
-                ...props.data.match.messages,
-            ],
+            participants: props.data.match.participants.map((participant) => ({
+                __typename: 'MatchParticipant',
+                ...participant,
+                lastReadMessage: participant.player.id === props.data.me.id
+                    ? {
+                        __typename: 'MatchMessage',
+                        id: props.data.match.messages[0].id,
+                    }
+                    : participant.lastReadMessage,
+            })),
         }),
     }]
 }

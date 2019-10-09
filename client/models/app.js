@@ -1,12 +1,16 @@
 import BaseModel from 'react-apollo-models';
 
-const FIELDS_PARTICIPANT = `
+export const FIELDS_PARTICIPANT = `
     player {
         id
         name
     }
     confirmed
     scores
+    awaitsAction
+    lastReadMessage {
+        id
+    }
 `;
 
 const FIELDS_MATCH = `
@@ -325,7 +329,7 @@ export default class AppModel extends BaseModel {
                     matches: {
                         [cacheData.me.matches.findIndex(({ id }) => id === item.id)]: {
                             messages: {
-                                $set: item.messages,
+                                $set: console.log(item.messages[0]) || item.messages,
                             },
                         },
                     },

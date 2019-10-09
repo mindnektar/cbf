@@ -313,17 +313,29 @@ export default {
                                 .findById([match.id, player.id])
                                 .patch({
                                     values: player.scores,
+                                    awaits_action: false,
                                 });
                         })
                     ));
                     await match.$query(trx).patch({ status: 'FINISHED' });
+                } else {
+                    await Promise.all((
+                        match.participants.map(async (participant) => {
+                            await participant.$query(trx).patch({
+                                awaits_action: currentState.activePlayers
+                                    .includes(participant.player.id),
+                            });
+                        })
+                    ));
                 }
 
                 await Action.query(trx).insert(newActions);
 
-                pubsub.publish('actionsPushed', match);
+                const result = await match.$graphqlLoadRelated(trx, info);
 
-                return match.$graphqlLoadRelated(trx, info);
+                pubsub.publish('actionsPushed', result);
+
+                return result;
             })
         ),
         createMessage: (parent, { input }, { auth, pubsub }, info) => (
@@ -336,13 +348,42 @@ export default {
                     throw new IllegalArgumentError();
                 }
 
-                await MatchMessage.query(trx).insert({
+                const message = await MatchMessage.query(trx).returning('*').insert({
                     match_id: match.id,
                     user_id: auth.id,
                     text: input.text,
                 });
 
-                pubsub.publish('messageCreated', match);
+                await MatchParticipant.query(trx)
+                    .where('match_id', match.id)
+                    .where('user_id', auth.id)
+                    .patch({ last_read_message_id: message.id });
+
+                const result = await match.$graphqlLoadRelated(trx, info);
+
+                pubsub.publish('messageCreated', result);
+
+                return result;
+            })
+        ),
+        markMessagesRead: (parent, { id }, { auth }, info) => (
+            transaction(async (trx) => {
+                const match = await Match.query(trx)
+                    .eager('[participants.player, messages]')
+                    .findById(id);
+
+                if (!match || !match.participants.some(({ player }) => player.id === auth.id)) {
+                    throw new IllegalArgumentError();
+                }
+
+                await MatchParticipant.query(trx)
+                    .where('match_id', match.id)
+                    .where('user_id', auth.id)
+                    .patch({
+                        last_read_message_id: (
+                            match.messages.length > 0 ? match.messages[0].id : null
+                        ),
+                    });
 
                 return match.$graphqlLoadRelated(trx, info);
             })
@@ -368,14 +409,14 @@ export default {
             Match.fromJson(payload).$graphqlLoadRelated(info)
         )),
         ...subscription('actionsPushed', (payload, variables, context, info) => (
-            Match.query().findById(payload.id).graphqlEager(info)
+            Match.fromJson(payload).$graphqlLoadRelated(info)
         ), async (payload, variables, { auth }) => {
             const match = await Match.query().findById(payload.id).eager('participants');
 
             return match.participants.some(({ userId }) => userId === auth.id);
         }),
         ...subscription('messageCreated', (payload, variables, context, info) => (
-            Match.query().findById(payload.id).graphqlEager(info)
+            Match.fromJson(payload).$graphqlLoadRelated(info)
         ), async (payload, variables, { auth }) => {
             const match = await Match.query().findById(payload.id).eager('participants');
 

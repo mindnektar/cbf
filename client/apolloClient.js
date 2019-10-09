@@ -49,7 +49,7 @@ const client = new ApolloClient({
 
                                 if (!renewalToken) {
                                     deleteToken(AUTH_TYPE_USER);
-                                    return
+                                    return;
                                 }
 
                                 const { data } = await client.mutate({
