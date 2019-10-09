@@ -12,9 +12,6 @@ const Home = (props) => {
         isOpen: false,
         id: null,
     });
-    const sortedAnnouncements = [...props.data.announcements].sort((a, b) => (
-        moment(b.createdAt).diff(a.createdAt)
-    ));
 
     const openAnnouncementEditorHandler = (id = null) => () => {
         setAnnouncementEditorState({
@@ -30,62 +27,68 @@ const Home = (props) => {
         });
     };
 
-    const renderContent = () => (
-        <div className="cbf-home">
-            <Headline>Welcome to Cardboard Frenzy!</Headline>
+    const renderContent = () => {
+        const sortedAnnouncements = [...props.data.announcements].sort((a, b) => (
+            moment(b.createdAt).diff(a.createdAt)
+        ));
 
-            {props.data.me.isAdmin && (
-                <>
-                    <div className="cbf-home__announcement-button">
-                        <Button onClick={openAnnouncementEditorHandler()}>
-                            Create announcement
-                        </Button>
-                    </div>
+        return (
+            <div className="cbf-home">
+                <Headline>Welcome to Cardboard Frenzy!</Headline>
 
-                    <AnnouncementEditor
-                        isOpen={announcementEditorState.isOpen}
-                        close={closeAnnouncementEditor}
-                        id={announcementEditorState.id}
-                    />
-                </>
-            )}
-
-            <div className="cbf-home__announcements">
-                {sortedAnnouncements.map((announcement) => (
-                    <div
-                        className="cbf-home__announcement"
-                        key={announcement.id}
-                    >
-                        <div className="cbf-home__announcement-title">
-                            {announcement.title}
+                {props.data.me.isAdmin && (
+                    <>
+                        <div className="cbf-home__announcement-button">
+                            <Button onClick={openAnnouncementEditorHandler()}>
+                                Create announcement
+                            </Button>
                         </div>
 
-                        <div className="cbf-home__announcement-text">
-                            {announcement.text}
+                        <AnnouncementEditor
+                            isOpen={announcementEditorState.isOpen}
+                            close={closeAnnouncementEditor}
+                            id={announcementEditorState.id}
+                        />
+                    </>
+                )}
+
+                <div className="cbf-home__announcements">
+                    {sortedAnnouncements.map((announcement) => (
+                        <div
+                            className="cbf-home__announcement"
+                            key={announcement.id}
+                        >
+                            <div className="cbf-home__announcement-title">
+                                {announcement.title}
+                            </div>
+
+                            <div className="cbf-home__announcement-text">
+                                {announcement.text}
+                            </div>
+
+                            {props.data.me.isAdmin && (
+                                <div className="cbf-home__announcement-button">
+                                    <Button onClick={openAnnouncementEditorHandler(announcement.id)}>
+                                        Edit
+                                    </Button>
+                                </div>
+                            )}
+
+                            <div className="cbf-home__announcement-footer">
+                                <div className="cbf-home__announcement-author">
+                                    {announcement.author.name}
+                                </div>
+
+                                <div className="cbf-home__announcement-date">
+                                    {moment(announcement.createdAt).format('LLL')}
+                                </div>
+                            </div>
                         </div>
-
-                        {props.data.me.isAdmin && (
-                            <div className="cbf-home__announcement-button">
-                                <Button onClick={openAnnouncementEditorHandler(announcement.id)}>
-                                    Edit
-                                </Button>
-                            </div>
-                        )}
-
-                        <div className="cbf-home__announcement-footer">
-                            <div className="cbf-home__announcement-author">
-                                {announcement.author.name}
-                            </div>
-
-                            <div className="cbf-home__announcement-date">
-                                {moment(announcement.createdAt).format('LLL')}
-                            </div>
-                        </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
-        </div>
-    );
+        );
+    };
 
     return (
         <LoadingContainer>

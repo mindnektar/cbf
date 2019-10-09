@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import { GraphQLServer } from 'graphql-yoga';
 import { mergeTypes, mergeResolvers, fileLoader } from 'merge-graphql-schemas';
 import aliasResolver from './middleware/graphql/aliasResolver';
+import permissions from './middleware/graphql/permissions';
 import tokenExpiredCheck from './middleware/graphql/tokenExpiredCheck';
 import resolveTokens from './middleware/express/resolveTokens';
 import tokenErrorHandler from './middleware/express/tokenErrorHandler';
@@ -50,7 +51,7 @@ const graphqlContextResolver = async ({ request, connection }) => {
 const server = new GraphQLServer({
     typeDefs: mergeTypes(fileLoader(path.join(__dirname, 'typeDefs'))),
     resolvers: mergeResolvers(fileLoader(path.join(__dirname, 'resolvers/!(*.test).js'))),
-    middlewares: [aliasResolver, tokenExpiredCheck],
+    middlewares: [tokenExpiredCheck, permissions, aliasResolver],
     context: graphqlContextResolver,
 });
 
