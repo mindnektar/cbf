@@ -7,7 +7,7 @@ import Button from 'atoms/Button';
 import Headline from 'atoms/Headline';
 
 const Lobby = (props) => {
-    const { participants, options, status, id } = props.data.match;
+    const { options, status, id, creator } = props.data.match;
 
     useEffect(() => {
         if (status === 'SETTING_UP') {
@@ -21,6 +21,11 @@ const Lobby = (props) => {
         return null;
     }
 
+    const participants = props.data.match.participants.sort((a, b) => (
+        (b.player.id === creator.id) - (a.player.id === creator.id)
+        || b.confirmed - a.confirmed
+        || a.player.name.localeCompare(b.player.name)
+    ));
     const possiblePlayers = options.find(({ type }) => type === 'num-players').values;
     const confirmedPlayers = participants.filter(({ confirmed }) => confirmed);
     const hasValidPlayerCount = possiblePlayers.includes(confirmedPlayers.length);
@@ -38,8 +43,8 @@ const Lobby = (props) => {
         props.removePlayerFromMatch({
             id: props.data.match.id,
             userId,
-        })
-    }
+        });
+    };
 
     const renderPlayerSlot = (_, index) => {
         const participant = participants[index] || {
@@ -107,6 +112,7 @@ Lobby.propTypes = {
     data: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
     startMatch: PropTypes.func.isRequired,
+    removePlayerFromMatch: PropTypes.func.isRequired,
 };
 
 export default withRouter(GameModel.graphql(Lobby));

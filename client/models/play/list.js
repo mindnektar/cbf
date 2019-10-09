@@ -57,174 +57,6 @@ export default class PlayModel extends BaseModel {
                 status: 'OPEN',
             },
         }),
-        subscriptions: [{
-            subscription: `
-                subscription matchOpened {
-                    matchOpened {
-                        id
-                        handle
-                        status
-                        createdAt
-                        creator {
-                            id
-                        }
-                        participants {
-                            player {
-                                id
-                                name
-                            }
-                            confirmed
-                            scores
-                        }
-                        options {
-                            type
-                            values
-                        }
-                    }
-                }
-            `,
-            cacheUpdatePath: ({ item, cacheData }) => {
-                if (cacheData.matches.some(({ id }) => id === item.id)) {
-                    return {};
-                }
-
-                let path = {
-                    matches: {
-                        $push: [item],
-                    },
-                };
-
-                if (item.participants.some(({ player }) => player.id === cacheData.me.id)) {
-                    path = {
-                        ...path,
-                        me: {
-                            matches: {
-                                $push: [item],
-                            },
-                        },
-                    };
-                }
-
-                return path;
-            },
-        }, {
-            subscription: `
-                subscription playerJoined {
-                    playerJoined {
-                        id
-                        participants {
-                            player {
-                                id
-                                name
-                            }
-                            confirmed
-                            scores
-                        }
-                    }
-                }
-            `,
-            cacheUpdatePath: ({ item, cacheData }) => {
-                if (cacheData.matches.some(({ id }) => id === item.id)) {
-                    return {};
-                }
-
-                return {
-                    matches: {
-                        [cacheData.matches.findIndex(({ id }) => id === item.id)]: {
-                            participants: {
-                                $set: item.participants,
-                            },
-                        },
-                    },
-                };
-            },
-        }, {
-            subscription: `
-                subscription invitationConfirmed {
-                    invitationConfirmed {
-                        id
-                        participants {
-                            player {
-                                id
-                                name
-                            }
-                            confirmed
-                            scores
-                        }
-                    }
-                }
-            `,
-            cacheUpdatePath: ({ cacheData, item }) => ({
-                matches: {
-                    [cacheData.matches.findIndex(({ id }) => id === item.id)]: {
-                        participants: {
-                            $set: item.participants,
-                        },
-                    },
-                },
-            }),
-        }, {
-            subscription: `
-                subscription invitationDeclined {
-                    invitationDeclined {
-                        id
-                        participants {
-                            player {
-                                id
-                                name
-                            }
-                            confirmed
-                            scores
-                        }
-                    }
-                }
-            `,
-            cacheUpdatePath: ({ cacheData, item }) => ({
-                matches: {
-                    [cacheData.matches.findIndex(({ id }) => id === item.id)]: {
-                        participants: {
-                            $set: item.participants,
-                        },
-                    },
-                },
-            }),
-        }, {
-            subscription: `
-                subscription removedPlayerFromMatch {
-                    removedPlayerFromMatch {
-                        id
-                        participants {
-                            player {
-                                id
-                                name
-                            }
-                            confirmed
-                            scores
-                        }
-                    }
-                }
-            `,
-            cacheUpdatePath: ({ item, cacheData }) => {
-                if (!cacheData.matches.some(({ id }) => id === item.id)) {
-                    return {};
-                }
-
-                return {
-                    matches: {
-                        [cacheData.matches.findIndex(({ id }) => id === item.id)]: {
-                            participants: {
-                                $set: item.participants,
-                            },
-                        },
-                    },
-                    me: {
-                        matches: {
-                            $removeById: item.id,
-                        },
-                    },
-                };
-            },
-        }],
     }
 
     static mutations = [{
@@ -304,13 +136,6 @@ export default class PlayModel extends BaseModel {
                 }))
                 .filter(({ player }) => player.id !== mutationVariables.id),
         }),
-        cacheUpdatePath: ({ item }) => ({
-            me: {
-                matches: {
-                    $removeById: item.id,
-                },
-            },
-        }),
     }, {
         mutation: `
             mutation createMatch($input: CreateMatchInput!) {
@@ -342,13 +167,6 @@ export default class PlayModel extends BaseModel {
             id: null,
             status: 'SETTING_UP',
             participants: [{ player: props.data.me, confirmed: true, scores: null }],
-        }),
-        cacheUpdatePath: ({ item }) => ({
-            me: {
-                matches: {
-                    $push: [item],
-                },
-            },
         }),
     }]
 }

@@ -329,7 +329,7 @@ export default {
         createMessage: (parent, { input }, { auth, pubsub }, info) => (
             transaction(async (trx) => {
                 const match = await Match.query(trx)
-                    .eager('[participants]')
+                    .eager('[participants.player]')
                     .findById(input.id);
 
                 if (!match || !match.participants.some(({ player }) => player.id === auth.id)) {
@@ -365,9 +365,7 @@ export default {
             Match.fromJson(payload).$graphqlLoadRelated(info)
         )),
         ...subscription('matchStarted', (payload, variables, context, info) => (
-            Match.fromJson(payload).$graphqlLoadRelated(info, { participants: {} })
-        ), async (payload, variables, { auth }) => (
-            payload.participants.some(({ userId }) => userId === auth.id)
+            Match.fromJson(payload).$graphqlLoadRelated(info)
         )),
         ...subscription('actionsPushed', (payload, variables, context, info) => (
             Match.query().findById(payload.id).graphqlEager(info)
