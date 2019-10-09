@@ -1,4 +1,5 @@
 import BaseModel from 'react-apollo-models';
+import { FIELDS_PARTICIPANT } from '../app';
 
 export default class PlayModel extends BaseModel {
     static query = {
@@ -16,12 +17,7 @@ export default class PlayModel extends BaseModel {
                             id
                         }
                         participants {
-                            player {
-                                id
-                                name
-                            }
-                            confirmed
-                            scores
+                            ${FIELDS_PARTICIPANT}
                         }
                         options {
                             type
@@ -38,12 +34,7 @@ export default class PlayModel extends BaseModel {
                         id
                     }
                     participants {
-                        player {
-                            id
-                            name
-                        }
-                        confirmed
-                        scores
+                        ${FIELDS_PARTICIPANT}
                     }
                     options {
                         type
@@ -65,12 +56,7 @@ export default class PlayModel extends BaseModel {
                 joinMatch(id: $id) {
                     id
                     participants {
-                        player {
-                            id
-                            name
-                        }
-                        confirmed
-                        scores
+                        ${FIELDS_PARTICIPANT}
                     }
                 }
             }
@@ -88,12 +74,7 @@ export default class PlayModel extends BaseModel {
                 confirmInvitation(id: $id) {
                     id
                     participants {
-                        player {
-                            id
-                            name
-                        }
-                        confirmed
-                        scores
+                        ${FIELDS_PARTICIPANT}
                     }
                 }
             }
@@ -116,12 +97,7 @@ export default class PlayModel extends BaseModel {
                 declineInvitation(id: $id) {
                     id
                     participants {
-                        player {
-                            id
-                            name
-                        }
-                        confirmed
-                        scores
+                        ${FIELDS_PARTICIPANT}
                     }
                 }
             }
@@ -148,12 +124,7 @@ export default class PlayModel extends BaseModel {
                         id
                     }
                     participants {
-                        player {
-                            id
-                            name
-                        }
-                        confirmed
-                        scores
+                        ${FIELDS_PARTICIPANT}
                     }
                     options {
                         type

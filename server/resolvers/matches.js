@@ -408,8 +408,8 @@ export default {
         ...subscription('matchStarted', (payload, variables, context, info) => (
             Match.fromJson(payload).$graphqlLoadRelated(info)
         )),
-        ...subscription('actionsPushed', (payload, variables, context, info) => (
-            Match.fromJson(payload).$graphqlLoadRelated(info)
+        ...subscription('actionsPushed', async (payload, variables, context, info) => (
+            Match.query().findById(payload.id).graphqlEager(info)
         ), async (payload, variables, { auth }) => {
             const match = await Match.query().findById(payload.id).eager('participants');
 

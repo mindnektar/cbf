@@ -17,41 +17,47 @@ const List = (props) => {
 
         if (props.data.me) {
             const myMatchCount = props.data.me.matches
-                .filter(({ status }) => status !== 'FINISHED')
-                .length;
-            const openInvitations = props.data.matches.filter((match) => {
-                const maxPlayerCount = match.options
-                    .find(({ type }) => type === 'num-players')
-                    .values
-                    .reduce((result, current) => (
-                        current > result ? current : result
-                    ), 0);
+                .filter((match) => {
+                    const participant = match.participants.find(({ player }) => (
+                        player.id === props.data.me.id
+                    ));
 
-                return (
-                    !match.participants.some(({ player }) => player.id === props.data.me.id)
-                    && match.participants.length < maxPlayerCount
-                );
-            });
+                    return (
+                        match.status !== 'FINISHED'
+                        && participant
+                        && participant.confirmed
+                        && participant.awaitsAction
+                    );
+                })
+                .length;
+            const myInvitationCount = props.data.me.matches
+                .filter((match) => {
+                    const participant = match.participants.find(({ player }) => (
+                        player.id === props.data.me.id
+                    ));
+
+                    return match.status === 'OPEN' && participant && !participant.confirmed;
+                })
+                .length;
 
             tabs = [
                 {
                     label: (
-                        <span>
+                        <>
                             My matches
                             <Notification count={myMatchCount} />
-                        </span>
+                        </>
                     ),
                     Content: MyMatches,
                 },
                 {
                     label: (
-                        <span>
+                        <>
                             Open invitations
-                            <Notification count={openInvitations.length} />
-                        </span>
+                            <Notification count={myInvitationCount} />
+                        </>
                     ),
                     Content: OpenInvitations,
-                    properties: { matches: openInvitations },
                 },
                 ...tabs,
             ];
@@ -60,8 +66,8 @@ const List = (props) => {
         return (
             <>
                 <Tabs tabs={tabs.map(({ label }) => label)}>
-                    {tabs.map(({ Content, properties = {} }, index) => (
-                        <Content key={index} {...properties} />
+                    {tabs.map(({ Content }, index) => (
+                        <Content key={index} />
                     ))}
                 </Tabs>
             </>

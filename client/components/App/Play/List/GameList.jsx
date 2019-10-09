@@ -29,7 +29,12 @@ const GameList = (props) => {
                     >
                         {(transitionState) => (
                             <Collapsible collapsed={transitionState !== 'entered'}>
-                                <div className="cbf-game-list__item">
+                                <div
+                                    className={classNames(
+                                        'cbf-game-list__item',
+                                        { 'cbf-game-list__item--highlighted': props.highlightItem(match) }
+                                    )}
+                                >
                                     <div className="cbf-game-list__item-image">
                                         <img
                                             src={`/img/games/${match.handle}/box.jpg`}
@@ -72,6 +77,7 @@ const GameList = (props) => {
 
 GameList.defaultProps = {
     small: false,
+    highlightItem: () => false,
 };
 
 GameList.propTypes = {
@@ -82,6 +88,7 @@ GameList.propTypes = {
         label: PropTypes.string.isRequired,
     })).isRequired,
     small: PropTypes.bool,
+    highlightItem: PropTypes.func,
 };
 
 export default GameList;

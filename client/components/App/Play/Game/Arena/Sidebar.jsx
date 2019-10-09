@@ -39,10 +39,10 @@ const Sidebar = (props) => {
                 tabs={[
                     'Turn history',
                     (
-                        <span>
+                        <>
                             Chat
                             <Notification count={renderedUnreadMessageCount} />
-                        </span>
+                        </>
                     ),
                 ]}
                 dark

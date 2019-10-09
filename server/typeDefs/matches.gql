@@ -47,6 +47,7 @@ type MatchParticipant {
     scores: JSON
     awaitsAction: Boolean!
     lastReadMessage: MatchMessage
+    updatedAt: DateTime!
 }
 
 type MatchMessage {

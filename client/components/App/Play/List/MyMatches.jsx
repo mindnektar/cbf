@@ -11,64 +11,36 @@ import Headline from 'atoms/Headline';
 import GameList from './GameList';
 
 const MyMatches = (props) => {
-    const invitations = props.data.me.matches.filter((match) => {
-        const participant = match.participants.find(({ player }) => player.id === props.data.me.id);
+    const activeMatches = props.data.me.matches
+        .filter((match) => {
+            const participant = match.participants.find(({ player }) => (
+                player.id === props.data.me.id
+            ));
 
-        return match.status === 'OPEN' && participant && !participant.confirmed;
-    });
-    const activeMatches = props.data.me.matches.filter((match) => {
-        const participant = match.participants.find(({ player }) => player.id === props.data.me.id);
+            return match.status !== 'FINISHED' && participant && participant.confirmed;
+        })
+        .sort((a, b) => {
+            const aParticipant = a.participants.find(({ player }) => (
+                player.id === props.data.me.id
+            ));
+            const bParticipant = b.participants.find(({ player }) => (
+                player.id === props.data.me.id
+            ));
 
-        return match.status !== 'FINISHED' && participant && participant.confirmed;
-    });
+            return (
+                (a.status === 'OPEN') - (b.status === 'OPEN')
+                || bParticipant.awaitsAction - aParticipant.awaitsAction
+                || aParticipant.updatedAt - bParticipant.updatedAt
+            );
+        });
     const finishedMatches = props.data.me.matches.filter((match) => match.status === 'FINISHED');
 
     const openMatch = (match) => {
         props.history.push(`/play/${match.id}`);
     };
 
-    const confirmInvitation = (match) => {
-        props.confirmInvitation(match.id);
-    };
-
-    const declineInvitation = (match) => {
-        props.declineInvitation(match.id);
-    };
-
     return (
         <div className="cbf-my-matches">
-            <TransitionGroup component={React.Fragment}>
-                {invitations.length > 0 && (
-                    <Transition
-                        mountOnEnter
-                        timeout={300}
-                        unmountOnExit
-                    >
-                        {(transitionState) => (
-                            <Collapsible collapsed={transitionState !== 'entered'}>
-                                <Headline>My invitations</Headline>
-                            </Collapsible>
-                        )}
-                    </Transition>
-                )}
-            </TransitionGroup>
-
-            <GameList
-                matches={invitations}
-                actions={[
-                    { label: 'Accept', handler: confirmInvitation },
-                    { label: 'Decline', handler: declineInvitation },
-                ]}
-            >
-                {(match) => (
-                    match.participants.map(({ player }) => (
-                        <div key={player.id}>
-                            {player.name}
-                        </div>
-                    ))
-                )}
-            </GameList>
-
             <TransitionGroup component={React.Fragment}>
                 {activeMatches.length > 0 && (
                     <Transition
@@ -88,11 +60,22 @@ const MyMatches = (props) => {
             <GameList
                 matches={activeMatches}
                 actions={[{ label: 'Open game', handler: openMatch }]}
+                highlightItem={(match) => (
+                    match.participants
+                        .find(({ player }) => player.id === props.data.me.id)
+                        .awaitsAction
+                )}
             >
                 {(match) => (
-                    match.participants.map(({ player }) => (
-                        <div key={player.id}>
-                            {player.name}
+                    match.participants.map((participant) => (
+                        <div
+                            className={classNames(
+                                'cbf-my-matches__player',
+                                { 'cbf-my-matches__player--active': participant.awaitsAction }
+                            )}
+                            key={participant.player.id}
+                        >
+                            {participant.player.name}
                         </div>
                     ))
                 )}
@@ -150,8 +133,6 @@ const MyMatches = (props) => {
 MyMatches.propTypes = {
     data: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
-    confirmInvitation: PropTypes.func.isRequired,
-    declineInvitation: PropTypes.func.isRequired,
 };
 
 export default withRouter(ListModel.graphql(MyMatches));

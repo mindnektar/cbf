@@ -11,6 +11,7 @@ export const FIELDS_PARTICIPANT = `
     lastReadMessage {
         id
     }
+    updatedAt
 `;
 
 const FIELDS_MATCH = `
