@@ -1,0 +1,28 @@
+type Query {
+    announcements: [Announcement!]!
+}
+
+type Mutation {
+    createAnnouncement(input: CreateAnnouncementInput!): Announcement!
+    updateAnnouncement(input: UpdateAnnouncementInput!): Announcement!
+    deleteAnnouncement(id: ID!): Announcement!
+}
+
+type Announcement {
+    id: ID!
+    title: String!
+    text: String!
+    createdAt: DateTime!
+    author: User!
+}
+
+input CreateAnnouncementInput {
+    title: String!
+    text: String!
+}
+
+input UpdateAnnouncementInput {
+    id: ID!
+    title: String
+    text: String
+}
