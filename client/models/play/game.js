@@ -224,33 +224,29 @@ export default class GameModel extends BaseModel {
                 }
             }
         `,
-        optimisticResponse: ({ props, mutationVariables }) => {
-            const tempId = 'temp-id';
-
-            return {
-                __typename: 'Match',
-                messages: [
-                    {
+        optimisticResponse: ({ props, mutationVariables }) => ({
+            __typename: 'Match',
+            messages: [
+                {
+                    __typename: 'MatchMessage',
+                    id: mutationVariables.messageId,
+                    text: mutationVariables.text,
+                    createdAt: moment().toISOString(),
+                    author: props.data.me,
+                },
+                ...props.data.match.messages,
+            ],
+            participants: props.data.match.participants.map((participant) => ({
+                __typename: 'MatchParticipant',
+                ...participant,
+                lastReadMessage: participant.player.id === props.data.me.id
+                    ? {
                         __typename: 'MatchMessage',
-                        id: tempId,
-                        text: mutationVariables.text,
-                        createdAt: moment().toISOString(),
-                        author: props.data.me,
-                    },
-                    ...props.data.match.messages,
-                ],
-                participants: props.data.match.participants.map((participant) => ({
-                    __typename: 'MatchParticipant',
-                    ...participant,
-                    lastReadMessage: participant.player.id === props.data.me.id
-                        ? {
-                            __typename: 'MatchMessage',
-                            id: tempId,
-                        }
-                        : participant.lastReadMessage,
-                })),
-            };
-        },
+                        id: mutationVariables.messageId,
+                    }
+                    : participant.lastReadMessage,
+            })),
+        }),
     }, {
         mutation: `
             mutation markMessagesRead($id: ID!) {
@@ -270,7 +266,7 @@ export default class GameModel extends BaseModel {
                 lastReadMessage: participant.player.id === props.data.me.id
                     ? {
                         __typename: 'MatchMessage',
-                        id: props.data.match.messages[0].id,
+                        id: props.data.match.messages[0] ? props.data.match.messages[0].id : null,
                     }
                     : participant.lastReadMessage,
             })),

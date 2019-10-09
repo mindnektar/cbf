@@ -116,5 +116,6 @@ input ActionInput {
 
 input CreateMessageInput {
     id: ID!
+    messageId: ID
     text: String!
 }

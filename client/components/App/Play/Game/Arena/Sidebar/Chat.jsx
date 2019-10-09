@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import moment from 'moment';
 import { withRouter } from 'react-router-dom';
+import uuid from 'uuid';
 import GameModel from 'models/play/game';
 import TextField from 'atoms/TextField';
 
@@ -11,8 +12,13 @@ const Chat = (props) => {
     let prevName;
 
     useEffect(() => {
-        props.markMessagesRead(props.data.match.id);
-    }, [props.data.match.messages.length]);
+        if (
+            props.data.match.messages[0]
+            && props.data.match.messages[0].author.id !== props.data.me.id
+        ) {
+            props.markMessagesRead(props.data.match.id);
+        }
+    }, [props.data.match.messages]);
 
     const changeMessage = (event) => {
         setMessage(event.target.value);
@@ -21,6 +27,7 @@ const Chat = (props) => {
     const submitMessage = () => {
         props.createMessage({
             id: props.data.match.id,
+            messageId: uuid(),
             text: message,
         });
         setMessage('');

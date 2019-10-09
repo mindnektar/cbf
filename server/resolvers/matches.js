@@ -349,6 +349,7 @@ export default {
                 }
 
                 const message = await MatchMessage.query(trx).returning('*').insert({
+                    id: input.messageId,
                     match_id: match.id,
                     user_id: auth.id,
                     text: input.text,
