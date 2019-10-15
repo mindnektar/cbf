@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import countMatchesAwaitingAction from 'helpers/countMatchesAwaitingAction';
 import ListModel from 'models/play/list';
 import Notification from 'atoms/Notification';
 import LoadingContainer from 'molecules/LoadingContainer';
@@ -16,20 +17,6 @@ const List = (props) => {
         }];
 
         if (props.data.me) {
-            const myMatchCount = props.data.me.matches
-                .filter((match) => {
-                    const participant = match.participants.find(({ player }) => (
-                        player.id === props.data.me.id
-                    ));
-
-                    return (
-                        match.status !== 'FINISHED'
-                        && participant
-                        && participant.confirmed
-                        && participant.awaitsAction
-                    );
-                })
-                .length;
             const myInvitationCount = props.data.me.matches
                 .filter((match) => {
                     const participant = match.participants.find(({ player }) => (
@@ -45,7 +32,7 @@ const List = (props) => {
                     label: (
                         <>
                             My matches
-                            <Notification count={myMatchCount} />
+                            <Notification count={countMatchesAwaitingAction(props.data.me)} />
                         </>
                     ),
                     Content: MyMatches,

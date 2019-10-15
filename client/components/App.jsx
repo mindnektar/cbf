@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Switch, Route, withRouter } from 'react-router-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import Helmet from 'react-helmet';
+import countMatchesAwaitingAction from 'helpers/countMatchesAwaitingAction';
 import AppModel from 'models/app';
 import LoadingContainer from 'molecules/LoadingContainer';
 import Header from './App/Header';
@@ -11,6 +13,16 @@ import Users from './App/Users';
 import Signup from './App/Signup';
 
 const App = (props) => {
+    const renderTitle = () => {
+        const myMatchCount = countMatchesAwaitingAction(props.data.me);
+
+        if (myMatchCount === 0) {
+            return 'Cardboard Frenzy';
+        }
+
+        return `(${myMatchCount}) Cardboard Frenzy`;
+    };
+
     const renderContent = () => (
         <>
             <Header />
@@ -24,6 +36,10 @@ const App = (props) => {
                     key={props.location.pathname}
                 >
                     <div className="cbf-content">
+                        <Helmet>
+                            <title>{renderTitle()}</title>
+                        </Helmet>
+
                         <Switch location={props.location}>
                             <Route path="/play" component={Play} />
                             <Route path="/users" component={Users} />
