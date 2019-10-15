@@ -22,8 +22,8 @@ module.exports = shield({
         announcements: everyone,
         match: everyone,
         matches: everyone,
-        users: isAuthenticated,
-        me: isAuthenticated,
+        users: everyone,
+        me: everyone,
     },
     Mutation: {
         createAnnouncement: isAdmin,

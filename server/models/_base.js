@@ -1,12 +1,12 @@
-const uuid = require('uuid/v4');
-const moment = require('moment');
-const knex = require('knex');
-const { Model, snakeCaseMappers } = require('objection');
-const knexConfig = require('../../config').knex;
-const CustomQueryBuilder = require('./_base/queryBuilder');
-const convertGraphqlInfoToRelationExpressionAndFilters = require('./_base/convertGraphqlInfoToRelationExpressionAndFilters');
+import uuid from 'uuid/v4';
+import moment from 'moment';
+import knex from 'knex';
+import { Model, snakeCaseMappers } from 'objection';
+import config from '../../shared/config';
+import CustomQueryBuilder from './_base/queryBuilder';
+import convertGraphqlInfoToRelationExpressionAndFilters from './_base/convertGraphqlInfoToRelationExpressionAndFilters';
 
-Model.knex(knex(knexConfig));
+Model.knex(knex(config.knex));
 
 module.exports = class BaseModel extends Model {
     static get columnNameMappers() {

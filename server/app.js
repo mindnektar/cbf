@@ -1,6 +1,7 @@
 import path from 'path';
 import cors from 'cors';
 import pg from 'pg';
+import express from 'express';
 import expressJwt from 'express-jwt';
 import jwt from 'jsonwebtoken';
 import { GraphQLServer } from 'graphql-yoga';
@@ -11,7 +12,7 @@ import tokenExpiredCheck from './middleware/graphql/tokenExpiredCheck';
 import resolveTokens from './middleware/express/resolveTokens';
 import tokenErrorHandler from './middleware/express/tokenErrorHandler';
 import pubsub from './services/pubsub';
-import config from '../config';
+import config from '../shared/config';
 
 // postgres returns decimal types as strings because the values could potentially become larger than
 // fit into a JS variable. it is suggested to parse them to float manually if it is certain that the
@@ -66,8 +67,11 @@ server.express.use(
     resolveTokens,
 );
 
+server.express.use(express.static(path.join(__dirname, '../client/public')));
+
 const options = {
     port: config.port.express,
+    endpoint: '/api/',
     formatError: (error) => {
         if (error.originalError) {
             const { isCustomError, ...originalError } = error.originalError;

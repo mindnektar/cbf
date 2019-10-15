@@ -10,7 +10,7 @@ export default {
             User.query().orderBy('name').graphqlEager(info)
         ),
         me: (parent, params, { auth }, info) => (
-            User.query().findById(auth.id).graphqlEager(info)
+            auth.id ? User.query().findById(auth.id).graphqlEager(info) : null
         ),
     },
     Mutation: {

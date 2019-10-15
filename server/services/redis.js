@@ -1,11 +1,11 @@
 /* eslint camelcase: "off" */
-const redis = require('redis');
-const config = require('../../config');
+import redis from 'redis';
+import config from '../../shared/config';
 
 const clients = [];
 
 const factory = () => {
-    const client = redis.createClient(config.redis.port, {
+    const client = redis.createClient(config.redis.uri, {
         retry_strategy: ({ attempt, total_retry_time }) => {
             if (total_retry_time > config.redis.retry.maxTotalTime) {
                 // End reconnecting after a specific timeout and flush all commands

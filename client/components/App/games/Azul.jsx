@@ -8,7 +8,7 @@ import Factory from './Azul/Factory';
 
 const Azul = (props) => {
     const state = props.match.states[props.match.stateIndex];
-    const meInSeatingOrder = state.seatingOrder.indexOf(props.me.id);
+    const meInSeatingOrder = props.me ? state.seatingOrder.indexOf(props.me.id) : 0;
     const players = [
         ...state.seatingOrder.slice(meInSeatingOrder),
         ...state.seatingOrder.slice(0, meInSeatingOrder),
@@ -64,9 +64,13 @@ const Azul = (props) => {
     );
 };
 
+Azul.defaultProps = {
+    me: null,
+};
+
 Azul.propTypes = {
     match: PropTypes.object.isRequired,
-    me: PropTypes.object.isRequired,
+    me: PropTypes.object,
 };
 
 export default Azul;

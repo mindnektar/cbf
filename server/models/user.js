@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import BaseModel from './_base';
 import bcrypt from '../services/bcrypt';
 import tokenString from '../services/token-string';
-import config from '../../config';
+import config from '../../shared/config';
 
 class User extends BaseModel {
     static get tableName() {

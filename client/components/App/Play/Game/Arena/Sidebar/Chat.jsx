@@ -13,7 +13,8 @@ const Chat = (props) => {
 
     useEffect(() => {
         if (
-            props.data.match.messages[0]
+            props.data.me
+            && props.data.match.messages[0]
             && props.data.match.messages[0].author.id !== props.data.me.id
         ) {
             props.markMessagesRead(props.data.match.id);
@@ -49,7 +50,7 @@ const Chat = (props) => {
             <div
                 className={classNames(
                     'cbf-chat__message',
-                    { 'cbf-chat__message--mine': item.author.id === props.data.me.id }
+                    { 'cbf-chat__message--mine': props.data.me && item.author.id === props.data.me.id }
                 )}
                 key={item.id}
             >

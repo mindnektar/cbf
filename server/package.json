@@ -1,8 +1,30 @@
 {
   "private": true,
+  "scripts": {
+    "dev": "knex migrate:latest && nodemon app.js -w . -w ../shared --exec babel-node --ignore='node_modules' --presets @babel/preset-env --plugins @babel/plugin-proposal-object-rest-spread",
+    "prestart": "knex migrate:latest",
+    "start": "nodemon app.js --exec babel-node --ignore='node_modules' --presets @babel/preset-env --plugins @babel/plugin-proposal-object-rest-spread"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "current"
+          }
+        }
+      ]
+    ],
+    "plugins": [
+      "@babel/plugin-proposal-class-properties",
+      "@babel/plugin-proposal-object-rest-spread"
+    ]
+  },
   "dependencies": {
     "@babel/cli": "7.6.2",
     "@babel/core": "7.6.2",
+    "@babel/node": "7.6.2",
     "@babel/plugin-proposal-class-properties": "7.5.5",
     "@babel/plugin-proposal-object-rest-spread": "7.6.2",
     "@babel/preset-env": "7.6.2",
@@ -27,11 +49,21 @@
     "moment": "^2.24.0",
     "mongoose": "^5.7.1",
     "mongoose-id-validator": "^0.5.3",
+    "nodemon": "^1.19.3",
     "objection": "^1.6.11",
     "pg": "^7.12.1",
     "redis": "^2.8.0",
     "serialize-error": "^5.0.0",
     "uuid": "^3.3.3",
     "validator": "^11.1.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.0.3",
+    "eslint": "6.4.0",
+    "eslint-config-airbnb": "18.0.1",
+    "eslint-import-resolver-webpack": "^0.11.1",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jsx-a11y": "6.2.3",
+    "eslint-plugin-react": "7.14.3"
   }
 }

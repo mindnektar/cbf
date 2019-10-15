@@ -1,0 +1,29 @@
+2019-10-10 13:35:00.782 CEST [13718] LOG:  listening on IPv6 address "::1", port 5433
+2019-10-10 13:35:00.782 CEST [13718] LOG:  listening on IPv4 address "127.0.0.1", port 5433
+2019-10-10 13:35:00.782 CEST [13718] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5433"
+2019-10-10 13:35:00.801 CEST [13719] LOG:  database system was shut down at 2019-10-09 18:07:05 CEST
+2019-10-10 13:35:00.813 CEST [13718] LOG:  database system is ready to accept connections
+2019-10-10 13:51:18.593 CEST [13718] LOG:  received fast shutdown request
+2019-10-10 13:51:18.594 CEST [13718] LOG:  aborting any active transactions
+2019-10-10 13:51:18.598 CEST [13718] LOG:  background worker "logical replication launcher" (PID 13725) exited with exit code 1
+2019-10-10 13:51:18.599 CEST [13720] LOG:  shutting down
+2019-10-10 13:51:18.604 CEST [13718] LOG:  database system is shut down
+2019-10-10 17:11:56.969 CEST [21288] LOG:  listening on IPv6 address "::1", port 5433
+2019-10-10 17:11:56.969 CEST [21288] LOG:  listening on IPv4 address "127.0.0.1", port 5433
+2019-10-10 17:11:56.970 CEST [21288] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5433"
+2019-10-10 17:11:56.990 CEST [21289] LOG:  database system was shut down at 2019-10-10 13:51:18 CEST
+2019-10-10 17:11:57.003 CEST [21288] LOG:  database system is ready to accept connections
+2019-10-14 15:23:34.136 CEST [58585] FATAL:  lock file "postmaster.pid" already exists
+2019-10-14 15:23:34.136 CEST [58585] HINT:  Is another postmaster (PID 21288) running in data directory "/Users/martindenk1/pgsql"?
+2019-10-14 15:24:47.572 CEST [58800] FATAL:  lock file "postmaster.pid" already exists
+2019-10-14 15:24:47.572 CEST [58800] HINT:  Is another postmaster (PID 21288) running in data directory "/Users/martindenk1/pgsql"?
+2019-10-14 15:24:52.991 CEST [21288] LOG:  received fast shutdown request
+2019-10-14 15:24:52.992 CEST [21288] LOG:  aborting any active transactions
+2019-10-14 15:24:53.002 CEST [21288] LOG:  background worker "logical replication launcher" (PID 21295) exited with exit code 1
+2019-10-14 15:24:53.004 CEST [21290] LOG:  shutting down
+2019-10-14 15:24:53.039 CEST [21288] LOG:  database system is shut down
+2019-10-14 15:24:54.972 CEST [58886] LOG:  listening on IPv6 address "::1", port 5433
+2019-10-14 15:24:54.972 CEST [58886] LOG:  listening on IPv4 address "127.0.0.1", port 5433
+2019-10-14 15:24:54.972 CEST [58886] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5433"
+2019-10-14 15:24:54.992 CEST [58887] LOG:  database system was shut down at 2019-10-14 15:24:53 CEST
+2019-10-14 15:24:55.004 CEST [58886] LOG:  database system is ready to accept connections

@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import config from '../../config';
+import config from '../../shared/config';
 
 export default {
     hash: async (input) => (

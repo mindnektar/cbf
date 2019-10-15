@@ -179,7 +179,9 @@ export default {
         ),
         startMatch: (parent, { id }, { auth, pubsub }, info) => (
             transaction(async (trx) => {
-                const match = await Match.query(trx).eager('[participants, options]').findById(id);
+                const match = await Match.query(trx)
+                    .eager('[participants.player, options]')
+                    .findById(id);
 
                 if (
                     !match
@@ -196,15 +198,25 @@ export default {
                 }
 
                 const setupAction = require(`../../shared/games/${match.handle}/actions/SETUP`);
+                const randomSeed = generateRandomSeed();
 
                 await match.$query(trx).patch({ status: Match.STATUS.ACTIVE });
 
                 await Action.query(trx).insert({
                     index: 0,
                     match_id: match.id,
-                    random_seed: generateRandomSeed(),
+                    random_seed: randomSeed,
                     type: setupAction.id,
                 });
+
+                const setupState = setupAction.perform({
+                    allPlayers: match.participants.map((participant) => participant.player),
+                    randomizer: randomizer(randomSeed),
+                });
+
+                await MatchParticipant.query(trx)
+                    .whereIn('user_id', setupState.activePlayers)
+                    .patch({ awaits_action: true });
 
                 const result = await match.$graphqlLoadRelated(trx, info);
 

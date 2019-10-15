@@ -5,7 +5,7 @@ const config = convict({
         express: {
             format: 'nat',
             default: 5051,
-            env: 'PORT_EXPRESS',
+            env: 'PORT',
         },
         webpackDevServer: {
             format: 'nat',
@@ -36,10 +36,10 @@ const config = convict({
         },
     },
     redis: {
-        port: {
-            format: 'nat',
-            default: 6380,
-            env: 'REDIS_PORT',
+        uri: {
+            format: String,
+            default: 'redis://localhost:6380',
+            env: 'REDIS_URI',
         },
         retry: {
             maxTotalTime: {

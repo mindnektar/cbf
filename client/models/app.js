@@ -109,12 +109,7 @@ export default class AppModel extends BaseModel {
                     playerJoined {
                         id
                         participants {
-                            player {
-                                id
-                                name
-                            }
-                            confirmed
-                            scores
+                            ${FIELDS_PARTICIPANT}
                         }
                     }
                 }
@@ -140,12 +135,7 @@ export default class AppModel extends BaseModel {
                     invitationConfirmed {
                         id
                         participants {
-                            player {
-                                id
-                                name
-                            }
-                            confirmed
-                            scores
+                            ${FIELDS_PARTICIPANT}
                         }
                     }
                 }
@@ -165,12 +155,7 @@ export default class AppModel extends BaseModel {
                     invitationDeclined {
                         id
                         participants {
-                            player {
-                                id
-                                name
-                            }
-                            confirmed
-                            scores
+                            ${FIELDS_PARTICIPANT}
                         }
                     }
                 }
@@ -190,12 +175,7 @@ export default class AppModel extends BaseModel {
                     removedPlayerFromMatch {
                         id
                         participants {
-                            player {
-                                id
-                                name
-                            }
-                            confirmed
-                            scores
+                            ${FIELDS_PARTICIPANT}
                         }
                     }
                 }
@@ -241,6 +221,9 @@ export default class AppModel extends BaseModel {
                                 id
                                 name
                             }
+                        }
+                        participants {
+                            ${FIELDS_PARTICIPANT}
                         }
                         states @client
                         stateIndex @client
@@ -331,7 +314,7 @@ export default class AppModel extends BaseModel {
                     matches: {
                         [cacheData.me.matches.findIndex(({ id }) => id === item.id)]: {
                             messages: {
-                                $set: console.log(item.messages[0]) || item.messages,
+                                $set: item.messages,
                             },
                         },
                     },

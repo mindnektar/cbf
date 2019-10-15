@@ -15,7 +15,7 @@ class AdminAuthorization extends Authorization {}
 
 const resolve = async (data) => {
     if (!data) {
-        return new AnonymousAuthorization(data);
+        return new AnonymousAuthorization();
     }
 
     if (data.role === 'user') {

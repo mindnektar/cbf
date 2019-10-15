@@ -30,13 +30,21 @@ const client = new ApolloClient({
             return kind === 'OperationDefinition' && operation === 'subscription';
         },
         new WebSocketLink({
-            uri: 'ws://localhost:5051',
+            uri: window.appConfig.apiUrlWs,
             options: {
                 lazy: true,
                 reconnect: true,
-                connectionParams: () => ({
-                    Authorization: `Bearer ${getToken(AUTH_TYPE_USER)}`,
-                }),
+                connectionParams: () => {
+                    const token = getToken(AUTH_TYPE_USER);
+
+                    if (token) {
+                        return {
+                            Authorization: `Bearer ${token}`,
+                        };
+                    }
+
+                    return {};
+                },
             },
         }),
         ApolloLink.from([
@@ -52,25 +60,30 @@ const client = new ApolloClient({
                                     return;
                                 }
 
-                                const { data } = await client.mutate({
-                                    mutation: gql`
-                                        mutation renewToken($input: RenewTokenInput!) {
-                                            renewToken(input: $input) {
-                                                authToken
-                                                renewalToken
+                                try {
+                                    const { data } = await client.mutate({
+                                        mutation: gql`
+                                            mutation renewToken($input: RenewTokenInput!) {
+                                                renewToken(input: $input) {
+                                                    authToken
+                                                    renewalToken
+                                                }
                                             }
-                                        }
-                                    `,
-                                    variables: {
-                                        input: { renewalToken },
-                                    },
-                                    context: {
-                                        authType: AUTH_TYPE_NONE,
-                                    },
-                                });
+                                        `,
+                                        variables: {
+                                            input: { renewalToken },
+                                        },
+                                        context: {
+                                            authType: AUTH_TYPE_NONE,
+                                        },
+                                    });
 
-                                setToken(AUTH_TYPE_USER, data.renewToken.authToken);
-                                setToken(RENEWAL_TYPE_USER, data.renewToken.renewalToken);
+                                    setToken(AUTH_TYPE_USER, data.renewToken.authToken);
+                                    setToken(RENEWAL_TYPE_USER, data.renewToken.renewalToken);
+                                } catch (error) {
+                                    deleteToken(AUTH_TYPE_USER);
+                                    deleteToken(RENEWAL_TYPE_USER);
+                                }
 
                                 window.location.reload();
                             }
@@ -99,7 +112,7 @@ const client = new ApolloClient({
                 return { ...context, headers };
             }),
             new HttpLink({
-                uri: 'http://localhost:5051',
+                uri: window.appConfig.apiUrl,
                 fetch,
             }),
         ]),

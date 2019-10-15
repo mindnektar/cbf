@@ -4,7 +4,7 @@ module.exports = {
     context: __dirname,
 
     entry: {
-        app: ['@babel/polyfill', './client/main.jsx'],
+        app: ['@babel/polyfill', './main.jsx'],
     },
 
     output: {
@@ -17,9 +17,9 @@ module.exports = {
         extensions: ['.js', '.jsx'],
         modules: [
             path.join(__dirname),
-            path.join(__dirname, 'client'),
-            path.join(__dirname, 'client/components/hoc'),
-            path.join(__dirname, 'client/components/ui'),
+            path.join(__dirname, 'components/hoc'),
+            path.join(__dirname, 'components/ui'),
+            path.join(__dirname, '../'),
             'node_modules',
         ],
     },

@@ -12,6 +12,7 @@ const Home = (props) => {
         isOpen: false,
         id: null,
     });
+    const isAdmin = props.data.me && props.data.me.isAdmin;
 
     const openAnnouncementEditorHandler = (id = null) => () => {
         setAnnouncementEditorState({
@@ -36,7 +37,7 @@ const Home = (props) => {
             <div className="cbf-home">
                 <Headline>Welcome to Cardboard Frenzy!</Headline>
 
-                {props.data.me.isAdmin && (
+                {isAdmin && (
                     <>
                         <div className="cbf-home__announcement-button">
                             <Button onClick={openAnnouncementEditorHandler()}>
@@ -66,9 +67,11 @@ const Home = (props) => {
                                 {announcement.text}
                             </div>
 
-                            {props.data.me.isAdmin && (
+                            {isAdmin && (
                                 <div className="cbf-home__announcement-button">
-                                    <Button onClick={openAnnouncementEditorHandler(announcement.id)}>
+                                    <Button
+                                        onClick={openAnnouncementEditorHandler(announcement.id)}
+                                    >
                                         Edit
                                     </Button>
                                 </div>

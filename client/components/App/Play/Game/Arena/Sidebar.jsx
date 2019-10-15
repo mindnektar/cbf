@@ -8,9 +8,11 @@ import History from './Sidebar/History';
 import Chat from './Sidebar/Chat';
 
 const Sidebar = (props) => {
-    const { lastReadMessage } = props.data.match.participants.find(({ player }) => (
-        player.id === props.data.me.id
-    ));
+    const lastReadMessage = props.data.me
+        ? props.data.match.participants.find(({ player }) => (
+            player.id === props.data.me.id
+        )).lastReadMessage
+        : props.data.match.messages[0];
     const unreadMessageCount = lastReadMessage
         ? props.data.match.messages.findIndex(({ id }) => (
             id === lastReadMessage.id

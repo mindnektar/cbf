@@ -1,0 +1,55 @@
+version: '3.1'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    image: quay.io/martin_denk/cbf-api:${APP_VERSION:-latest}
+    volumes:
+      - ./server:/app/server
+      - ./shared:/app/shared
+    ports:
+      - ${EXTERNAL_PORT:-5051}:5051
+    links:
+      - postgres
+      - redis
+    environment:
+      - NODE_ENV=development
+      - POSTGRES_URI=postgresql://cbf:secret@postgres:5432/cbf
+      - REDIS_URI=redis://redis:6379
+      - BCRYPT_SALT_ROUNDS=12
+      - LOG_LEVEL=${LOG_LEVEL:-debug}
+      - DEBUG
+      - DATABASE_DEBUG
+    command: ["npm", "run", "dev"]
+
+  web:
+    image: quay.io/martin_denk/cbf-web:${APP_VERSION:-latest}
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    ports:
+      - ${EXTERNAL_PORT:-3000}:${PORT}
+    environment:
+      - API_URL=http://localhost:5051/
+      - API_URL_WS=ws://localhost:5051/
+      - NODE_ENV=production
+
+  postgres:
+    image: postgres:11.1-alpine
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=cbf
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=cbf
+
+  redis:
+    image: redis:5.0.0-alpine
+    volumes:
+      - redis-data:/data
+
+volumes:
+  postgres-data:
+  redis-data:
