@@ -1,4 +1,0 @@
-window.appConfig = {
-    apiUrl: '${API_URL}',
-    apiUrlWs: '${API_URL_WS}',
-};
