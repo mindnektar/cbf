@@ -324,7 +324,7 @@ export default {
                             await MatchParticipant.query(trx)
                                 .findById([match.id, player.id])
                                 .patch({
-                                    values: player.scores,
+                                    scores: player.scores,
                                     awaits_action: false,
                                 });
                         })
