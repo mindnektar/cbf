@@ -36,7 +36,7 @@ const Action = (props) => {
             width: (childRect.width / scale),
             height: (childRect.height / scale),
         });
-    }, [match.states.length]);
+    }, [match.stateIndex]);
 
     const onClick = () => {
         if (isActive) {
