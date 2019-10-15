@@ -85,8 +85,10 @@ module.exports = {
 
         score = Math.max(0, score - negatives);
 
-        if (floorLine.indexOf(5) === 0) {
-            centerTiles = floorLine.splice(0, 1);
+        const firstPlayerTileIndex = floorLine.indexOf(5);
+
+        if (firstPlayerTileIndex >= 0) {
+            centerTiles = floorLine.splice(firstPlayerTileIndex, 1);
             [nextStartPlayer] = activePlayers;
         }
 
