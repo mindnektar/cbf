@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withRouter } from 'react-router-dom';
 import { Transition, TransitionGroup } from 'react-transition-group';
+import moment from 'moment';
 import determineRanks from 'helpers/determineRanks';
 import games from 'data/games';
 import ListModel from 'models/play/list';
@@ -31,7 +32,7 @@ const MyMatches = (props) => {
             return (
                 (a.status === 'OPEN') - (b.status === 'OPEN')
                 || bParticipant.awaitsAction - aParticipant.awaitsAction
-                || aParticipant.updatedAt - bParticipant.updatedAt
+                || moment(aParticipant.updatedAt).diff(bParticipant.updatedAt)
             );
         });
     const finishedMatches = props.data.me.matches.filter((match) => match.status === 'FINISHED');

@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import moment from 'moment';
 import { withRouter } from 'react-router-dom';
 import MatchContext from 'contexts/MatchContext';
 import games from 'data/games';
@@ -24,7 +25,7 @@ const Table = (props) => {
                     player.id === props.data.me.id
                 ));
 
-                return aParticipant.updatedAt - bParticipant.updatedAt;
+                return moment(aParticipant.updatedAt).diff(bParticipant.updatedAt);
             })[0]
         : null;
     const awaitsAction = (

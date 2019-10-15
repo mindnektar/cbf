@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
+import moment from 'moment';
 import handleAction from 'helpers/handleAction';
 import determineRanks from 'helpers/determineRanks';
 import games from 'data/games';
@@ -27,7 +28,7 @@ const Status = (props) => {
                     player.id === props.data.me.id
                 ));
 
-                return aParticipant.updatedAt - bParticipant.updatedAt;
+                return moment(aParticipant.updatedAt).diff(bParticipant.updatedAt);
             })[0]
         : null;
 
