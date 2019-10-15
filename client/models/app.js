@@ -243,6 +243,9 @@ export default class AppModel extends BaseModel {
                         actions: {
                             $set: item.actions,
                         },
+                        participants: {
+                            $set: item.participants,
+                        },
                     },
                 } : {
                     $removeById: item.id,
