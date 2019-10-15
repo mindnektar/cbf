@@ -13,6 +13,7 @@ export default class PlayModel extends BaseModel {
                         handle
                         status
                         createdAt
+                        finishedAt
                         creator {
                             id
                         }

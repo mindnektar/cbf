@@ -19,6 +19,7 @@ const FIELDS_MATCH = `
     handle
     status
     createdAt
+    finishedAt
     creator {
         id
     }
@@ -262,6 +263,7 @@ export default class AppModel extends BaseModel {
                         id
                         handle
                         status
+                        finishedAt
                         actions {
                             randomSeed
                             type

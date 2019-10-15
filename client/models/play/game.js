@@ -151,6 +151,7 @@ export default class GameModel extends BaseModel {
                 pushActions(input: $input) {
                     id
                     status
+                    finishedAt
                     actions {
                         randomSeed
                         type

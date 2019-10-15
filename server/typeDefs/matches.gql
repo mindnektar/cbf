@@ -32,6 +32,7 @@ type Match {
     status: MatchStatus!
     handle: String!
     createdAt: DateTime!
+    finishedAt: DateTime
     actions: [Action!]!
     participants: [MatchParticipant!]!
     players: [User!]!

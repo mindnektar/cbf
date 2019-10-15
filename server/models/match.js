@@ -27,6 +27,7 @@ class Match extends BaseModel {
                 },
                 createdAt: { type: 'string' },
                 updatedAt: { type: 'string' },
+                finishedAt: { type: 'string' },
             },
         };
     }

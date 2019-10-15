@@ -47,7 +47,7 @@ const GameList = (props) => {
                                             <div className="cbf-game-list__item-title">
                                                 {games[match.handle].title}
 
-                                                <div>{moment(match.createdAt).format('L')}</div>
+                                                <div>{moment(match.finishedAt || match.createdAt).format('L')}</div>
                                             </div>
 
                                             {props.children(match)}

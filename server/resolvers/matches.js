@@ -1,4 +1,5 @@
 import clone from 'clone';
+import moment from 'moment';
 import generateStates from '../../shared/helpers/generateStates';
 import randomizer from '../../shared/helpers/randomizer';
 import transaction from './helpers/transaction';
@@ -329,7 +330,10 @@ export default {
                                 });
                         })
                     ));
-                    await match.$query(trx).patch({ status: 'FINISHED' });
+                    await match.$query(trx).patch({
+                        status: 'FINISHED',
+                        finishedAt: moment().toISOString(),
+                    });
                 } else {
                     await Promise.all((
                         match.participants.map(async (participant) => {
