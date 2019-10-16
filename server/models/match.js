@@ -45,6 +45,7 @@ class Match extends BaseModel {
             participants: {
                 relation: BaseModel.HasManyRelation,
                 modelClass: 'MatchParticipant',
+                modify: (builder) => builder.orderBy('user_id'),
                 join: {
                     from: 'match.id',
                     to: 'match_participant.match_id',
