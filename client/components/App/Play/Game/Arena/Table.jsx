@@ -56,4 +56,6 @@ Table.propTypes = {
 
 export default withRouter(GameModel.graphql(React.memo(Table, (prevProps, nextProps) => (
     prevProps.data.match.stateIndex === nextProps.data.match.stateIndex
+    && getNextMatchAwaitingAction(nextProps.data.me)
+    && getNextMatchAwaitingAction(prevProps.data.me)
 ))));
