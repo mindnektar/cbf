@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Switch, Route, withRouter } from 'react-router-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import Helmet from 'react-helmet';
+import usePrevious from 'hooks/usePrevious';
 import countMatchesAwaitingAction from 'helpers/countMatchesAwaitingAction';
+import getNextMatchAwaitingAction from 'helpers/getNextMatchAwaitingAction';
 import AppModel from 'models/app';
 import LoadingContainer from 'molecules/LoadingContainer';
 import Header from './App/Header';
@@ -13,9 +15,35 @@ import Users from './App/Users';
 import Signup from './App/Signup';
 
 const App = (props) => {
-    const renderTitle = () => {
-        const myMatchCount = countMatchesAwaitingAction(props.data.me);
+    const myMatchCount = countMatchesAwaitingAction(props.data.me);
+    const prevMatchCount = usePrevious(myMatchCount);
 
+    useEffect(() => {
+        if (Notification && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+    });
+
+    useEffect(() => {
+        if (
+            myMatchCount > prevMatchCount
+            && myMatchCount === 1
+            && Notification
+            && Notification.permission === 'granted'
+        ) {
+            const nextMatch = getNextMatchAwaitingAction(props.data.me);
+            const notification = new Notification('It\'s your turn!', {
+                body: 'Click this notification to go and make your move.',
+            });
+
+            notification.onclick = () => {
+                props.history.push(`/play/${nextMatch.id}`);
+                notification.close();
+            };
+        }
+    }, [myMatchCount]);
+
+    const renderTitle = () => {
         if (myMatchCount === 0) {
             return 'Cardboard Frenzy';
         }
@@ -62,6 +90,7 @@ const App = (props) => {
 App.propTypes = {
     location: PropTypes.object.isRequired,
     data: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
 };
 
 export default withRouter(AppModel.graphql(App));

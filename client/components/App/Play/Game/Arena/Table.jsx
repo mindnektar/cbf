@@ -1,33 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import moment from 'moment';
 import { withRouter } from 'react-router-dom';
 import MatchContext from 'contexts/MatchContext';
+import getNextMatchAwaitingAction from 'helpers/getNextMatchAwaitingAction';
 import games from 'data/games';
 import GameModel from 'models/play/game';
 
 const Table = (props) => {
-    const nextMatchAwaitingAction = props.data.me
-        ? props.data.me.matches
-            .filter(({ status, participants }) => {
-                const participant = participants.find(({ player }) => (
-                    player.id === props.data.me.id
-                ));
-
-                return status === 'ACTIVE' && participant.awaitsAction;
-            })
-            .sort((a, b) => {
-                const aParticipant = a.participants.find(({ player }) => (
-                    player.id === props.data.me.id
-                ));
-                const bParticipant = b.participants.find(({ player }) => (
-                    player.id === props.data.me.id
-                ));
-
-                return moment(aParticipant.updatedAt).diff(bParticipant.updatedAt);
-            })[0]
-        : null;
+    const nextMatchAwaitingAction = getNextMatchAwaitingAction(props.data.me);
     const awaitsAction = (
         !props.data.match.historyMode
         && nextMatchAwaitingAction

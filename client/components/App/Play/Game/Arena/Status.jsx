@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import moment from 'moment';
+import getNextMatchAwaitingAction from 'helpers/getNextMatchAwaitingAction';
 import handleAction from 'helpers/handleAction';
 import determineRanks from 'helpers/determineRanks';
 import games from 'data/games';
@@ -11,26 +11,7 @@ import Button from 'atoms/Button';
 const Status = (props) => {
     const state = props.data.match.states[props.data.match.stateIndex];
     const isLatestState = props.data.match.stateIndex === props.data.match.states.length - 1;
-    const nextMatchAwaitingAction = props.data.me
-        ? props.data.me.matches
-            .filter(({ status, participants }) => {
-                const participant = participants.find(({ player }) => (
-                    player.id === props.data.me.id
-                ));
-
-                return status === 'ACTIVE' && participant.awaitsAction;
-            })
-            .sort((a, b) => {
-                const aParticipant = a.participants.find(({ player }) => (
-                    player.id === props.data.me.id
-                ));
-                const bParticipant = b.participants.find(({ player }) => (
-                    player.id === props.data.me.id
-                ));
-
-                return moment(aParticipant.updatedAt).diff(bParticipant.updatedAt);
-            })[0]
-        : null;
+    const nextMatchAwaitingAction = getNextMatchAwaitingAction(props.data.me);
 
     const getInstruction = () => {
         if (props.data.match.historyMode) {
