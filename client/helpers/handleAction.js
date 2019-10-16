@@ -21,7 +21,7 @@ export default async ({ match, action, player, payload, pushActions, performActi
         state: clone(match.states[match.stateIndex]),
         payload,
         player,
-        allPlayers: match.players,
+        allPlayers: match.participants.map((participant) => participant.player),
     });
 
     return performAction({
