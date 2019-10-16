@@ -3,12 +3,20 @@
 @import './games/**/*'
 @import './ui/**/*'
 
+html
+    overflow: hidden
+
 body
     background-color: $color-light
     color: $color-text
     font-family: $font-primary
+    height: 100vh
     margin: 0
+    overflow-y: scroll
+    position: fixed
     touch-action: manipulation
+    width: 100vw
+    -webkit-overflow-scrolling: touch
 
 .cbf-content
     bottom: 0
