@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import moment from 'moment';
 import games from 'data/games';
 import { Transition, TransitionGroup } from 'react-transition-group';
 import Collapsible from 'molecules/Collapsible';
@@ -47,7 +46,7 @@ const GameList = (props) => {
                                             <div className="cbf-game-list__item-title">
                                                 {games[match.handle].title}
 
-                                                <div>{moment(match.finishedAt || match.createdAt).format('L')}</div>
+                                                <div>{props.renderDate(match)}</div>
                                             </div>
 
                                             {props.children(match)}
@@ -78,6 +77,7 @@ const GameList = (props) => {
 GameList.defaultProps = {
     small: false,
     highlightItem: () => false,
+    renderDate: () => null,
 };
 
 GameList.propTypes = {
@@ -89,6 +89,7 @@ GameList.propTypes = {
     })).isRequired,
     small: PropTypes.bool,
     highlightItem: PropTypes.func,
+    renderDate: PropTypes.func,
 };
 
 export default GameList;

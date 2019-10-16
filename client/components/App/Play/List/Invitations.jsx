@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { Transition, TransitionGroup } from 'react-transition-group';
+import moment from 'moment';
 import ListModel from 'models/play/list';
 import Collapsible from 'molecules/Collapsible';
 import Headline from 'atoms/Headline';
@@ -65,6 +66,7 @@ const OpenInvitations = (props) => {
                     { label: 'Accept', handler: confirmInvitation },
                     { label: 'Decline', handler: declineInvitation },
                 ]}
+                renderDate={(match) => moment(match.createdAt).format('L')}
             >
                 {(match) => (
                     match.participants.map(({ player }) => (
@@ -94,6 +96,7 @@ const OpenInvitations = (props) => {
             <GameList
                 matches={openInvitations}
                 actions={[{ label: 'Join game', handler: joinMatch }]}
+                renderDate={(match) => moment(match.createdAt).format('L')}
             >
                 {(match) => (
                     match.participants.map(({ player }) => (

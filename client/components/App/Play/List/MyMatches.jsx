@@ -35,7 +35,9 @@ const MyMatches = (props) => {
                 || moment(aParticipant.updatedAt).diff(bParticipant.updatedAt)
             );
         });
-    const finishedMatches = props.data.me.matches.filter((match) => match.status === 'FINISHED');
+    const finishedMatches = props.data.me.matches
+        .filter((match) => match.status === 'FINISHED')
+        .sort((a, b) => moment(b.finishedAt).diff(a.finishedAt));
 
     const openMatch = (match) => {
         props.history.push(`/play/${match.id}`);
@@ -85,6 +87,7 @@ const MyMatches = (props) => {
                         .find(({ player }) => player.id === props.data.me.id)
                         .awaitsAction
                 )}
+                renderDate={(match) => moment(match.createdAt).format('L')}
             >
                 {(match) => (
                     match.participants.map((participant) => (
@@ -120,6 +123,7 @@ const MyMatches = (props) => {
             <GameList
                 matches={finishedMatches}
                 actions={[{ label: 'Open game', handler: openMatch }]}
+                renderDate={(match) => moment(match.finishedAt).format('L')}
                 small
             >
                 {(match) => (
