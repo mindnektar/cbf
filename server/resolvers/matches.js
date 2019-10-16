@@ -217,6 +217,7 @@ export default {
 
                 await MatchParticipant.query(trx)
                     .whereIn('user_id', setupState.activePlayers)
+                    .where('match_id', match.id)
                     .patch({ awaits_action: true });
 
                 const result = await match.$graphqlLoadRelated(trx, info);
