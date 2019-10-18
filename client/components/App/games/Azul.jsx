@@ -13,6 +13,8 @@ const Azul = (props) => {
         ...state.seatingOrder.slice(meInSeatingOrder),
         ...state.seatingOrder.slice(0, meInSeatingOrder),
     ].map((id) => [id, state.players[id]]);
+    const gameType = props.match.options.find(({ type }) => type === 'game-type');
+    const usesVariant = gameType ? gameType.values[0] === 1 : false;
 
     const renderPlayerArea = ([id, playerData], index) => {
         const { name } = props.match.participants.find(({ player }) => player.id === id).player;
@@ -49,7 +51,8 @@ const Azul = (props) => {
         <div
             className={classNames(
                 'azul',
-                `azul--player-count-${players.length}`
+                `azul--player-count-${players.length}`,
+                { 'azul--variant': usesVariant }
             )}
         >
             <div className="azul__game">
