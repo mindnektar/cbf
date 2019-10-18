@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     tiles: [
         ...Array(20).fill(0),
         ...Array(20).fill(1),

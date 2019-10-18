@@ -1,20 +1,26 @@
-const states = require('../states');
+import Action from '../../../classes/Action';
+import states from '../states';
 
-module.exports = {
-    id: 5,
-    isServerAction: true,
+export default class extends Action {
+    static get id() {
+        return 5;
+    }
 
-    toString: ({ me, state, previousState }) => {
+    static get isServerAction() {
+        return true;
+    }
+
+    static toString({ me, state, previousState }) {
         const score = state.players[me.id].score - previousState.players[me.id].score;
 
         return `${me.name} scores ${score} bonus point${score !== 1 ? 's' : ''}.`;
-    },
+    }
 
-    isValid: ({ state }) => (
-        state.state === states.SCORE_BONUSES.id
-    ),
+    static isValid({ state }) {
+        return state.state === states.SCORE_BONUSES.id;
+    }
 
-    perform: ({ state }) => {
+    static perform({ state }) {
         let nextState = state.state;
         let { activePlayers } = state;
         const { playerOrder } = state.game;
@@ -45,5 +51,5 @@ module.exports = {
             state: nextState,
             activePlayers,
         };
-    },
-};
+    }
+}

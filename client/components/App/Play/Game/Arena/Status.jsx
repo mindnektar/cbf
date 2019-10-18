@@ -82,9 +82,7 @@ const Status = (props) => {
             );
         }
 
-        const { instruction } = games[props.data.match.handle].states.findById(state.state);
-
-        return instruction ? instruction(state) : '';
+        return games[props.data.match.handle].states[state.state].instruction(state);
     };
 
     const endTurn = () => {

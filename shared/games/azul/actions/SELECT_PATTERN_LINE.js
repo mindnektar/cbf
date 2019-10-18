@@ -1,16 +1,19 @@
-const states = require('../states');
+import Action from '../../../classes/Action';
+import states from '../states';
 
-module.exports = {
-    id: 2,
+export default class extends Action {
+    static get id() {
+        return 2;
+    }
 
-    toString: ({ me, payload: [lineIndex] }) => {
+    static toString({ me, payload: [lineIndex] }) {
         const numberMap = ['first', 'second', 'third', 'fourth', 'fifth'];
         const lineText = lineIndex === null ? 'floor line' : `${numberMap[lineIndex]} pattern line`;
 
         return `${me.name} places their tiles on their ${lineText}.`;
-    },
+    }
 
-    isValid: ({ state, player, payload: [lineIndex] }) => {
+    static isValid({ state, player, payload: [lineIndex] }) {
         const { patternLines, wall, hand } = state.players[player.id];
 
         if (state.state !== states.SELECT_PATTERN_LINE.id) {
@@ -28,9 +31,9 @@ module.exports = {
             && (typeof line[0] === 'undefined' || line[0] === hand[0])
             && !wall[lineIndex].includes(hand[0])
         );
-    },
+    }
 
-    perform: ({ state, player, payload: [lineIndex] }) => {
+    static perform({ state, player, payload: [lineIndex] }) {
         const { discardedTiles } = state.game;
         const { patternLines, floorLine, hand } = state.players[player.id];
 
@@ -65,5 +68,5 @@ module.exports = {
             },
             state: states.END_TURN.id,
         };
-    },
-};
+    }
+}

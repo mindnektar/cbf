@@ -1,14 +1,17 @@
-const assets = require('../assets');
-const states = require('../states');
+import Action from '../../../classes/Action';
+import states from '../states';
+import assets from '../assets';
 
-module.exports = {
-    id: 6,
+export default class extends Action {
+    static get id() {
+        return 6;
+    }
 
-    isValid: ({ state }) => (
-        !state
-    ),
+    static get isSetupAction() {
+        return true;
+    }
 
-    perform: ({ allPlayers, randomizer }) => {
+    static perform({ allPlayers, randomizer }) {
         const seatingOrder = randomizer.shuffle(allPlayers.map(({ id }) => id));
         const remainingTiles = [...assets.tiles];
         const factoryTiles = [];
@@ -41,5 +44,5 @@ module.exports = {
             seatingOrder,
             activePlayers: [seatingOrder[0]],
         };
-    },
-};
+    }
+}

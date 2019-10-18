@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { actions } from 'shared/games/azul';
+import azul from 'shared/games/azul';
 import Action from '../helpers/Action';
 import Tile from './Tile';
 
@@ -21,7 +21,7 @@ const Factory = (props) => (
                     <div className="azul__factory-display">
                         {display.map((tile, tileIndex) => (
                             <Action
-                                action={actions.PICK_UP_TILES}
+                                action={azul.actions.PICK_UP_TILES}
                                 key={tileIndex}
                                 payload={[index, tile]}
                             >
@@ -36,7 +36,7 @@ const Factory = (props) => (
         <div className="azul__factory-center">
             {props.centerTiles.map((tile, index) => (
                 <Action
-                    action={actions.PICK_UP_TILES}
+                    action={azul.actions.PICK_UP_TILES}
                     key={index}
                     payload={[null, tile]}
                 >

@@ -140,6 +140,10 @@ export default class GameModel extends BaseModel {
                             name
                         }
                     }
+                    options {
+                        type
+                        values
+                    }
                     states @client
                 }
             }
@@ -163,6 +167,10 @@ export default class GameModel extends BaseModel {
                     }
                     participants {
                         ${FIELDS_PARTICIPANT}
+                    }
+                    options {
+                        type
+                        values
                     }
                     states @client
                     stateIndex @client

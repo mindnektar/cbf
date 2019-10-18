@@ -76,7 +76,7 @@ Action.defaultProps = {
 };
 
 Action.propTypes = {
-    action: PropTypes.object.isRequired,
+    action: PropTypes.func.isRequired,
     children: PropTypes.node.isRequired,
     match: PropTypes.object.isRequired,
     payload: PropTypes.array,

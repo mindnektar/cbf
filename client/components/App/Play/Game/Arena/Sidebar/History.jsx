@@ -72,7 +72,7 @@ const History = (props) => {
         }
 
         const { player, type, payload } = props.data.match.actions[index];
-        const actionText = games[props.data.match.handle].actions.findById(type).toString({
+        const actionText = games[props.data.match.handle].actions[type].toString({
             me: (
                 props.data.match.actions[index].player
                 || props.participants.find((participant) => (

@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { actions } from 'shared/games/azul';
+import azul from 'shared/games/azul';
 import Action from '../../helpers/Action';
 import Tile from '../Tile';
 
 const FloorLine = (props) => (
     <Action
-        action={actions.SELECT_PATTERN_LINE}
+        action={azul.actions.SELECT_PATTERN_LINE}
         payload={[null]}
         disabled={props.actionsDisabled}
         offset={{ top: 14 }}

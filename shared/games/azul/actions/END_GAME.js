@@ -1,29 +1,30 @@
-const states = require('../states');
+import Action from '../../../classes/Action';
+import states from '../states';
 
-module.exports = {
-    id: 4,
-    isServerAction: true,
-    isEndGameAction: true,
+export default class extends Action {
+    static get id() {
+        return 4;
+    }
 
-    formatScores: (values) => (
-        `${values[0]} point${values[0] !== 1 ? 's' : ''}, ${values[1]} row${values[1] !== 1 ? 's' : ''}`
-    ),
+    static get isEndGameAction() {
+        return true;
+    }
 
-    getScores: ({ state }) => (
-        Object.entries(state.players).map(([id, player]) => ({
+    static formatScores(values) {
+        return `${values[0]} point${values[0] !== 1 ? 's' : ''}, ${values[1]} row${values[1] !== 1 ? 's' : ''}`;
+    }
+
+    static getScores({ state }) {
+        return Object.entries(state.players).map(([id, player]) => ({
             id,
             scores: [
                 player.score,
                 player.wall.filter((line) => !line.includes(null)).length,
             ],
-        }))
-    ),
+        }));
+    }
 
-    toString: () => (
-        'The game is over.'
-    ),
-
-    isValid: ({ state }) => (
-        state.state === states.END_GAME.id
-    ),
-};
+    static isValid({ state }) {
+        return state.state === states.END_GAME.id;
+    }
+}

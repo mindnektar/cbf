@@ -156,6 +156,10 @@ export const resolvers = {
                                     name
                                 }
                             }
+                            options {
+                                type
+                                values
+                            }
                             states
                         }
                     `,

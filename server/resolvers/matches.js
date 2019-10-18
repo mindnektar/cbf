@@ -1,7 +1,6 @@
-import clone from 'clone';
 import moment from 'moment';
 import generateStates from '../../shared/helpers/generateStates';
-import randomizer from '../../shared/helpers/randomizer';
+import azul from '../../shared/games/azul';
 import transaction from './helpers/transaction';
 import subscription from './helpers/subscription';
 import generateRandomSeed from '../helpers/generateRandomSeed';
@@ -198,22 +197,18 @@ export default {
                     throw new IllegalArgumentError();
                 }
 
-                const setupAction = require(`../../shared/games/${match.handle}/actions/SETUP`);
                 const randomSeed = generateRandomSeed();
 
                 await match.$query(trx).patch({ status: Match.STATUS.ACTIVE });
 
-                await Action.query(trx).insert({
+                const action = await Action.query(trx).returning('*').insert({
                     index: 0,
                     match_id: match.id,
                     random_seed: randomSeed,
-                    type: setupAction.id,
+                    type: azul.actions.SETUP.id,
                 });
 
-                const setupState = setupAction.perform({
-                    allPlayers: match.participants.map((participant) => participant.player),
-                    randomizer: randomizer(randomSeed),
-                });
+                const setupState = azul.actions.SETUP.prepareAndperform(match, action);
 
                 await MatchParticipant.query(trx)
                     .whereIn('user_id', setupState.activePlayers)
@@ -230,7 +225,7 @@ export default {
         pushActions: (parent, { input }, { auth, pubsub }, info) => (
             transaction(async (trx) => {
                 const match = await Match.query(trx)
-                    .eager('[participants.player, actions.player]')
+                    .eager('[participants.player, actions.player, options]')
                     .findById(input.id);
 
                 if (
@@ -241,8 +236,6 @@ export default {
                     throw new IllegalArgumentError();
                 }
 
-                const actions = require(`../../shared/games/${match.handle}/actions`);
-                const states = require(`../../shared/games/${match.handle}/states`);
                 const allStates = generateStates(match);
                 let stateIndex = allStates.length - 1;
                 let currentState = allStates.pop();
@@ -255,7 +248,7 @@ export default {
                 let action;
 
                 const newActions = input.actions.map(({ type, payload }) => {
-                    action = actions.findById(type);
+                    action = azul.actions[type];
                     const { player } = match.participants.find((participant) => (
                         participant.player.id === auth.id
                     ));
@@ -271,13 +264,11 @@ export default {
 
                     const randomSeed = action.isServerAction ? generateRandomSeed() : null;
 
-                    currentState = action.perform({
-                        state: clone(currentState),
-                        payload,
-                        player,
-                        allPlayers: match.participants.map((participant) => participant.player),
-                        randomizer: randomSeed ? randomizer(randomSeed) : null,
-                    });
+                    currentState = action.prepareAndPerform(
+                        match,
+                        { payload, player, randomSeed },
+                        currentState
+                    );
 
                     stateIndex += 1;
 
@@ -291,11 +282,11 @@ export default {
                     };
                 });
 
-                while (states.findById(currentState.state).performAutomatically) {
-                    action = states.findById(currentState.state).performAutomatically();
+                while (azul.states[currentState.state].performAutomatically()) {
+                    action = azul.states[currentState.state].performAutomatically();
 
                     if (!action.isValid({ state: currentState })) {
-                        throw new Error(`Invalid action: ${action}`);
+                        throw new Error(`Invalid action: ${action.id}`);
                     }
 
                     if (action.isEndGameAction) {
@@ -304,11 +295,7 @@ export default {
 
                     const randomSeed = action.isServerAction ? generateRandomSeed() : null;
 
-                    currentState = action.perform({
-                        state: clone(currentState),
-                        allPlayers: match.participants.map((participant) => participant.player),
-                        randomizer: randomSeed ? randomizer(randomSeed) : null,
-                    });
+                    currentState = action.prepareAndPerform(match, { randomSeed }, currentState);
 
                     stateIndex += 1;
 

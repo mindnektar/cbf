@@ -1,16 +1,19 @@
-const states = require('../states');
+import Action from '../../../classes/Action';
+import states from '../states';
 
-module.exports = {
-    id: 1,
+export default class extends Action {
+    static get id() {
+        return 1;
+    }
 
-    toString: ({ me, state, payload: [, type] }) => {
+    static toString({ me, state, payload: [, type] }) {
         const pickUpCount = state.players[me.id].hand.length;
         const tileMap = ['light blue', 'yellow', 'blue', 'red', 'black'];
 
         return `${me.name} picks up ${pickUpCount} ${tileMap[type]} tile${pickUpCount > 1 ? 's' : ''}.`;
-    },
+    }
 
-    isValid: ({ state, payload: [display, type] }) => {
+    static isValid({ state, payload: [display, type] }) {
         if (state.state !== states.PICK_UP_TILES.id) {
             return false;
         }
@@ -20,9 +23,9 @@ module.exports = {
         }
 
         return state.game.factoryTiles[display].includes(type);
-    },
+    }
 
-    perform: ({ state, player, payload: [display, type] }) => {
+    static perform({ state, player, payload: [display, type] }) {
         let { centerTiles, factoryTiles } = state.game;
         let pickUpCount;
         let { floorLine } = state.players[player.id];
@@ -65,5 +68,5 @@ module.exports = {
             },
             state: states.SELECT_PATTERN_LINE.id,
         };
-    },
-};
+    }
+}

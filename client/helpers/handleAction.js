@@ -1,6 +1,4 @@
-import clone from 'clone';
-
-export default async ({ match, action, player, payload, pushActions, performAction }) => {
+export default async ({ match, action, payload, player, pushActions, performAction }) => {
     if (action.isServerAction) {
         return pushActions({
             id: match.id,
@@ -17,12 +15,11 @@ export default async ({ match, action, player, payload, pushActions, performActi
         });
     }
 
-    const nextState = action.perform({
-        state: clone(match.states[match.stateIndex]),
-        payload,
-        player,
-        allPlayers: match.participants.map((participant) => participant.player),
-    });
+    const nextState = action.prepareAndPerform(
+        match,
+        { payload, player },
+        match.states[match.stateIndex]
+    );
 
     return performAction({
         id: match.id,
