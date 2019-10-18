@@ -1,0 +1,50 @@
+.cbf-setup-image-value
+    border-radius: 8px
+    cursor: pointer
+    padding: 4px
+    margin-right: 12px
+    transition: 300ms background-color
+    width: 240px
+
+    &:hover
+        .cbf-setup-image-value__image
+            img
+                filter: grayscale(0%)
+
+        .cbf-setup-image-value__label
+            color: $color-primary
+
+.cbf-setup-image-value--selected
+    background-color: $color-primary
+
+    &:hover
+        .cbf-setup-image-value__label
+            color: $color-white
+
+    .cbf-setup-image-value__image
+        img
+            filter: grayscale(0%)
+
+    .cbf-setup-image-value__label
+        color: $color-white
+
+.cbf-setup-image-value__image
+    background-color: white
+    border-radius: 6px
+    padding: 4px
+
+    img
+        border-radius: 4px
+        filter: grayscale(100%)
+        overflow: hidden
+        display: block
+        transition: 300ms filter
+        width: 100%
+
+.cbf-setup-image-value__label
+    color: $color-disabled
+    font-size: .8em
+    font-weight: 700
+    padding: 8px 0 4px
+    text-align: center
+    transition: 300ms color

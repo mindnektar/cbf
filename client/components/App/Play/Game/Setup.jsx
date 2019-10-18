@@ -7,11 +7,19 @@ import Button from 'atoms/Button';
 import Headline from 'atoms/Headline';
 import Select from 'atoms/Select';
 import Checkbox from 'atoms/Checkbox';
+import Option from './Setup/Option';
+import ImageValue from './Setup/ImageValue';
 
 const Setup = (props) => {
-    const possiblePlayers = [...games[props.data.match.handle].playerCount];
+    const { playerCount, options } = games[props.data.match.handle];
     const [invitedPlayers, setInvitedPlayers] = useState([]);
-    const [numPlayers, setNumPlayers] = useState(possiblePlayers);
+    const [numPlayers, setNumPlayers] = useState([...playerCount]);
+    const [optionValues, setOptionValues] = useState((
+        options.reduce((result, { key, values }) => ({
+            ...result,
+            [key]: values[0].value,
+        }), {})
+    ));
     const invitablePlayers = props.data.users.filter(({ id }) => (
         id !== props.data.me.id && !invitedPlayers.includes(id)
     ));
@@ -37,6 +45,9 @@ const Setup = (props) => {
             players: invitedPlayers,
             options: [
                 { type: 'num-players', values: numPlayers },
+                ...Object.entries(optionValues).map(([type, value]) => ({
+                    type, values: [value],
+                })),
             ],
         });
 
@@ -77,61 +88,72 @@ const Setup = (props) => {
         }
     };
 
+    const changeOptionHandler = (key, value) => () => {
+        setOptionValues((prevState) => ({
+            ...prevState,
+            [key]: value,
+        }));
+    };
+
     return (
         <div className="cbf-setup">
             <Headline>Configure your match</Headline>
 
-            <div className="cbf-setup__option">
-                <div className="cbf-setup__option-label">
-                    Number of players
-                </div>
+            <Option label="Number of players">
+                {playerCount.map((value) => (
+                    <Checkbox
+                        checked={numPlayers.includes(value)}
+                        onChange={() => toggleNumPlayers(value)}
+                        key={value}
+                    >
+                        {value}
+                    </Checkbox>
+                ))}
+            </Option>
 
-                <div className="cbf-setup__option-inputs">
-                    {possiblePlayers.map((value) => (
-                        <Checkbox
-                            checked={numPlayers.includes(value)}
-                            onChange={() => toggleNumPlayers(value)}
-                            key={value}
-                        >
-                            {value}
-                        </Checkbox>
-                    ))}
-                </div>
-            </div>
+            <Option label="Invite players">
+                {invitedPlayers.map((id) => (
+                    <div
+                        className="cbf-setup__invited-player"
+                        key={id}
+                        onClick={() => toggleInvitedPlayers(id)}
+                    >
+                        {props.data.users.find((user) => user.id === id).name}
 
-            <div className="cbf-setup__option">
-                <div className="cbf-setup__option-label">
-                    Invite players
-                </div>
+                        <span>&#x2718;</span>
+                    </div>
+                ))}
 
-                <div className="cbf-setup__option-inputs">
-                    {invitedPlayers.map((id) => (
-                        <div
-                            className="cbf-setup__invited-player"
-                            key={id}
-                            onClick={() => toggleInvitedPlayers(id)}
-                        >
-                            {props.data.users.find((user) => user.id === id).name}
+                {invitedPlayers.length < maxPlayers - 1 && (
+                    <Select
+                        onChange={toggleInvitedPlayers}
+                        options={[
+                            { value: '', label: 'Select a player' },
+                            ...invitablePlayers.map((user) => ({
+                                value: user.id,
+                                label: user.name,
+                            })),
+                        ]}
+                        value=""
+                    />
+                )}
+            </Option>
 
-                            <span>&#x2718;</span>
-                        </div>
-                    ))}
-
-                    {invitedPlayers.length < maxPlayers - 1 && (
-                        <Select
-                            onChange={toggleInvitedPlayers}
-                            options={[
-                                { value: '', label: 'Select a player' },
-                                ...invitablePlayers.map((user) => ({
-                                    value: user.id,
-                                    label: user.name,
-                                })),
-                            ]}
-                            value=""
+            {options.map((option) => (
+                <Option
+                    label={option.label}
+                    key={option.key}
+                >
+                    {option.values.map(({ label, image, value }) => (
+                        <ImageValue
+                            label={label}
+                            image={image}
+                            selected={optionValues[option.key] === value}
+                            onChange={changeOptionHandler(option.key, value)}
                         />
-                    )}
-                </div>
-            </div>
+                    ))}
+                </Option>
+            ))}
 
             <Button
                 onClick={openMatch}

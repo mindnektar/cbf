@@ -11,6 +11,19 @@ export default {
         actions: azul.actions,
         states: azul.states,
         component: Azul,
+        options: [{
+            label: 'Game type',
+            key: 'game-type',
+            values: [{
+                label: 'Standard',
+                image: '/img/games/azul/board.png',
+                value: 0,
+            }, {
+                label: 'Variant',
+                image: '/img/games/azul/board-variant.png',
+                value: 1,
+            }],
+        }],
     },
     // 'five-tribes': {
     //     handle: 'five-tribes',
